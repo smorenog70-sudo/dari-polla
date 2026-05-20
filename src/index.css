@@ -1,0 +1,48 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html, body, #root {
+  min-height: 100%;
+  background-color: #0f172a;
+  color: #f1f5f9;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* iOS safe areas */
+body {
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* Inputs more touch-friendly on mobile */
+input, select, button {
+  font-size: 16px; /* prevent iOS zoom on focus */
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center px-4 py-2 rounded-lg font-medium transition active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+  .btn-primary {
+    @apply btn bg-brand-600 text-white hover:bg-brand-700;
+  }
+  .btn-ghost {
+    @apply btn bg-ink-800 text-ink-100 hover:bg-ink-700;
+  }
+  .btn-danger {
+    @apply btn bg-red-700 text-white hover:bg-red-600;
+  }
+  .card {
+    @apply bg-ink-800 rounded-xl p-4 shadow-sm border border-ink-700;
+  }
+  .input {
+    @apply w-full bg-ink-900 border border-ink-700 rounded-lg px-3 py-2 text-ink-100 focus:outline-none focus:ring-2 focus:ring-brand-500;
+  }
+  .label {
+    @apply block text-sm font-medium text-ink-300 mb-1;
+  }
+  .pill {
+    @apply inline-block px-2 py-0.5 rounded-full text-xs font-medium;
+  }
+}

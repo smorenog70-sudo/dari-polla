@@ -1,0 +1,51 @@
+import { Routes, Route, Navigate } from 'react-router-dom'
+import { AuthProvider, useAuth } from './lib/auth'
+import Layout from './components/Layout'
+import Login from './pages/Login'
+import Signup from './pages/Signup'
+import Home from './pages/Home'
+import Predictions from './pages/Predictions'
+import GroupsPredictions from './pages/GroupsPredictions'
+import ThirdsPredictions from './pages/ThirdsPredictions'
+import Standings from './pages/Standings'
+import Rules from './pages/Rules'
+import AdminResults from './pages/AdminResults'
+import AdminGroupResults from './pages/AdminGroupResults'
+import AdminThirds from './pages/AdminThirds'
+import AdminUsers from './pages/AdminUsers'
+import AdminFines from './pages/AdminFines'
+import AdminConfig from './pages/AdminConfig'
+
+function Protected({ children, adminOnly = false }) {
+  const { user, profile, loading } = useAuth()
+  if (loading) return <div className="p-8 text-center text-ink-300">Cargando…</div>
+  if (!user) return <Navigate to="/login" replace />
+  if (adminOnly && !profile?.is_admin) return <Navigate to="/" replace />
+  return children
+}
+
+export default function App() {
+  return (
+    <AuthProvider>
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route element={<Protected><Layout /></Protected>}>
+          <Route index element={<Home />} />
+          <Route path="predicciones" element={<Predictions />} />
+          <Route path="grupos" element={<GroupsPredictions />} />
+          <Route path="terceros" element={<ThirdsPredictions />} />
+          <Route path="tabla" element={<Standings />} />
+          <Route path="reglas" element={<Rules />} />
+          <Route path="admin/marcadores" element={<Protected adminOnly><AdminResults /></Protected>} />
+          <Route path="admin/grupos" element={<Protected adminOnly><AdminGroupResults /></Protected>} />
+          <Route path="admin/terceros" element={<Protected adminOnly><AdminThirds /></Protected>} />
+          <Route path="admin/usuarios" element={<Protected adminOnly><AdminUsers /></Protected>} />
+          <Route path="admin/multas" element={<Protected adminOnly><AdminFines /></Protected>} />
+          <Route path="admin/config" element={<Protected adminOnly><AdminConfig /></Protected>} />
+        </Route>
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </AuthProvider>
+  )
+}
