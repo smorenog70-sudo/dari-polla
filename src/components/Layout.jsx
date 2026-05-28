@@ -34,7 +34,7 @@ export default function Layout() {
       <header className="sticky top-0 z-30 bg-ink-800 border-b border-ink-700">
         <div className="max-w-2xl mx-auto px-4 py-3 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2">
-            <span className="text-2xl">⚽</span>
+            <img src="/logo.png" alt="Dari-polla" className="w-9 h-9 rounded-full bg-white p-0.5" />
             <span className="font-bold text-lg">Dari-polla</span>
           </Link>
           <button
@@ -52,6 +52,9 @@ export default function Layout() {
               {profile?.is_admin && <span className="ml-2 pill bg-brand-600 text-white">ADMIN</span>}
               {profile && !profile.paid && <span className="ml-2 pill bg-yellow-600 text-white">PAGO PENDIENTE</span>}
             </div>
+            <NavLink to="/comunidad" onClick={() => setMenuOpen(false)} className="block px-3 py-2 rounded hover:bg-ink-700">
+              📊 Estadísticas comunales
+            </NavLink>
             <NavLink to="/reglas" onClick={() => setMenuOpen(false)} className="block px-3 py-2 rounded hover:bg-ink-700">
               📜 Reglas y premios
             </NavLink>

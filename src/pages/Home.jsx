@@ -8,6 +8,9 @@ import {
   scoreGroupPositions,
   scoreThirds,
 } from '../lib/scoring'
+import PendingMatchesBanner from '../components/PendingMatchesBanner'
+import NewResultsBanner from '../components/NewResultsBanner'
+import { useNewResults } from '../lib/useNewResults'
 
 function formatCOP(n) {
   return new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(n)
@@ -16,9 +19,14 @@ function formatCOP(n) {
 export default function Home() {
   const { user, profile } = useAuth()
   const data = useLeagueData()
+  const { newResults, totalNewPoints, dismiss: dismissResults } = useNewResults(user.id)
+
+  const myPreds = useMemo(
+    () => data.predictions.filter(p => p.user_id === user.id),
+    [data.predictions, user.id]
+  )
 
   const stats = useMemo(() => {
-    const myPreds = data.predictions.filter(p => p.user_id === user.id)
     const myGroupPreds = data.groupPreds.filter(p => p.user_id === user.id)
     const myThirdPreds = data.thirdPreds.filter(p => p.user_id === user.id)
 
@@ -51,7 +59,7 @@ export default function Home() {
       players: data.profiles.length,
       playersPaid: paidProfiles.length,
     }
-  }, [data, user.id])
+  }, [data, user.id, myPreds])
 
   const nextMatch = useMemo(() => {
     const now = Date.now()
@@ -73,6 +81,16 @@ export default function Home() {
           </div>
         )}
       </div>
+
+      {/* Notificación de resultados nuevos */}
+      <NewResultsBanner
+        newResults={newResults}
+        totalNewPoints={totalNewPoints}
+        dismiss={dismissResults}
+      />
+
+      {/* Banner de partidos pendientes (auto-refresh cada 30s) */}
+      <PendingMatchesBanner userPredictions={myPreds} />
 
       <div className="grid grid-cols-2 gap-3">
         <div className="card text-center">
@@ -129,6 +147,10 @@ export default function Home() {
           </div>
         </div>
       )}
+
+      <Link to="/comunidad" className="block card text-center text-brand-500 hover:bg-ink-700">
+        📊 Ver estadísticas comunales
+      </Link>
 
       <Link to="/reglas" className="block card text-center text-brand-500 hover:bg-ink-700">
         📜 Ver reglas y premios

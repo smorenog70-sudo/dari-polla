@@ -9,6 +9,7 @@ import GroupsPredictions from './pages/GroupsPredictions'
 import ThirdsPredictions from './pages/ThirdsPredictions'
 import Standings from './pages/Standings'
 import Rules from './pages/Rules'
+import CommunityStats from './pages/CommunityStats'
 import AdminResults from './pages/AdminResults'
 import AdminGroupResults from './pages/AdminGroupResults'
 import AdminThirds from './pages/AdminThirds'
@@ -36,6 +37,7 @@ export default function App() {
           <Route path="grupos" element={<GroupsPredictions />} />
           <Route path="terceros" element={<ThirdsPredictions />} />
           <Route path="tabla" element={<Standings />} />
+          <Route path="comunidad" element={<CommunityStats />} />
           <Route path="reglas" element={<Rules />} />
           <Route path="admin/marcadores" element={<Protected adminOnly><AdminResults /></Protected>} />
           <Route path="admin/grupos" element={<Protected adminOnly><AdminGroupResults /></Protected>} />

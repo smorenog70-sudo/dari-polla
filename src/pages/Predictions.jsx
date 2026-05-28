@@ -8,8 +8,11 @@ import {
   isMatchLocked,
 } from '../lib/matches'
 import { scoreMatch } from '../lib/scoring'
+import { useNowTick } from '../lib/useNowTick'
+import SharePredictionButton from '../components/SharePredictionButton'
 
 const TABS = [
+  { id: 'closing', label: '⏰ Cierre pronto' },
   { id: 'F1', label: 'Fecha 1', stage: 'group', fecha: 1 },
   { id: 'F2', label: 'Fecha 2', stage: 'group', fecha: 2 },
   { id: 'F3', label: 'Fecha 3', stage: 'group', fecha: 3 },
@@ -21,7 +24,7 @@ const TABS = [
   { id: 'final', label: 'Final', stage: 'final' },
 ]
 
-function MatchRow({ match, pred, actual, onChange, locked, knockoutsEnabled }) {
+function MatchRow({ match, pred, actual, onChange, locked, knockoutsEnabled, userName }) {
   const disabled = locked || (match.stage !== 'group' && !knockoutsEnabled)
   const points = pred && actual ? scoreMatch(pred, actual).total : null
 
@@ -29,6 +32,9 @@ function MatchRow({ match, pred, actual, onChange, locked, knockoutsEnabled }) {
     const v = val === '' ? '' : Math.max(0, Math.min(30, parseInt(val) || 0))
     onChange({ ...pred, [field]: v })
   }
+
+  const hasPrediction =
+    pred && pred.score1 !== '' && pred.score2 !== '' && pred.score1 != null && pred.score2 != null
 
   return (
     <div className="card mb-2">
@@ -81,13 +87,16 @@ function MatchRow({ match, pred, actual, onChange, locked, knockoutsEnabled }) {
           {match.team1_raw !== match.team1 && `(${match.team1_raw} vs ${match.team2_raw})`}
         </div>
       )}
+      {hasPrediction && !locked && (
+        <SharePredictionButton match={match} prediction={pred} userName={userName} />
+      )}
     </div>
   )
 }
 
 export default function Predictions() {
-  const { user } = useAuth()
-  const [tab, setTab] = useState('F1')
+  const { user, profile } = useAuth()
+  const [tab, setTab] = useState('closing')
   const [preds, setPreds] = useState({})       // match_id -> {score1, score2}
   const [original, setOriginal] = useState({}) // last saved state
   const [results, setResults] = useState({})   // match_id -> {score1, score2}
@@ -95,6 +104,9 @@ export default function Predictions() {
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [savedMsg, setSavedMsg] = useState('')
+
+  // re-render every 30s so countdowns and the "closing soon" filter stay fresh
+  const nowMs = useNowTick(30000)
 
   const load = async () => {
     setLoading(true)
@@ -122,6 +134,25 @@ export default function Predictions() {
 
   const matches = useMemo(() => {
     const all = groupedMatches()
+
+    if (tab === 'closing') {
+      // Partidos que cierran en las próximas 24h y aún no están cerrados
+      const cutoffMs = nowMs + 24 * 60 * 60 * 1000
+      const knockoutsEnabledNow = config.knockouts_enabled === true
+      return TOURNAMENT.matches
+        .filter(m => {
+          if (!m.kickoff_utc) return false
+          const ko = new Date(m.kickoff_utc).getTime()
+          const lockMs = ko - 10 * 60 * 1000
+          if (lockMs <= nowMs) return false   // ya cerró
+          if (lockMs > cutoffMs) return false  // demasiado lejos
+          // eliminatorias bloqueadas si knockouts no está habilitado
+          if (m.stage !== 'group' && !knockoutsEnabledNow) return false
+          return true
+        })
+        .sort((a, b) => new Date(a.kickoff_utc) - new Date(b.kickoff_utc))
+    }
+
     if (tab === 'F1') return all.group[1]
     if (tab === 'F2') return all.group[2]
     if (tab === 'F3') return all.group[3]
@@ -132,7 +163,7 @@ export default function Predictions() {
     if (tab === 'third') return all.third
     if (tab === 'final') return all.final
     return []
-  }, [tab])
+  }, [tab, nowMs, config.knockouts_enabled])
 
   const knockoutsEnabled = config.knockouts_enabled === true
 
@@ -222,6 +253,22 @@ export default function Predictions() {
         </div>
       )}
 
+      {tab === 'closing' && matches.length === 0 && (
+        <div className="card text-center py-8 text-ink-300">
+          <div className="text-3xl mb-2">🌴</div>
+          <div className="font-medium">Sin partidos próximos a cerrar</div>
+          <div className="text-xs mt-1">
+            No hay partidos en las próximas 24 horas. Vuelve cerca del próximo partido o usa las pestañas para pronosticar por fecha.
+          </div>
+        </div>
+      )}
+
+      {tab === 'closing' && matches.length > 0 && (
+        <div className="text-xs text-ink-300 px-1">
+          Mostrando partidos que cierran en las próximas 24 horas, ordenados por urgencia.
+        </div>
+      )}
+
       {matches.map(m => (
         <MatchRow
           key={m.id}
@@ -230,6 +277,7 @@ export default function Predictions() {
           actual={results[m.id]}
           locked={isMatchLocked(m)}
           knockoutsEnabled={knockoutsEnabled}
+          userName={profile?.display_name}
           onChange={p => setPreds(prev => ({ ...prev, [m.id]: p }))}
         />
       ))}

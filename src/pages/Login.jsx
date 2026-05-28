@@ -26,7 +26,7 @@ export default function Login() {
     <div className="min-h-screen flex items-center justify-center p-6">
       <form onSubmit={onSubmit} className="card w-full max-w-sm space-y-4">
         <div className="text-center mb-2">
-          <div className="text-4xl mb-2">⚽</div>
+          <img src="/logo.png" alt="Dari-polla" className="w-24 h-24 mx-auto mb-3 rounded-full bg-white p-1" />
           <h1 className="text-2xl font-bold">Dari-polla</h1>
           <p className="text-sm text-ink-300">Polla Mundialista 2026</p>
         </div>
