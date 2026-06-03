@@ -70,7 +70,8 @@ export default function Standings() {
       }
       return {
         id: prof.id,
-        name: prof.display_name,
+        name: (prof.nickname || '').trim() || prof.display_name,
+        avatar: (prof.avatar || '').trim() || '⚽',
         is_admin: prof.is_admin,
         paid: prof.paid,
         match_points: matchPts,
@@ -136,7 +137,7 @@ export default function Standings() {
                     {idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : idx + 1}
                   </td>
                   <td className="py-2 px-2">
-                    <div className="font-medium">{r.name}</div>
+                    <div className="font-medium">{r.avatar} {r.name}</div>
                     <div className="text-xs text-ink-500">
                       {!r.paid && <span className="text-yellow-500">⚠ sin pagar</span>}
                       {r.is_admin && <span className="ml-1 text-brand-500">admin</span>}

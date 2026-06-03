@@ -10,6 +10,7 @@ import {
 import { scoreMatch } from '../lib/scoring'
 import { useNowTick } from '../lib/useNowTick'
 import SharePredictionButton from '../components/SharePredictionButton'
+import MatchSocial from '../components/MatchSocial'
 
 const TABS = [
   { id: 'closing', label: '⏰ Cierre pronto' },
@@ -24,7 +25,7 @@ const TABS = [
   { id: 'final', label: 'Final', stage: 'final' },
 ]
 
-function MatchRow({ match, pred, actual, onChange, locked, knockoutsEnabled, userName }) {
+function MatchRow({ match, pred, actual, onChange, locked, knockoutsEnabled, userName, user, profile, profilesById, isAdmin }) {
   const disabled = locked || (match.stage !== 'group' && !knockoutsEnabled)
   const points = pred && actual ? scoreMatch(pred, actual).total : null
 
@@ -90,6 +91,13 @@ function MatchRow({ match, pred, actual, onChange, locked, knockoutsEnabled, use
       {hasPrediction && !locked && (
         <SharePredictionButton match={match} prediction={pred} userName={userName} />
       )}
+      <MatchSocial
+        match={match}
+        user={user}
+        profile={profile}
+        profilesById={profilesById}
+        isAdmin={isAdmin}
+      />
     </div>
   )
 }
@@ -101,6 +109,7 @@ export default function Predictions() {
   const [original, setOriginal] = useState({}) // last saved state
   const [results, setResults] = useState({})   // match_id -> {score1, score2}
   const [config, setConfig] = useState({})
+  const [profilesById, setProfilesById] = useState({})
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [savedMsg, setSavedMsg] = useState('')
@@ -110,10 +119,11 @@ export default function Predictions() {
 
   const load = async () => {
     setLoading(true)
-    const [pRes, rRes, cRes] = await Promise.all([
+    const [pRes, rRes, cRes, profRes] = await Promise.all([
       supabase.from('predictions').select('*').eq('user_id', user.id),
       supabase.from('results').select('*'),
       supabase.from('config').select('*'),
+      supabase.from('profiles').select('id, display_name, nickname, avatar'),
     ])
     const map = {}
     for (const p of pRes.data || []) map[p.match_id] = { score1: p.score1, score2: p.score2 }
@@ -123,6 +133,10 @@ export default function Predictions() {
     const rmap = {}
     for (const r of rRes.data || []) rmap[r.match_id] = { score1: r.score1, score2: r.score2 }
     setResults(rmap)
+
+    const pbid = {}
+    for (const p of profRes.data || []) pbid[p.id] = p
+    setProfilesById(pbid)
 
     const cfg = {}
     for (const c of cRes.data || []) cfg[c.key] = c.value
@@ -278,6 +292,10 @@ export default function Predictions() {
           locked={isMatchLocked(m)}
           knockoutsEnabled={knockoutsEnabled}
           userName={profile?.display_name}
+          user={user}
+          profile={profile}
+          profilesById={profilesById}
+          isAdmin={!!profile?.is_admin}
           onChange={p => setPreds(prev => ({ ...prev, [m.id]: p }))}
         />
       ))}

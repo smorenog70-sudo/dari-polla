@@ -52,6 +52,21 @@ export default function Layout() {
               {profile?.is_admin && <span className="ml-2 pill bg-brand-600 text-white">ADMIN</span>}
               {profile && !profile.paid && <span className="ml-2 pill bg-yellow-600 text-white">PAGO PENDIENTE</span>}
             </div>
+            <NavLink to="/perfil" onClick={() => setMenuOpen(false)} className="block px-3 py-2 rounded hover:bg-ink-700">
+              🎭 Mi perfil
+            </NavLink>
+            <NavLink to="/progreso" onClick={() => setMenuOpen(false)} className="block px-3 py-2 rounded hover:bg-ink-700">
+              📈 Mi progreso
+            </NavLink>
+            <NavLink to="/resumen" onClick={() => setMenuOpen(false)} className="block px-3 py-2 rounded hover:bg-ink-700">
+              📋 Resumen de fecha
+            </NavLink>
+            <NavLink to="/muro" onClick={() => setMenuOpen(false)} className="block px-3 py-2 rounded hover:bg-ink-700">
+              📰 Muro de actividad
+            </NavLink>
+            <NavLink to="/duelo" onClick={() => setMenuOpen(false)} className="block px-3 py-2 rounded hover:bg-ink-700">
+              ⚔️ Duelo
+            </NavLink>
             <NavLink to="/comunidad" onClick={() => setMenuOpen(false)} className="block px-3 py-2 rounded hover:bg-ink-700">
               📊 Estadísticas comunales
             </NavLink>

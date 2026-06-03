@@ -8,6 +8,8 @@
 create table if not exists profiles (
   id uuid primary key references auth.users(id) on delete cascade,
   display_name text not null,
+  nickname text,
+  avatar text default '⚽',
   is_admin boolean not null default false,
   paid boolean not null default false,        -- admin marca cuando confirma los 50k COP
   created_at timestamptz not null default now()
@@ -224,6 +226,51 @@ insert into config (key, value) values
   ('fine_amount', '5000'::jsonb),
   ('knockouts_enabled', 'false'::jsonb)
 on conflict (key) do nothing;
+
+-- COMENTARIOS EN PARTIDOS
+create table if not exists match_comments (
+  id bigserial primary key,
+  match_id text not null,
+  user_id uuid not null references auth.users(id) on delete cascade,
+  body text not null check (char_length(body) <= 280),
+  created_at timestamptz not null default now()
+);
+create index if not exists match_comments_match_idx on match_comments(match_id);
+create index if not exists match_comments_created_idx on match_comments(created_at desc);
+alter table match_comments enable row level security;
+
+drop policy if exists "mc_select_all" on match_comments;
+create policy "mc_select_all" on match_comments
+  for select using (auth.role() = 'authenticated');
+
+drop policy if exists "mc_insert_self" on match_comments;
+create policy "mc_insert_self" on match_comments
+  for insert with check (user_id = auth.uid());
+
+drop policy if exists "mc_delete_own_or_admin" on match_comments;
+create policy "mc_delete_own_or_admin" on match_comments
+  for delete using (
+    user_id = auth.uid()
+    or exists (select 1 from profiles p where p.id = auth.uid() and p.is_admin)
+  );
+
+-- REACCIONES EN PARTIDOS (una por usuario por partido)
+create table if not exists match_reactions (
+  match_id text not null,
+  user_id uuid not null references auth.users(id) on delete cascade,
+  emoji text not null,
+  created_at timestamptz not null default now(),
+  primary key (match_id, user_id)
+);
+alter table match_reactions enable row level security;
+
+drop policy if exists "mr_select_all" on match_reactions;
+create policy "mr_select_all" on match_reactions
+  for select using (auth.role() = 'authenticated');
+
+drop policy if exists "mr_write_self" on match_reactions;
+create policy "mr_write_self" on match_reactions
+  for all using (user_id = auth.uid()) with check (user_id = auth.uid());
 
 -- ============================================================================
 -- TRIGGER: auto-crear profile cuando un user se registra

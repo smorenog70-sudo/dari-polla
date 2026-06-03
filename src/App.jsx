@@ -10,6 +10,11 @@ import ThirdsPredictions from './pages/ThirdsPredictions'
 import Standings from './pages/Standings'
 import Rules from './pages/Rules'
 import CommunityStats from './pages/CommunityStats'
+import Profile from './pages/Profile'
+import Duel from './pages/Duel'
+import ActivityWall from './pages/ActivityWall'
+import Progress from './pages/Progress'
+import FechaRecap from './pages/FechaRecap'
 import AdminResults from './pages/AdminResults'
 import AdminGroupResults from './pages/AdminGroupResults'
 import AdminThirds from './pages/AdminThirds'
@@ -38,6 +43,11 @@ export default function App() {
           <Route path="terceros" element={<ThirdsPredictions />} />
           <Route path="tabla" element={<Standings />} />
           <Route path="comunidad" element={<CommunityStats />} />
+          <Route path="progreso" element={<Progress />} />
+          <Route path="resumen" element={<FechaRecap />} />
+          <Route path="muro" element={<ActivityWall />} />
+          <Route path="duelo" element={<Duel />} />
+          <Route path="perfil" element={<Profile />} />
           <Route path="reglas" element={<Rules />} />
           <Route path="admin/marcadores" element={<Protected adminOnly><AdminResults /></Protected>} />
           <Route path="admin/grupos" element={<Protected adminOnly><AdminGroupResults /></Protected>} />

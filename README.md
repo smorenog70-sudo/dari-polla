@@ -20,6 +20,11 @@ Stack: React + Vite + Tailwind (frontend) · Supabase (auth + Postgres + RLS) ·
 2. Copia y pega el contenido completo de `supabase_schema.sql`.
 3. Click **Run** (abajo a la derecha). Debe decir "Success" sin errores.
 
+> **¿Ya tienes la app corriendo con usuarios?** No vuelvas a correr
+> `supabase_schema.sql`. En su lugar corre una sola vez
+> `supabase_migration_social.sql` (agrega apodos, avatares, comentarios y
+> reacciones sin tocar tus datos existentes).
+
 ### 3. Obtener las credenciales
 
 1. En el dashboard: **Project Settings** (engranaje abajo a la izq) → **API**.
