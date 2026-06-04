@@ -3,6 +3,8 @@ import { AuthProvider, useAuth } from './lib/auth'
 import Layout from './components/Layout'
 import Login from './pages/Login'
 import Signup from './pages/Signup'
+import ForgotPassword from './pages/ForgotPassword'
+import ResetPassword from './pages/ResetPassword'
 import Home from './pages/Home'
 import Predictions from './pages/Predictions'
 import GroupsPredictions from './pages/GroupsPredictions'
@@ -36,6 +38,8 @@ export default function App() {
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
+        <Route path="/recuperar" element={<ForgotPassword />} />
+        <Route path="/nueva-clave" element={<ResetPassword />} />
         <Route element={<Protected><Layout /></Protected>}>
           <Route index element={<Home />} />
           <Route path="predicciones" element={<Predictions />} />
