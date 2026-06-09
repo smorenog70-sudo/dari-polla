@@ -272,7 +272,6 @@ drop policy if exists "mr_write_self" on match_reactions;
 create policy "mr_write_self" on match_reactions
   for all using (user_id = auth.uid()) with check (user_id = auth.uid());
 
--- ============================================================================
 -- TRIGGER: auto-crear profile cuando un user se registra
 -- ============================================================================
 create or replace function public.handle_new_user()

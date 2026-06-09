@@ -3,7 +3,6 @@ import { supabase } from './supabase'
 
 /**
  * Loads all the data needed for the standings / overview screens.
- * Returns: { profiles, predictions, results, groupPreds, groupResults, thirdPreds, thirdResults, fines, config, refresh, loading }
  */
 export function useLeagueData() {
   const [state, setState] = useState({

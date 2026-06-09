@@ -61,6 +61,12 @@ export default function Layout() {
             <NavLink to="/resumen" onClick={() => setMenuOpen(false)} className="block px-3 py-2 rounded hover:bg-ink-700">
               📋 Resumen de fecha
             </NavLink>
+            <NavLink to="/bracket" onClick={() => setMenuOpen(false)} className="block px-3 py-2 rounded hover:bg-ink-700">
+              🏆 Camino a la final
+            </NavLink>
+            <NavLink to="/revive" onClick={() => setMenuOpen(false)} className="block px-3 py-2 rounded hover:bg-ink-700">
+              📜 Revive el partido
+            </NavLink>
             <NavLink to="/muro" onClick={() => setMenuOpen(false)} className="block px-3 py-2 rounded hover:bg-ink-700">
               📰 Muro de actividad
             </NavLink>

@@ -1,4 +1,36 @@
+import { useMemo } from 'react'
+import { useLeagueData } from '../lib/useLeagueData'
+
+const CORRAL_BONO = 50000
+const BONOS_TOTALES = CORRAL_BONO * 2
+
+function formatCOP(n) {
+  return new Intl.NumberFormat('es-CO', {
+    style: 'currency', currency: 'COP', maximumFractionDigits: 0,
+  }).format(n)
+}
+
 export default function Rules() {
+  const data = useLeagueData()
+
+  const premios = useMemo(() => {
+    if (data.loading) return null
+    const entryFee = Number(data.config.entry_fee || 50000)
+    const fineAmount = Number(data.config.fine_amount || 5000)
+    const paidProfiles = data.profiles.filter(p => p.paid)
+    const finesTotal = (data.fines || []).reduce((s, f) => s + (f.amount || fineAmount), 0)
+    const bolsa = paidProfiles.length * entryFee + finesTotal
+    const repartible = Math.max(0, bolsa - BONOS_TOTALES)
+    return {
+      bolsa,
+      repartible,
+      primero: Math.round(repartible * 0.7),
+      segundo: Math.round(repartible * 0.2),
+      tercero: Math.round(repartible * 0.1),
+      tieneBolsa: bolsa > 0,
+    }
+  }, [data])
+
   return (
     <div className="space-y-4">
       <div className="card">
@@ -47,9 +79,46 @@ export default function Rules() {
       <div className="card">
         <h2 className="font-semibold mb-3">🏆 Premios</h2>
         <ul className="space-y-2">
-          <li className="flex justify-between"><span>🥇 1er lugar</span><span className="font-bold text-brand-500">80% del botín</span></li>
-          <li className="flex justify-between"><span>🥈 2do lugar</span><span className="font-bold text-brand-500">20% del botín</span></li>
+          <li className="flex justify-between items-center">
+            <span>🥇 1er lugar</span>
+            <span className="text-right">
+              <span className="font-bold text-brand-500">70% de la bolsa</span>
+              {premios?.tieneBolsa && <span className="block text-xs text-ink-400">{formatCOP(premios.primero)}</span>}
+            </span>
+          </li>
+          <li className="flex justify-between items-center">
+            <span>🥈 2do lugar</span>
+            <span className="text-right">
+              <span className="font-bold text-brand-500">20% de la bolsa</span>
+              {premios?.tieneBolsa && <span className="block text-xs text-ink-400">{formatCOP(premios.segundo)}</span>}
+            </span>
+          </li>
+          <li className="flex justify-between items-center">
+            <span>🥉 3er lugar</span>
+            <span className="text-right">
+              <span className="font-bold text-brand-500">10% de la bolsa</span>
+              {premios?.tieneBolsa && <span className="block text-xs text-ink-400">{formatCOP(premios.tercero)}</span>}
+            </span>
+          </li>
+          <li className="flex justify-between items-center border-t border-ink-700 pt-2 mt-2">
+            <span>🍔 4to lugar</span>
+            <span className="font-bold text-brand-500">Bono El Corral $50.000</span>
+          </li>
+          <li className="flex justify-between items-center">
+            <span>🍔 5to lugar</span>
+            <span className="font-bold text-brand-500">Bono El Corral $50.000</span>
+          </li>
         </ul>
+        <p className="text-xs text-ink-500 mt-3">
+          Primero se separan los dos bonos de El Corral ($100.000 en total para el 4° y 5° lugar).
+          El resto de la bolsa se reparte entre el podio: 70% / 20% / 10%.
+        </p>
+        {premios?.tieneBolsa && (
+          <div className="mt-3 text-xs text-ink-400 bg-ink-900/50 rounded-lg p-2">
+            Bolsa actual: <strong>{formatCOP(premios.bolsa)}</strong> · A repartir en podio tras bonos:{' '}
+            <strong>{formatCOP(premios.repartible)}</strong>
+          </div>
+        )}
       </div>
 
       <p className="text-center text-ink-300 text-sm py-4">

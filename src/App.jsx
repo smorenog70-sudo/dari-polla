@@ -17,6 +17,8 @@ import Duel from './pages/Duel'
 import ActivityWall from './pages/ActivityWall'
 import Progress from './pages/Progress'
 import FechaRecap from './pages/FechaRecap'
+import Bracket from './pages/Bracket'
+import MatchReplay from './pages/MatchReplay'
 import AdminResults from './pages/AdminResults'
 import AdminGroupResults from './pages/AdminGroupResults'
 import AdminThirds from './pages/AdminThirds'
@@ -49,6 +51,8 @@ export default function App() {
           <Route path="comunidad" element={<CommunityStats />} />
           <Route path="progreso" element={<Progress />} />
           <Route path="resumen" element={<FechaRecap />} />
+          <Route path="bracket" element={<Bracket />} />
+          <Route path="revive" element={<MatchReplay />} />
           <Route path="muro" element={<ActivityWall />} />
           <Route path="duelo" element={<Duel />} />
           <Route path="perfil" element={<Profile />} />
