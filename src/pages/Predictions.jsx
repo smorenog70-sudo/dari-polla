@@ -11,6 +11,7 @@ import { scoreMatch } from '../lib/scoring'
 import { useNowTick } from '../lib/useNowTick'
 import SharePredictionButton from '../components/SharePredictionButton'
 import MatchSocial from '../components/MatchSocial'
+import { teamWithFlag } from '../lib/flags'
 
 const TABS = [
   { id: 'closing', label: '⏰ Cierre pronto' },
@@ -57,7 +58,7 @@ function MatchRow({ match, pred, actual, onChange, locked, knockoutsEnabled, use
         </span>
       </div>
       <div className="flex items-center gap-2">
-        <div className="flex-1 text-right font-medium text-sm">{match.team1}</div>
+        <div className="flex-1 text-right font-medium text-sm">{teamWithFlag(match.team1)}</div>
         <input
           type="number"
           min="0"
@@ -81,7 +82,7 @@ function MatchRow({ match, pred, actual, onChange, locked, knockoutsEnabled, use
           className="input w-14 text-center px-1 py-2"
           placeholder="-"
         />
-        <div className="flex-1 text-left font-medium text-sm">{match.team2}</div>
+        <div className="flex-1 text-left font-medium text-sm">{teamWithFlag(match.team2)}</div>
       </div>
       {match.stage !== 'group' && (
         <div className="text-[10px] text-ink-500 mt-1 text-center">

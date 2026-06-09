@@ -14,6 +14,7 @@ const adminItems = [
   { to: '/admin/marcadores', label: 'Marcadores' },
   { to: '/admin/grupos', label: 'Resultados Grupos' },
   { to: '/admin/terceros', label: 'Mejores Terceros' },
+  { to: '/admin/llaves', label: 'Llaves (eliminatorias)' },
   { to: '/admin/multas', label: 'Multas' },
   { to: '/admin/usuarios', label: 'Usuarios' },
   { to: '/admin/config', label: 'Config' },

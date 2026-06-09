@@ -19,6 +19,7 @@ import Progress from './pages/Progress'
 import FechaRecap from './pages/FechaRecap'
 import Bracket from './pages/Bracket'
 import MatchReplay from './pages/MatchReplay'
+import AdminBracket from './pages/AdminBracket'
 import AdminResults from './pages/AdminResults'
 import AdminGroupResults from './pages/AdminGroupResults'
 import AdminThirds from './pages/AdminThirds'
@@ -60,6 +61,7 @@ export default function App() {
           <Route path="admin/marcadores" element={<Protected adminOnly><AdminResults /></Protected>} />
           <Route path="admin/grupos" element={<Protected adminOnly><AdminGroupResults /></Protected>} />
           <Route path="admin/terceros" element={<Protected adminOnly><AdminThirds /></Protected>} />
+          <Route path="admin/llaves" element={<Protected adminOnly><AdminBracket /></Protected>} />
           <Route path="admin/usuarios" element={<Protected adminOnly><AdminUsers /></Protected>} />
           <Route path="admin/multas" element={<Protected adminOnly><AdminFines /></Protected>} />
           <Route path="admin/config" element={<Protected adminOnly><AdminConfig /></Protected>} />

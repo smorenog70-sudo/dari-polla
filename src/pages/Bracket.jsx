@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 import { useAuth } from '../lib/auth'
 import { useLeagueData } from '../lib/useLeagueData'
 import { groupedMatches, isMatchLocked, formatKickoff } from '../lib/matches'
+import { resolveTeamWithFlag } from '../lib/bracketTeams'
 
 const ROUNDS = [
   { key: 'r32', label: '16avos' },
@@ -30,6 +31,8 @@ export default function Bracket() {
 
   const grouped = useMemo(() => groupedMatches(), [])
 
+  const bracketTeams = data.config?.bracket_teams || {}
+
   if (data.loading) return <div className="text-center text-ink-300 py-8">Cargando…</div>
 
   return (
@@ -56,6 +59,7 @@ export default function Bracket() {
                     <BracketMatch
                       key={m.id}
                       match={m}
+                      bracketTeams={bracketTeams}
                       pred={myPredsById.get(m.id)}
                       result={resultsById.get(m.id)}
                       locked={isMatchLocked(m)}
@@ -79,6 +83,7 @@ export default function Bracket() {
             <BracketMatch
               key={m.id}
               match={m}
+              bracketTeams={bracketTeams}
               pred={myPredsById.get(m.id)}
               result={resultsById.get(m.id)}
               locked={isMatchLocked(m)}
@@ -95,7 +100,7 @@ export default function Bracket() {
   )
 }
 
-function BracketMatch({ match, pred, result, locked, isFinal }) {
+function BracketMatch({ match, bracketTeams, pred, result, locked, isFinal }) {
   const teamLine = (team, predScore, realScore, isWinner) => (
     <div className={`flex items-center justify-between gap-1 px-2 py-1 rounded ${
       isWinner ? 'bg-green-900/30' : ''
@@ -115,13 +120,17 @@ function BracketMatch({ match, pred, result, locked, isFinal }) {
   const realWinner1 = result && result.score1 > result.score2
   const realWinner2 = result && result.score2 > result.score1
 
+  // Resolver placeholders (2A, W73...) a equipos reales si el admin ya los asignó
+  const team1 = resolveTeamWithFlag(match.team1_raw || match.team1, bracketTeams)
+  const team2 = resolveTeamWithFlag(match.team2_raw || match.team2, bracketTeams)
+
   return (
     <div className={`rounded-lg border p-1.5 ${
       isFinal ? 'border-brand-500 bg-brand-900/20' : 'border-ink-700 bg-ink-800/50'
     }`}>
-      {teamLine(match.team1, pred?.score1, result?.score1, realWinner1)}
+      {teamLine(team1, pred?.score1, result?.score1, realWinner1)}
       <div className="border-t border-ink-700 my-0.5" />
-      {teamLine(match.team2, pred?.score2, result?.score2, realWinner2)}
+      {teamLine(team2, pred?.score2, result?.score2, realWinner2)}
       <div className="text-[9px] text-ink-500 text-center mt-1 flex items-center justify-center gap-1">
         {locked && <span className="text-red-400">🔒</span>}
         {result ? (

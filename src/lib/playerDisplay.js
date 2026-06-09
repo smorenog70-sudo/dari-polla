@@ -34,8 +34,18 @@ export function displayNameWithAvatar(profile) {
  * Lista de avatares sugeridos para que el usuario elija.
  */
 export const AVATAR_OPTIONS = [
+  // Clásicos
   '⚽', '🔥', '⭐', '🏆', '👑', '🎯', '💪', '🚀',
+  // Animales
   '🦁', '🐉', '🦅', '🐺', '🐂', '🦊', '🐯', '🦈',
+  '🐐', '🐢', '🦄', '🐸', '🐵', '🦍', '🐷', '🦖',
+  '🦦', '🦥', '🦜', '🦂', '🐊', '🦓', '🐘', '🦏',
+  // Caras y personajes
   '😎', '🤓', '😏', '🥶', '🤖', '👻', '💀', '🎩',
+  '🤡', '👽', '🤠', '🥸', '😈', '🧙', '🦸', '🥷',
+  // Diversión
+  '🍔', '🍺', '🎮', '🎸', '🃏', '🎲', '💎', '⚡',
+  // Banderas
   '🇨🇴', '🇩🇪', '🇧🇷', '🇦🇷', '🇪🇸', '🇫🇷', '🇮🇹', '🇵🇹',
+  '🇳🇿', '🇲🇽', '🇺🇾', '🇯🇵', '🇳🇱', '🇺🇸', '🇬🇧', '🇨🇦',
 ]
