@@ -163,6 +163,14 @@ export default function Home() {
       <Link to="/reglas" className="block card text-center text-brand-500 hover:bg-ink-700">
         📜 Ver reglas y premios
       </Link>
+
+      <a
+        href="/mundial-2026.ics"
+        download="Mundial-2026.ics"
+        className="block card text-center text-brand-500 hover:bg-ink-700"
+      >
+        📅 Agregar partidos a mi calendario
+      </a>
     </div>
   )
 }

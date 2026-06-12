@@ -1,0 +1,2483 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Heru//Mundial 2026//ES
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-WR-CALNAME:🏆 Mundial 2026 · Todos los partidos
+X-WR-TIMEZONE:UTC
+X-WR-CALDESC:Los 104 partidos del Mundial FIFA 2026 (Canadá, EE.UU. y Méx
+ ico) con banderas, sede, aforo y recordatorio 1h antes. Las horas se muest
+ ran en tu zona local.
+REFRESH-INTERVAL;VALUE=DURATION:P1D
+X-PUBLISHED-TTL:P1D
+BEGIN:VEVENT
+UID:wc2026-m1@openfootball
+DTSTAMP:20260612T014416Z
+DTSTART:20260611T190000Z
+DTEND:20260611T210000Z
+SUMMARY:⚽ 🇲🇽 México vs 🇿🇦 Sudáfrica · Grupo A · J1
+LOCATION:Estadio Azteca\, Ciudad de México\, México
+DESCRIPTION:Grupo A · Jornada 1\n🏟️ Estadio Azteca\, Ciudad de Méxic
+ o\, México\n👥 Aforo: 83\,000\n🕐 Hora del estadio: 13:00 (UTC-6)\n
+ 🇲🇽 Hora CDMX: 13:00 del 11/06\n🔗 Marcador en vivo: https://www.go
+ ogle.com/search?q=M%C3%A9xico+vs+Sud%C3%A1frica+Mundial+2026\n—\nFuente:
+  openfootball/worldcup (dominio publico)
+URL:https://www.google.com/search?q=M%C3%A9xico+vs+Sud%C3%A1frica+Mundial+2
+ 026
+CATEGORIES:Mundial 2026,Grupo A
+GEO:19.30306;-99.15056
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Falta 1 hora para el partido ⚽
+TRIGGER:-PT1H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:wc2026-m2@openfootball
+DTSTAMP:20260612T014416Z
+DTSTART:20260612T020000Z
+DTEND:20260612T040000Z
+SUMMARY:⚽ 🇰🇷 Corea del Sur vs 🇨🇿 República Checa · Grupo A 
+ · J1
+LOCATION:Estadio Akron\, Guadalajara (Zapopan)\, México
+DESCRIPTION:Grupo A · Jornada 1\n🏟️ Estadio Akron\, Guadalajara (Zapo
+ pan)\, México\n👥 Aforo: 48\,000\n🕐 Hora del estadio: 20:00 (UTC-6)\
+ n🇲🇽 Hora CDMX: 20:00 del 11/06\n🔗 Marcador en vivo: https://www.g
+ oogle.com/search?q=Corea+del+Sur+vs+Rep%C3%BAblica+Checa+Mundial+2026\n—
+ \nFuente: openfootball/worldcup (dominio publico)
+URL:https://www.google.com/search?q=Corea+del+Sur+vs+Rep%C3%BAblica+Checa+M
+ undial+2026
+CATEGORIES:Mundial 2026,Grupo A
+GEO:20.68167;-103.46278
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Falta 1 hora para el partido ⚽
+TRIGGER:-PT1H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:wc2026-m3@openfootball
+DTSTAMP:20260612T014416Z
+DTSTART:20260618T160000Z
+DTEND:20260618T180000Z
+SUMMARY:⚽ 🇨🇿 República Checa vs 🇿🇦 Sudáfrica · Grupo A · 
+ J2
+LOCATION:Mercedes-Benz Stadium\, Atlanta\, Estados Unidos
+DESCRIPTION:Grupo A · Jornada 2\n🏟️ Mercedes-Benz Stadium\, Atlanta\,
+  Estados Unidos\n👥 Aforo: 75\,000\n🕐 Hora del estadio: 12:00 (UTC-4)
+ \n🇲🇽 Hora CDMX: 10:00 del 18/06\n🔗 Marcador en vivo: https://www.
+ google.com/search?q=Rep%C3%BAblica+Checa+vs+Sud%C3%A1frica+Mundial+2026\n
+ —\nFuente: openfootball/worldcup (dominio publico)
+URL:https://www.google.com/search?q=Rep%C3%BAblica+Checa+vs+Sud%C3%A1frica+
+ Mundial+2026
+CATEGORIES:Mundial 2026,Grupo A
+GEO:33.75556;-84.4
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Falta 1 hora para el partido ⚽
+TRIGGER:-PT1H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:wc2026-m4@openfootball
+DTSTAMP:20260612T014416Z
+DTSTART:20260619T010000Z
+DTEND:20260619T030000Z
+SUMMARY:⚽ 🇲🇽 México vs 🇰🇷 Corea del Sur · Grupo A · J2
+LOCATION:Estadio Akron\, Guadalajara (Zapopan)\, México
+DESCRIPTION:Grupo A · Jornada 2\n🏟️ Estadio Akron\, Guadalajara (Zapo
+ pan)\, México\n👥 Aforo: 48\,000\n🕐 Hora del estadio: 19:00 (UTC-6)\
+ n🇲🇽 Hora CDMX: 19:00 del 18/06\n🔗 Marcador en vivo: https://www.g
+ oogle.com/search?q=M%C3%A9xico+vs+Corea+del+Sur+Mundial+2026\n—\nFuente:
+  openfootball/worldcup (dominio publico)
+URL:https://www.google.com/search?q=M%C3%A9xico+vs+Corea+del+Sur+Mundial+20
+ 26
+CATEGORIES:Mundial 2026,Grupo A
+GEO:20.68167;-103.46278
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Falta 1 hora para el partido ⚽
+TRIGGER:-PT1H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:wc2026-m5@openfootball
+DTSTAMP:20260612T014416Z
+DTSTART:20260625T010000Z
+DTEND:20260625T030000Z
+SUMMARY:⚽ 🇨🇿 República Checa vs 🇲🇽 México · Grupo A · J3
+LOCATION:Estadio Azteca\, Ciudad de México\, México
+DESCRIPTION:Grupo A · Jornada 3\n🏟️ Estadio Azteca\, Ciudad de Méxic
+ o\, México\n👥 Aforo: 83\,000\n🕐 Hora del estadio: 19:00 (UTC-6)\n
+ 🇲🇽 Hora CDMX: 19:00 del 24/06\n🔗 Marcador en vivo: https://www.go
+ ogle.com/search?q=Rep%C3%BAblica+Checa+vs+M%C3%A9xico+Mundial+2026\n—\nF
+ uente: openfootball/worldcup (dominio publico)
+URL:https://www.google.com/search?q=Rep%C3%BAblica+Checa+vs+M%C3%A9xico+Mun
+ dial+2026
+CATEGORIES:Mundial 2026,Grupo A
+GEO:19.30306;-99.15056
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Falta 1 hora para el partido ⚽
+TRIGGER:-PT1H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:wc2026-m6@openfootball
+DTSTAMP:20260612T014416Z
+DTSTART:20260625T010000Z
+DTEND:20260625T030000Z
+SUMMARY:⚽ 🇿🇦 Sudáfrica vs 🇰🇷 Corea del Sur · Grupo A · J3
+LOCATION:Estadio BBVA\, Monterrey (Guadalupe)\, México
+DESCRIPTION:Grupo A · Jornada 3\n🏟️ Estadio BBVA\, Monterrey (Guadalu
+ pe)\, México\n👥 Aforo: 53\,500\n🕐 Hora del estadio: 19:00 (UTC-6)\n
+ 🇲🇽 Hora CDMX: 19:00 del 24/06\n🔗 Marcador en vivo: https://www.go
+ ogle.com/search?q=Sud%C3%A1frica+vs+Corea+del+Sur+Mundial+2026\n—\nFuent
+ e: openfootball/worldcup (dominio publico)
+URL:https://www.google.com/search?q=Sud%C3%A1frica+vs+Corea+del+Sur+Mundial
+ +2026
+CATEGORIES:Mundial 2026,Grupo A
+GEO:25.66917;-100.24444
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Falta 1 hora para el partido ⚽
+TRIGGER:-PT1H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:wc2026-m7@openfootball
+DTSTAMP:20260612T014416Z
+DTSTART:20260612T190000Z
+DTEND:20260612T210000Z
+SUMMARY:⚽ 🇨🇦 Canadá vs 🇧🇦 Bosnia y Herzegovina · Grupo B ·
+  J1
+LOCATION:BMO Field\, Toronto\, Canadá
+DESCRIPTION:Grupo B · Jornada 1\n🏟️ BMO Field\, Toronto\, Canadá\n
+ 👥 Aforo: 45\,000\n🕐 Hora del estadio: 15:00 (UTC-4)\n🇲🇽 Hora C
+ DMX: 13:00 del 12/06\n🔗 Marcador en vivo: https://www.google.com/search
+ ?q=Canad%C3%A1+vs+Bosnia+y+Herzegovina+Mundial+2026\n—\nFuente: openfoot
+ ball/worldcup (dominio publico)
+URL:https://www.google.com/search?q=Canad%C3%A1+vs+Bosnia+y+Herzegovina+Mun
+ dial+2026
+CATEGORIES:Mundial 2026,Grupo B
+GEO:43.63333;-79.41861
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Falta 1 hora para el partido ⚽
+TRIGGER:-PT1H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:wc2026-m8@openfootball
+DTSTAMP:20260612T014416Z
+DTSTART:20260613T190000Z
+DTEND:20260613T210000Z
+SUMMARY:⚽ 🇶🇦 Catar vs 🇨🇭 Suiza · Grupo B · J1
+LOCATION:Levi's Stadium\, San Francisco Bay Area (Santa Clara)\, Estados Un
+ idos
+DESCRIPTION:Grupo B · Jornada 1\n🏟️ Levi's Stadium\, San Francisco Ba
+ y Area (Santa Clara)\, Estados Unidos\n👥 Aforo: 71\,000\n🕐 Hora del 
+ estadio: 12:00 (UTC-7)\n🇲🇽 Hora CDMX: 13:00 del 13/06\n🔗 Marcador
+  en vivo: https://www.google.com/search?q=Catar+vs+Suiza+Mundial+2026\n—
+ \nFuente: openfootball/worldcup (dominio publico)
+URL:https://www.google.com/search?q=Catar+vs+Suiza+Mundial+2026
+CATEGORIES:Mundial 2026,Grupo B
+GEO:37.403;-121.97
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Falta 1 hora para el partido ⚽
+TRIGGER:-PT1H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:wc2026-m9@openfootball
+DTSTAMP:20260612T014416Z
+DTSTART:20260618T190000Z
+DTEND:20260618T210000Z
+SUMMARY:⚽ 🇨🇭 Suiza vs 🇧🇦 Bosnia y Herzegovina · Grupo B · J
+ 2
+LOCATION:SoFi Stadium\, Los Angeles (Inglewood)\, Estados Unidos
+DESCRIPTION:Grupo B · Jornada 2\n🏟️ SoFi Stadium\, Los Angeles (Ingle
+ wood)\, Estados Unidos\n👥 Aforo: 70\,000\n🕐 Hora del estadio: 12:00 
+ (UTC-7)\n🇲🇽 Hora CDMX: 13:00 del 18/06\n🔗 Marcador en vivo: https
+ ://www.google.com/search?q=Suiza+vs+Bosnia+y+Herzegovina+Mundial+2026\n—
+ \nFuente: openfootball/worldcup (dominio publico)
+URL:https://www.google.com/search?q=Suiza+vs+Bosnia+y+Herzegovina+Mundial+2
+ 026
+CATEGORIES:Mundial 2026,Grupo B
+GEO:33.953;-118.339
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Falta 1 hora para el partido ⚽
+TRIGGER:-PT1H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:wc2026-m10@openfootball
+DTSTAMP:20260612T014416Z
+DTSTART:20260618T220000Z
+DTEND:20260619T000000Z
+SUMMARY:⚽ 🇨🇦 Canadá vs 🇶🇦 Catar · Grupo B · J2
+LOCATION:BC Place\, Vancouver\, Canadá
+DESCRIPTION:Grupo B · Jornada 2\n🏟️ BC Place\, Vancouver\, Canadá\n
+ 👥 Aforo: 54\,000\n🕐 Hora del estadio: 15:00 (UTC-7)\n🇲🇽 Hora C
+ DMX: 16:00 del 18/06\n🔗 Marcador en vivo: https://www.google.com/search
+ ?q=Canad%C3%A1+vs+Catar+Mundial+2026\n—\nFuente: openfootball/worldcup (
+ dominio publico)
+URL:https://www.google.com/search?q=Canad%C3%A1+vs+Catar+Mundial+2026
+CATEGORIES:Mundial 2026,Grupo B
+GEO:49.27667;-123.11194
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Falta 1 hora para el partido ⚽
+TRIGGER:-PT1H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:wc2026-m11@openfootball
+DTSTAMP:20260612T014416Z
+DTSTART:20260624T190000Z
+DTEND:20260624T210000Z
+SUMMARY:⚽ 🇨🇭 Suiza vs 🇨🇦 Canadá · Grupo B · J3
+LOCATION:BC Place\, Vancouver\, Canadá
+DESCRIPTION:Grupo B · Jornada 3\n🏟️ BC Place\, Vancouver\, Canadá\n
+ 👥 Aforo: 54\,000\n🕐 Hora del estadio: 12:00 (UTC-7)\n🇲🇽 Hora C
+ DMX: 13:00 del 24/06\n🔗 Marcador en vivo: https://www.google.com/search
+ ?q=Suiza+vs+Canad%C3%A1+Mundial+2026\n—\nFuente: openfootball/worldcup (
+ dominio publico)
+URL:https://www.google.com/search?q=Suiza+vs+Canad%C3%A1+Mundial+2026
+CATEGORIES:Mundial 2026,Grupo B
+GEO:49.27667;-123.11194
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Falta 1 hora para el partido ⚽
+TRIGGER:-PT1H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:wc2026-m12@openfootball
+DTSTAMP:20260612T014416Z
+DTSTART:20260624T190000Z
+DTEND:20260624T210000Z
+SUMMARY:⚽ 🇧🇦 Bosnia y Herzegovina vs 🇶🇦 Catar · Grupo B · J
+ 3
+LOCATION:Lumen Field\, Seattle\, Estados Unidos
+DESCRIPTION:Grupo B · Jornada 3\n🏟️ Lumen Field\, Seattle\, Estados U
+ nidos\n👥 Aforo: 69\,000\n🕐 Hora del estadio: 12:00 (UTC-7)\n🇲🇽
+  Hora CDMX: 13:00 del 24/06\n🔗 Marcador en vivo: https://www.google.com
+ /search?q=Bosnia+y+Herzegovina+vs+Catar+Mundial+2026\n—\nFuente: openfoo
+ tball/worldcup (dominio publico)
+URL:https://www.google.com/search?q=Bosnia+y+Herzegovina+vs+Catar+Mundial+2
+ 026
+CATEGORIES:Mundial 2026,Grupo B
+GEO:47.59528;-122.33167
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Falta 1 hora para el partido ⚽
+TRIGGER:-PT1H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:wc2026-m13@openfootball
+DTSTAMP:20260612T014416Z
+DTSTART:20260613T220000Z
+DTEND:20260614T000000Z
+SUMMARY:⚽ 🇧🇷 Brasil vs 🇲🇦 Marruecos · Grupo C · J1
+LOCATION:MetLife Stadium\, New York/New Jersey (East Rutherford)\, Estados 
+ Unidos
+DESCRIPTION:Grupo C · Jornada 1\n🏟️ MetLife Stadium\, New York/New Je
+ rsey (East Rutherford)\, Estados Unidos\n👥 Aforo: 82\,500\n🕐 Hora de
+ l estadio: 18:00 (UTC-4)\n🇲🇽 Hora CDMX: 16:00 del 13/06\n🔗 Marcad
+ or en vivo: https://www.google.com/search?q=Brasil+vs+Marruecos+Mundial+20
+ 26\n—\nFuente: openfootball/worldcup (dominio publico)
+URL:https://www.google.com/search?q=Brasil+vs+Marruecos+Mundial+2026
+CATEGORIES:Mundial 2026,Grupo C
+GEO:40.81353;-74.07436
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Falta 1 hora para el partido ⚽
+TRIGGER:-PT1H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:wc2026-m14@openfootball
+DTSTAMP:20260612T014416Z
+DTSTART:20260614T010000Z
+DTEND:20260614T030000Z
+SUMMARY:⚽ 🇭🇹 Haití vs 🏴󠁧󠁢󠁳󠁣󠁴󠁿 Escocia · Grup
+ o C · J1
+LOCATION:Gillette Stadium\, Boston (Foxborough)\, Estados Unidos
+DESCRIPTION:Grupo C · Jornada 1\n🏟️ Gillette Stadium\, Boston (Foxbor
+ ough)\, Estados Unidos\n👥 Aforo: 65\,000\n🕐 Hora del estadio: 21:00 
+ (UTC-4)\n🇲🇽 Hora CDMX: 19:00 del 13/06\n🔗 Marcador en vivo: https
+ ://www.google.com/search?q=Hait%C3%AD+vs+Escocia+Mundial+2026\n—\nFuente
+ : openfootball/worldcup (dominio publico)
+URL:https://www.google.com/search?q=Hait%C3%AD+vs+Escocia+Mundial+2026
+CATEGORIES:Mundial 2026,Grupo C
+GEO:42.091;-71.264
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Falta 1 hora para el partido ⚽
+TRIGGER:-PT1H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:wc2026-m15@openfootball
+DTSTAMP:20260612T014416Z
+DTSTART:20260619T220000Z
+DTEND:20260620T000000Z
+SUMMARY:⚽ 🏴󠁧󠁢󠁳󠁣󠁴󠁿 Escocia vs 🇲🇦 Marruecos · G
+ rupo C · J2
+LOCATION:Gillette Stadium\, Boston (Foxborough)\, Estados Unidos
+DESCRIPTION:Grupo C · Jornada 2\n🏟️ Gillette Stadium\, Boston (Foxbor
+ ough)\, Estados Unidos\n👥 Aforo: 65\,000\n🕐 Hora del estadio: 18:00 
+ (UTC-4)\n🇲🇽 Hora CDMX: 16:00 del 19/06\n🔗 Marcador en vivo: https
+ ://www.google.com/search?q=Escocia+vs+Marruecos+Mundial+2026\n—\nFuente:
+  openfootball/worldcup (dominio publico)
+URL:https://www.google.com/search?q=Escocia+vs+Marruecos+Mundial+2026
+CATEGORIES:Mundial 2026,Grupo C
+GEO:42.091;-71.264
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Falta 1 hora para el partido ⚽
+TRIGGER:-PT1H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:wc2026-m16@openfootball
+DTSTAMP:20260612T014416Z
+DTSTART:20260620T003000Z
+DTEND:20260620T023000Z
+SUMMARY:⚽ 🇧🇷 Brasil vs 🇭🇹 Haití · Grupo C · J2
+LOCATION:Lincoln Financial Field\, Philadelphia\, Estados Unidos
+DESCRIPTION:Grupo C · Jornada 2\n🏟️ Lincoln Financial Field\, Philade
+ lphia\, Estados Unidos\n👥 Aforo: 69\,000\n🕐 Hora del estadio: 20:30 
+ (UTC-4)\n🇲🇽 Hora CDMX: 18:30 del 19/06\n🔗 Marcador en vivo: https
+ ://www.google.com/search?q=Brasil+vs+Hait%C3%AD+Mundial+2026\n—\nFuente:
+  openfootball/worldcup (dominio publico)
+URL:https://www.google.com/search?q=Brasil+vs+Hait%C3%AD+Mundial+2026
+CATEGORIES:Mundial 2026,Grupo C
+GEO:39.90083;-75.1675
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Falta 1 hora para el partido ⚽
+TRIGGER:-PT1H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:wc2026-m17@openfootball
+DTSTAMP:20260612T014416Z
+DTSTART:20260624T220000Z
+DTEND:20260625T000000Z
+SUMMARY:⚽ 🏴󠁧󠁢󠁳󠁣󠁴󠁿 Escocia vs 🇧🇷 Brasil · Grup
+ o C · J3
+LOCATION:Hard Rock Stadium\, Miami (Miami Gardens)\, Estados Unidos
+DESCRIPTION:Grupo C · Jornada 3\n🏟️ Hard Rock Stadium\, Miami (Miami 
+ Gardens)\, Estados Unidos\n👥 Aforo: 65\,000\n🕐 Hora del estadio: 18:
+ 00 (UTC-4)\n🇲🇽 Hora CDMX: 16:00 del 24/06\n🔗 Marcador en vivo: ht
+ tps://www.google.com/search?q=Escocia+vs+Brasil+Mundial+2026\n—\nFuente:
+  openfootball/worldcup (dominio publico)
+URL:https://www.google.com/search?q=Escocia+vs+Brasil+Mundial+2026
+CATEGORIES:Mundial 2026,Grupo C
+GEO:25.95806;-80.23889
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Falta 1 hora para el partido ⚽
+TRIGGER:-PT1H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:wc2026-m18@openfootball
+DTSTAMP:20260612T014416Z
+DTSTART:20260624T220000Z
+DTEND:20260625T000000Z
+SUMMARY:⚽ 🇲🇦 Marruecos vs 🇭🇹 Haití · Grupo C · J3
+LOCATION:Mercedes-Benz Stadium\, Atlanta\, Estados Unidos
+DESCRIPTION:Grupo C · Jornada 3\n🏟️ Mercedes-Benz Stadium\, Atlanta\,
+  Estados Unidos\n👥 Aforo: 75\,000\n🕐 Hora del estadio: 18:00 (UTC-4)
+ \n🇲🇽 Hora CDMX: 16:00 del 24/06\n🔗 Marcador en vivo: https://www.
+ google.com/search?q=Marruecos+vs+Hait%C3%AD+Mundial+2026\n—\nFuente: ope
+ nfootball/worldcup (dominio publico)
+URL:https://www.google.com/search?q=Marruecos+vs+Hait%C3%AD+Mundial+2026
+CATEGORIES:Mundial 2026,Grupo C
+GEO:33.75556;-84.4
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Falta 1 hora para el partido ⚽
+TRIGGER:-PT1H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:wc2026-m19@openfootball
+DTSTAMP:20260612T014416Z
+DTSTART:20260613T010000Z
+DTEND:20260613T030000Z
+SUMMARY:⚽ 🇺🇸 Estados Unidos vs 🇵🇾 Paraguay · Grupo D · J1
+LOCATION:SoFi Stadium\, Los Angeles (Inglewood)\, Estados Unidos
+DESCRIPTION:Grupo D · Jornada 1\n🏟️ SoFi Stadium\, Los Angeles (Ingle
+ wood)\, Estados Unidos\n👥 Aforo: 70\,000\n🕐 Hora del estadio: 18:00 
+ (UTC-7)\n🇲🇽 Hora CDMX: 19:00 del 12/06\n🔗 Marcador en vivo: https
+ ://www.google.com/search?q=Estados+Unidos+vs+Paraguay+Mundial+2026\n—\nF
+ uente: openfootball/worldcup (dominio publico)
+URL:https://www.google.com/search?q=Estados+Unidos+vs+Paraguay+Mundial+2026
+CATEGORIES:Mundial 2026,Grupo D
+GEO:33.953;-118.339
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Falta 1 hora para el partido ⚽
+TRIGGER:-PT1H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:wc2026-m20@openfootball
+DTSTAMP:20260612T014416Z
+DTSTART:20260614T040000Z
+DTEND:20260614T060000Z
+SUMMARY:⚽ 🇦🇺 Australia vs 🇹🇷 Turquía · Grupo D · J1
+LOCATION:BC Place\, Vancouver\, Canadá
+DESCRIPTION:Grupo D · Jornada 1\n🏟️ BC Place\, Vancouver\, Canadá\n
+ 👥 Aforo: 54\,000\n🕐 Hora del estadio: 21:00 (UTC-7)\n🇲🇽 Hora C
+ DMX: 22:00 del 13/06\n🔗 Marcador en vivo: https://www.google.com/search
+ ?q=Australia+vs+Turqu%C3%ADa+Mundial+2026\n—\nFuente: openfootball/world
+ cup (dominio publico)
+URL:https://www.google.com/search?q=Australia+vs+Turqu%C3%ADa+Mundial+2026
+CATEGORIES:Mundial 2026,Grupo D
+GEO:49.27667;-123.11194
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Falta 1 hora para el partido ⚽
+TRIGGER:-PT1H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:wc2026-m21@openfootball
+DTSTAMP:20260612T014416Z
+DTSTART:20260619T190000Z
+DTEND:20260619T210000Z
+SUMMARY:⚽ 🇺🇸 Estados Unidos vs 🇦🇺 Australia · Grupo D · J2
+LOCATION:Lumen Field\, Seattle\, Estados Unidos
+DESCRIPTION:Grupo D · Jornada 2\n🏟️ Lumen Field\, Seattle\, Estados U
+ nidos\n👥 Aforo: 69\,000\n🕐 Hora del estadio: 12:00 (UTC-7)\n🇲🇽
+  Hora CDMX: 13:00 del 19/06\n🔗 Marcador en vivo: https://www.google.com
+ /search?q=Estados+Unidos+vs+Australia+Mundial+2026\n—\nFuente: openfootb
+ all/worldcup (dominio publico)
+URL:https://www.google.com/search?q=Estados+Unidos+vs+Australia+Mundial+202
+ 6
+CATEGORIES:Mundial 2026,Grupo D
+GEO:47.59528;-122.33167
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Falta 1 hora para el partido ⚽
+TRIGGER:-PT1H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:wc2026-m22@openfootball
+DTSTAMP:20260612T014416Z
+DTSTART:20260620T030000Z
+DTEND:20260620T050000Z
+SUMMARY:⚽ 🇹🇷 Turquía vs 🇵🇾 Paraguay · Grupo D · J2
+LOCATION:Levi's Stadium\, San Francisco Bay Area (Santa Clara)\, Estados Un
+ idos
+DESCRIPTION:Grupo D · Jornada 2\n🏟️ Levi's Stadium\, San Francisco Ba
+ y Area (Santa Clara)\, Estados Unidos\n👥 Aforo: 71\,000\n🕐 Hora del 
+ estadio: 20:00 (UTC-7)\n🇲🇽 Hora CDMX: 21:00 del 19/06\n🔗 Marcador
+  en vivo: https://www.google.com/search?q=Turqu%C3%ADa+vs+Paraguay+Mundial
+ +2026\n—\nFuente: openfootball/worldcup (dominio publico)
+URL:https://www.google.com/search?q=Turqu%C3%ADa+vs+Paraguay+Mundial+2026
+CATEGORIES:Mundial 2026,Grupo D
+GEO:37.403;-121.97
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Falta 1 hora para el partido ⚽
+TRIGGER:-PT1H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:wc2026-m23@openfootball
+DTSTAMP:20260612T014416Z
+DTSTART:20260626T020000Z
+DTEND:20260626T040000Z
+SUMMARY:⚽ 🇹🇷 Turquía vs 🇺🇸 Estados Unidos · Grupo D · J3
+LOCATION:SoFi Stadium\, Los Angeles (Inglewood)\, Estados Unidos
+DESCRIPTION:Grupo D · Jornada 3\n🏟️ SoFi Stadium\, Los Angeles (Ingle
+ wood)\, Estados Unidos\n👥 Aforo: 70\,000\n🕐 Hora del estadio: 19:00 
+ (UTC-7)\n🇲🇽 Hora CDMX: 20:00 del 25/06\n🔗 Marcador en vivo: https
+ ://www.google.com/search?q=Turqu%C3%ADa+vs+Estados+Unidos+Mundial+2026\n
+ —\nFuente: openfootball/worldcup (dominio publico)
+URL:https://www.google.com/search?q=Turqu%C3%ADa+vs+Estados+Unidos+Mundial+
+ 2026
+CATEGORIES:Mundial 2026,Grupo D
+GEO:33.953;-118.339
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Falta 1 hora para el partido ⚽
+TRIGGER:-PT1H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:wc2026-m24@openfootball
+DTSTAMP:20260612T014416Z
+DTSTART:20260626T020000Z
+DTEND:20260626T040000Z
+SUMMARY:⚽ 🇵🇾 Paraguay vs 🇦🇺 Australia · Grupo D · J3
+LOCATION:Levi's Stadium\, San Francisco Bay Area (Santa Clara)\, Estados Un
+ idos
+DESCRIPTION:Grupo D · Jornada 3\n🏟️ Levi's Stadium\, San Francisco Ba
+ y Area (Santa Clara)\, Estados Unidos\n👥 Aforo: 71\,000\n🕐 Hora del 
+ estadio: 19:00 (UTC-7)\n🇲🇽 Hora CDMX: 20:00 del 25/06\n🔗 Marcador
+  en vivo: https://www.google.com/search?q=Paraguay+vs+Australia+Mundial+20
+ 26\n—\nFuente: openfootball/worldcup (dominio publico)
+URL:https://www.google.com/search?q=Paraguay+vs+Australia+Mundial+2026
+CATEGORIES:Mundial 2026,Grupo D
+GEO:37.403;-121.97
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Falta 1 hora para el partido ⚽
+TRIGGER:-PT1H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:wc2026-m25@openfootball
+DTSTAMP:20260612T014416Z
+DTSTART:20260614T170000Z
+DTEND:20260614T190000Z
+SUMMARY:⚽ 🇩🇪 Alemania vs 🇨🇼 Curazao · Grupo E · J1
+LOCATION:NRG Stadium\, Houston\, Estados Unidos
+DESCRIPTION:Grupo E · Jornada 1\n🏟️ NRG Stadium\, Houston\, Estados U
+ nidos\n👥 Aforo: 72\,000\n🕐 Hora del estadio: 12:00 (UTC-5)\n🇲🇽
+  Hora CDMX: 11:00 del 14/06\n🔗 Marcador en vivo: https://www.google.com
+ /search?q=Alemania+vs+Curazao+Mundial+2026\n—\nFuente: openfootball/worl
+ dcup (dominio publico)
+URL:https://www.google.com/search?q=Alemania+vs+Curazao+Mundial+2026
+CATEGORIES:Mundial 2026,Grupo E
+GEO:29.68472;-95.41083
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Falta 1 hora para el partido ⚽
+TRIGGER:-PT1H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:wc2026-m26@openfootball
+DTSTAMP:20260612T014416Z
+DTSTART:20260614T230000Z
+DTEND:20260615T010000Z
+SUMMARY:⚽ 🇨🇮 Costa de Marfil vs 🇪🇨 Ecuador · Grupo E · J1
+LOCATION:Lincoln Financial Field\, Philadelphia\, Estados Unidos
+DESCRIPTION:Grupo E · Jornada 1\n🏟️ Lincoln Financial Field\, Philade
+ lphia\, Estados Unidos\n👥 Aforo: 69\,000\n🕐 Hora del estadio: 19:00 
+ (UTC-4)\n🇲🇽 Hora CDMX: 17:00 del 14/06\n🔗 Marcador en vivo: https
+ ://www.google.com/search?q=Costa+de+Marfil+vs+Ecuador+Mundial+2026\n—\nF
+ uente: openfootball/worldcup (dominio publico)
+URL:https://www.google.com/search?q=Costa+de+Marfil+vs+Ecuador+Mundial+2026
+CATEGORIES:Mundial 2026,Grupo E
+GEO:39.90083;-75.1675
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Falta 1 hora para el partido ⚽
+TRIGGER:-PT1H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:wc2026-m27@openfootball
+DTSTAMP:20260612T014416Z
+DTSTART:20260620T200000Z
+DTEND:20260620T220000Z
+SUMMARY:⚽ 🇩🇪 Alemania vs 🇨🇮 Costa de Marfil · Grupo E · J2
+LOCATION:BMO Field\, Toronto\, Canadá
+DESCRIPTION:Grupo E · Jornada 2\n🏟️ BMO Field\, Toronto\, Canadá\n
+ 👥 Aforo: 45\,000\n🕐 Hora del estadio: 16:00 (UTC-4)\n🇲🇽 Hora C
+ DMX: 14:00 del 20/06\n🔗 Marcador en vivo: https://www.google.com/search
+ ?q=Alemania+vs+Costa+de+Marfil+Mundial+2026\n—\nFuente: openfootball/wor
+ ldcup (dominio publico)
+URL:https://www.google.com/search?q=Alemania+vs+Costa+de+Marfil+Mundial+202
+ 6
+CATEGORIES:Mundial 2026,Grupo E
+GEO:43.63333;-79.41861
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Falta 1 hora para el partido ⚽
+TRIGGER:-PT1H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:wc2026-m28@openfootball
+DTSTAMP:20260612T014416Z
+DTSTART:20260621T000000Z
+DTEND:20260621T020000Z
+SUMMARY:⚽ 🇪🇨 Ecuador vs 🇨🇼 Curazao · Grupo E · J2
+LOCATION:Arrowhead Stadium\, Kansas City\, Estados Unidos
+DESCRIPTION:Grupo E · Jornada 2\n🏟️ Arrowhead Stadium\, Kansas City\,
+  Estados Unidos\n👥 Aforo: 73\,000\n🕐 Hora del estadio: 19:00 (UTC-5)
+ \n🇲🇽 Hora CDMX: 18:00 del 20/06\n🔗 Marcador en vivo: https://www.
+ google.com/search?q=Ecuador+vs+Curazao+Mundial+2026\n—\nFuente: openfoot
+ ball/worldcup (dominio publico)
+URL:https://www.google.com/search?q=Ecuador+vs+Curazao+Mundial+2026
+CATEGORIES:Mundial 2026,Grupo E
+GEO:39.04889;-94.48389
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Falta 1 hora para el partido ⚽
+TRIGGER:-PT1H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:wc2026-m29@openfootball
+DTSTAMP:20260612T014416Z
+DTSTART:20260625T200000Z
+DTEND:20260625T220000Z
+SUMMARY:⚽ 🇨🇼 Curazao vs 🇨🇮 Costa de Marfil · Grupo E · J3
+LOCATION:Lincoln Financial Field\, Philadelphia\, Estados Unidos
+DESCRIPTION:Grupo E · Jornada 3\n🏟️ Lincoln Financial Field\, Philade
+ lphia\, Estados Unidos\n👥 Aforo: 69\,000\n🕐 Hora del estadio: 16:00 
+ (UTC-4)\n🇲🇽 Hora CDMX: 14:00 del 25/06\n🔗 Marcador en vivo: https
+ ://www.google.com/search?q=Curazao+vs+Costa+de+Marfil+Mundial+2026\n—\nF
+ uente: openfootball/worldcup (dominio publico)
+URL:https://www.google.com/search?q=Curazao+vs+Costa+de+Marfil+Mundial+2026
+CATEGORIES:Mundial 2026,Grupo E
+GEO:39.90083;-75.1675
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Falta 1 hora para el partido ⚽
+TRIGGER:-PT1H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:wc2026-m30@openfootball
+DTSTAMP:20260612T014416Z
+DTSTART:20260625T200000Z
+DTEND:20260625T220000Z
+SUMMARY:⚽ 🇪🇨 Ecuador vs 🇩🇪 Alemania · Grupo E · J3
+LOCATION:MetLife Stadium\, New York/New Jersey (East Rutherford)\, Estados 
+ Unidos
+DESCRIPTION:Grupo E · Jornada 3\n🏟️ MetLife Stadium\, New York/New Je
+ rsey (East Rutherford)\, Estados Unidos\n👥 Aforo: 82\,500\n🕐 Hora de
+ l estadio: 16:00 (UTC-4)\n🇲🇽 Hora CDMX: 14:00 del 25/06\n🔗 Marcad
+ or en vivo: https://www.google.com/search?q=Ecuador+vs+Alemania+Mundial+20
+ 26\n—\nFuente: openfootball/worldcup (dominio publico)
+URL:https://www.google.com/search?q=Ecuador+vs+Alemania+Mundial+2026
+CATEGORIES:Mundial 2026,Grupo E
+GEO:40.81353;-74.07436
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Falta 1 hora para el partido ⚽
+TRIGGER:-PT1H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:wc2026-m31@openfootball
+DTSTAMP:20260612T014416Z
+DTSTART:20260614T200000Z
+DTEND:20260614T220000Z
+SUMMARY:⚽ 🇳🇱 Países Bajos vs 🇯🇵 Japón · Grupo F · J1
+LOCATION:AT&T Stadium\, Dallas (Arlington)\, Estados Unidos
+DESCRIPTION:Grupo F · Jornada 1\n🏟️ AT&T Stadium\, Dallas (Arlington)
+ \, Estados Unidos\n👥 Aforo: 94\,000\n🕐 Hora del estadio: 15:00 (UTC-
+ 5)\n🇲🇽 Hora CDMX: 14:00 del 14/06\n🔗 Marcador en vivo: https://ww
+ w.google.com/search?q=Pa%C3%ADses+Bajos+vs+Jap%C3%B3n+Mundial+2026\n—\nF
+ uente: openfootball/worldcup (dominio publico)
+URL:https://www.google.com/search?q=Pa%C3%ADses+Bajos+vs+Jap%C3%B3n+Mundial
+ +2026
+CATEGORIES:Mundial 2026,Grupo F
+GEO:32.74778;-97.09278
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Falta 1 hora para el partido ⚽
+TRIGGER:-PT1H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:wc2026-m32@openfootball
+DTSTAMP:20260612T014416Z
+DTSTART:20260615T020000Z
+DTEND:20260615T040000Z
+SUMMARY:⚽ 🇸🇪 Suecia vs 🇹🇳 Túnez · Grupo F · J1
+LOCATION:Estadio BBVA\, Monterrey (Guadalupe)\, México
+DESCRIPTION:Grupo F · Jornada 1\n🏟️ Estadio BBVA\, Monterrey (Guadalu
+ pe)\, México\n👥 Aforo: 53\,500\n🕐 Hora del estadio: 20:00 (UTC-6)\n
+ 🇲🇽 Hora CDMX: 20:00 del 14/06\n🔗 Marcador en vivo: https://www.go
+ ogle.com/search?q=Suecia+vs+T%C3%BAnez+Mundial+2026\n—\nFuente: openfoot
+ ball/worldcup (dominio publico)
+URL:https://www.google.com/search?q=Suecia+vs+T%C3%BAnez+Mundial+2026
+CATEGORIES:Mundial 2026,Grupo F
+GEO:25.66917;-100.24444
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Falta 1 hora para el partido ⚽
+TRIGGER:-PT1H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:wc2026-m33@openfootball
+DTSTAMP:20260612T014416Z
+DTSTART:20260620T170000Z
+DTEND:20260620T190000Z
+SUMMARY:⚽ 🇳🇱 Países Bajos vs 🇸🇪 Suecia · Grupo F · J2
+LOCATION:NRG Stadium\, Houston\, Estados Unidos
+DESCRIPTION:Grupo F · Jornada 2\n🏟️ NRG Stadium\, Houston\, Estados U
+ nidos\n👥 Aforo: 72\,000\n🕐 Hora del estadio: 12:00 (UTC-5)\n🇲🇽
+  Hora CDMX: 11:00 del 20/06\n🔗 Marcador en vivo: https://www.google.com
+ /search?q=Pa%C3%ADses+Bajos+vs+Suecia+Mundial+2026\n—\nFuente: openfootb
+ all/worldcup (dominio publico)
+URL:https://www.google.com/search?q=Pa%C3%ADses+Bajos+vs+Suecia+Mundial+202
+ 6
+CATEGORIES:Mundial 2026,Grupo F
+GEO:29.68472;-95.41083
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Falta 1 hora para el partido ⚽
+TRIGGER:-PT1H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:wc2026-m34@openfootball
+DTSTAMP:20260612T014416Z
+DTSTART:20260621T040000Z
+DTEND:20260621T060000Z
+SUMMARY:⚽ 🇹🇳 Túnez vs 🇯🇵 Japón · Grupo F · J2
+LOCATION:Estadio BBVA\, Monterrey (Guadalupe)\, México
+DESCRIPTION:Grupo F · Jornada 2\n🏟️ Estadio BBVA\, Monterrey (Guadalu
+ pe)\, México\n👥 Aforo: 53\,500\n🕐 Hora del estadio: 22:00 (UTC-6)\n
+ 🇲🇽 Hora CDMX: 22:00 del 20/06\n🔗 Marcador en vivo: https://www.go
+ ogle.com/search?q=T%C3%BAnez+vs+Jap%C3%B3n+Mundial+2026\n—\nFuente: open
+ football/worldcup (dominio publico)
+URL:https://www.google.com/search?q=T%C3%BAnez+vs+Jap%C3%B3n+Mundial+2026
+CATEGORIES:Mundial 2026,Grupo F
+GEO:25.66917;-100.24444
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Falta 1 hora para el partido ⚽
+TRIGGER:-PT1H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:wc2026-m35@openfootball
+DTSTAMP:20260612T014416Z
+DTSTART:20260625T230000Z
+DTEND:20260626T010000Z
+SUMMARY:⚽ 🇯🇵 Japón vs 🇸🇪 Suecia · Grupo F · J3
+LOCATION:AT&T Stadium\, Dallas (Arlington)\, Estados Unidos
+DESCRIPTION:Grupo F · Jornada 3\n🏟️ AT&T Stadium\, Dallas (Arlington)
+ \, Estados Unidos\n👥 Aforo: 94\,000\n🕐 Hora del estadio: 18:00 (UTC-
+ 5)\n🇲🇽 Hora CDMX: 17:00 del 25/06\n🔗 Marcador en vivo: https://ww
+ w.google.com/search?q=Jap%C3%B3n+vs+Suecia+Mundial+2026\n—\nFuente: open
+ football/worldcup (dominio publico)
+URL:https://www.google.com/search?q=Jap%C3%B3n+vs+Suecia+Mundial+2026
+CATEGORIES:Mundial 2026,Grupo F
+GEO:32.74778;-97.09278
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Falta 1 hora para el partido ⚽
+TRIGGER:-PT1H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:wc2026-m36@openfootball
+DTSTAMP:20260612T014416Z
+DTSTART:20260625T230000Z
+DTEND:20260626T010000Z
+SUMMARY:⚽ 🇹🇳 Túnez vs 🇳🇱 Países Bajos · Grupo F · J3
+LOCATION:Arrowhead Stadium\, Kansas City\, Estados Unidos
+DESCRIPTION:Grupo F · Jornada 3\n🏟️ Arrowhead Stadium\, Kansas City\,
+  Estados Unidos\n👥 Aforo: 73\,000\n🕐 Hora del estadio: 18:00 (UTC-5)
+ \n🇲🇽 Hora CDMX: 17:00 del 25/06\n🔗 Marcador en vivo: https://www.
+ google.com/search?q=T%C3%BAnez+vs+Pa%C3%ADses+Bajos+Mundial+2026\n—\nFue
+ nte: openfootball/worldcup (dominio publico)
+URL:https://www.google.com/search?q=T%C3%BAnez+vs+Pa%C3%ADses+Bajos+Mundial
+ +2026
+CATEGORIES:Mundial 2026,Grupo F
+GEO:39.04889;-94.48389
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Falta 1 hora para el partido ⚽
+TRIGGER:-PT1H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:wc2026-m37@openfootball
+DTSTAMP:20260612T014416Z
+DTSTART:20260615T190000Z
+DTEND:20260615T210000Z
+SUMMARY:⚽ 🇧🇪 Bélgica vs 🇪🇬 Egipto · Grupo G · J1
+LOCATION:Lumen Field\, Seattle\, Estados Unidos
+DESCRIPTION:Grupo G · Jornada 1\n🏟️ Lumen Field\, Seattle\, Estados U
+ nidos\n👥 Aforo: 69\,000\n🕐 Hora del estadio: 12:00 (UTC-7)\n🇲🇽
+  Hora CDMX: 13:00 del 15/06\n🔗 Marcador en vivo: https://www.google.com
+ /search?q=B%C3%A9lgica+vs+Egipto+Mundial+2026\n—\nFuente: openfootball/w
+ orldcup (dominio publico)
+URL:https://www.google.com/search?q=B%C3%A9lgica+vs+Egipto+Mundial+2026
+CATEGORIES:Mundial 2026,Grupo G
+GEO:47.59528;-122.33167
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Falta 1 hora para el partido ⚽
+TRIGGER:-PT1H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:wc2026-m38@openfootball
+DTSTAMP:20260612T014416Z
+DTSTART:20260616T010000Z
+DTEND:20260616T030000Z
+SUMMARY:⚽ 🇮🇷 Irán vs 🇳🇿 Nueva Zelanda · Grupo G · J1
+LOCATION:SoFi Stadium\, Los Angeles (Inglewood)\, Estados Unidos
+DESCRIPTION:Grupo G · Jornada 1\n🏟️ SoFi Stadium\, Los Angeles (Ingle
+ wood)\, Estados Unidos\n👥 Aforo: 70\,000\n🕐 Hora del estadio: 18:00 
+ (UTC-7)\n🇲🇽 Hora CDMX: 19:00 del 15/06\n🔗 Marcador en vivo: https
+ ://www.google.com/search?q=Ir%C3%A1n+vs+Nueva+Zelanda+Mundial+2026\n—\nF
+ uente: openfootball/worldcup (dominio publico)
+URL:https://www.google.com/search?q=Ir%C3%A1n+vs+Nueva+Zelanda+Mundial+2026
+CATEGORIES:Mundial 2026,Grupo G
+GEO:33.953;-118.339
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Falta 1 hora para el partido ⚽
+TRIGGER:-PT1H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:wc2026-m39@openfootball
+DTSTAMP:20260612T014416Z
+DTSTART:20260621T190000Z
+DTEND:20260621T210000Z
+SUMMARY:⚽ 🇧🇪 Bélgica vs 🇮🇷 Irán · Grupo G · J2
+LOCATION:SoFi Stadium\, Los Angeles (Inglewood)\, Estados Unidos
+DESCRIPTION:Grupo G · Jornada 2\n🏟️ SoFi Stadium\, Los Angeles (Ingle
+ wood)\, Estados Unidos\n👥 Aforo: 70\,000\n🕐 Hora del estadio: 12:00 
+ (UTC-7)\n🇲🇽 Hora CDMX: 13:00 del 21/06\n🔗 Marcador en vivo: https
+ ://www.google.com/search?q=B%C3%A9lgica+vs+Ir%C3%A1n+Mundial+2026\n—\nFu
+ ente: openfootball/worldcup (dominio publico)
+URL:https://www.google.com/search?q=B%C3%A9lgica+vs+Ir%C3%A1n+Mundial+2026
+CATEGORIES:Mundial 2026,Grupo G
+GEO:33.953;-118.339
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Falta 1 hora para el partido ⚽
+TRIGGER:-PT1H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:wc2026-m40@openfootball
+DTSTAMP:20260612T014416Z
+DTSTART:20260622T010000Z
+DTEND:20260622T030000Z
+SUMMARY:⚽ 🇳🇿 Nueva Zelanda vs 🇪🇬 Egipto · Grupo G · J2
+LOCATION:BC Place\, Vancouver\, Canadá
+DESCRIPTION:Grupo G · Jornada 2\n🏟️ BC Place\, Vancouver\, Canadá\n
+ 👥 Aforo: 54\,000\n🕐 Hora del estadio: 18:00 (UTC-7)\n🇲🇽 Hora C
+ DMX: 19:00 del 21/06\n🔗 Marcador en vivo: https://www.google.com/search
+ ?q=Nueva+Zelanda+vs+Egipto+Mundial+2026\n—\nFuente: openfootball/worldcu
+ p (dominio publico)
+URL:https://www.google.com/search?q=Nueva+Zelanda+vs+Egipto+Mundial+2026
+CATEGORIES:Mundial 2026,Grupo G
+GEO:49.27667;-123.11194
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Falta 1 hora para el partido ⚽
+TRIGGER:-PT1H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:wc2026-m41@openfootball
+DTSTAMP:20260612T014416Z
+DTSTART:20260627T030000Z
+DTEND:20260627T050000Z
+SUMMARY:⚽ 🇪🇬 Egipto vs 🇮🇷 Irán · Grupo G · J3
+LOCATION:Lumen Field\, Seattle\, Estados Unidos
+DESCRIPTION:Grupo G · Jornada 3\n🏟️ Lumen Field\, Seattle\, Estados U
+ nidos\n👥 Aforo: 69\,000\n🕐 Hora del estadio: 20:00 (UTC-7)\n🇲🇽
+  Hora CDMX: 21:00 del 26/06\n🔗 Marcador en vivo: https://www.google.com
+ /search?q=Egipto+vs+Ir%C3%A1n+Mundial+2026\n—\nFuente: openfootball/worl
+ dcup (dominio publico)
+URL:https://www.google.com/search?q=Egipto+vs+Ir%C3%A1n+Mundial+2026
+CATEGORIES:Mundial 2026,Grupo G
+GEO:47.59528;-122.33167
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Falta 1 hora para el partido ⚽
+TRIGGER:-PT1H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:wc2026-m42@openfootball
+DTSTAMP:20260612T014416Z
+DTSTART:20260627T030000Z
+DTEND:20260627T050000Z
+SUMMARY:⚽ 🇳🇿 Nueva Zelanda vs 🇧🇪 Bélgica · Grupo G · J3
+LOCATION:BC Place\, Vancouver\, Canadá
+DESCRIPTION:Grupo G · Jornada 3\n🏟️ BC Place\, Vancouver\, Canadá\n
+ 👥 Aforo: 54\,000\n🕐 Hora del estadio: 20:00 (UTC-7)\n🇲🇽 Hora C
+ DMX: 21:00 del 26/06\n🔗 Marcador en vivo: https://www.google.com/search
+ ?q=Nueva+Zelanda+vs+B%C3%A9lgica+Mundial+2026\n—\nFuente: openfootball/w
+ orldcup (dominio publico)
+URL:https://www.google.com/search?q=Nueva+Zelanda+vs+B%C3%A9lgica+Mundial+2
+ 026
+CATEGORIES:Mundial 2026,Grupo G
+GEO:49.27667;-123.11194
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Falta 1 hora para el partido ⚽
+TRIGGER:-PT1H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:wc2026-m43@openfootball
+DTSTAMP:20260612T014416Z
+DTSTART:20260615T160000Z
+DTEND:20260615T180000Z
+SUMMARY:⚽ 🇪🇸 España vs 🇨🇻 Cabo Verde · Grupo H · J1
+LOCATION:Mercedes-Benz Stadium\, Atlanta\, Estados Unidos
+DESCRIPTION:Grupo H · Jornada 1\n🏟️ Mercedes-Benz Stadium\, Atlanta\,
+  Estados Unidos\n👥 Aforo: 75\,000\n🕐 Hora del estadio: 12:00 (UTC-4)
+ \n🇲🇽 Hora CDMX: 10:00 del 15/06\n🔗 Marcador en vivo: https://www.
+ google.com/search?q=Espa%C3%B1a+vs+Cabo+Verde+Mundial+2026\n—\nFuente: o
+ penfootball/worldcup (dominio publico)
+URL:https://www.google.com/search?q=Espa%C3%B1a+vs+Cabo+Verde+Mundial+2026
+CATEGORIES:Mundial 2026,Grupo H
+GEO:33.75556;-84.4
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Falta 1 hora para el partido ⚽
+TRIGGER:-PT1H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:wc2026-m44@openfootball
+DTSTAMP:20260612T014416Z
+DTSTART:20260615T220000Z
+DTEND:20260616T000000Z
+SUMMARY:⚽ 🇸🇦 Arabia Saudita vs 🇺🇾 Uruguay · Grupo H · J1
+LOCATION:Hard Rock Stadium\, Miami (Miami Gardens)\, Estados Unidos
+DESCRIPTION:Grupo H · Jornada 1\n🏟️ Hard Rock Stadium\, Miami (Miami 
+ Gardens)\, Estados Unidos\n👥 Aforo: 65\,000\n🕐 Hora del estadio: 18:
+ 00 (UTC-4)\n🇲🇽 Hora CDMX: 16:00 del 15/06\n🔗 Marcador en vivo: ht
+ tps://www.google.com/search?q=Arabia+Saudita+vs+Uruguay+Mundial+2026\n—\
+ nFuente: openfootball/worldcup (dominio publico)
+URL:https://www.google.com/search?q=Arabia+Saudita+vs+Uruguay+Mundial+2026
+CATEGORIES:Mundial 2026,Grupo H
+GEO:25.95806;-80.23889
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Falta 1 hora para el partido ⚽
+TRIGGER:-PT1H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:wc2026-m45@openfootball
+DTSTAMP:20260612T014416Z
+DTSTART:20260621T160000Z
+DTEND:20260621T180000Z
+SUMMARY:⚽ 🇪🇸 España vs 🇸🇦 Arabia Saudita · Grupo H · J2
+LOCATION:Mercedes-Benz Stadium\, Atlanta\, Estados Unidos
+DESCRIPTION:Grupo H · Jornada 2\n🏟️ Mercedes-Benz Stadium\, Atlanta\,
+  Estados Unidos\n👥 Aforo: 75\,000\n🕐 Hora del estadio: 12:00 (UTC-4)
+ \n🇲🇽 Hora CDMX: 10:00 del 21/06\n🔗 Marcador en vivo: https://www.
+ google.com/search?q=Espa%C3%B1a+vs+Arabia+Saudita+Mundial+2026\n—\nFuent
+ e: openfootball/worldcup (dominio publico)
+URL:https://www.google.com/search?q=Espa%C3%B1a+vs+Arabia+Saudita+Mundial+2
+ 026
+CATEGORIES:Mundial 2026,Grupo H
+GEO:33.75556;-84.4
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Falta 1 hora para el partido ⚽
+TRIGGER:-PT1H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:wc2026-m46@openfootball
+DTSTAMP:20260612T014416Z
+DTSTART:20260621T220000Z
+DTEND:20260622T000000Z
+SUMMARY:⚽ 🇺🇾 Uruguay vs 🇨🇻 Cabo Verde · Grupo H · J2
+LOCATION:Hard Rock Stadium\, Miami (Miami Gardens)\, Estados Unidos
+DESCRIPTION:Grupo H · Jornada 2\n🏟️ Hard Rock Stadium\, Miami (Miami 
+ Gardens)\, Estados Unidos\n👥 Aforo: 65\,000\n🕐 Hora del estadio: 18:
+ 00 (UTC-4)\n🇲🇽 Hora CDMX: 16:00 del 21/06\n🔗 Marcador en vivo: ht
+ tps://www.google.com/search?q=Uruguay+vs+Cabo+Verde+Mundial+2026\n—\nFue
+ nte: openfootball/worldcup (dominio publico)
+URL:https://www.google.com/search?q=Uruguay+vs+Cabo+Verde+Mundial+2026
+CATEGORIES:Mundial 2026,Grupo H
+GEO:25.95806;-80.23889
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Falta 1 hora para el partido ⚽
+TRIGGER:-PT1H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:wc2026-m47@openfootball
+DTSTAMP:20260612T014416Z
+DTSTART:20260627T000000Z
+DTEND:20260627T020000Z
+SUMMARY:⚽ 🇨🇻 Cabo Verde vs 🇸🇦 Arabia Saudita · Grupo H · J3
+LOCATION:NRG Stadium\, Houston\, Estados Unidos
+DESCRIPTION:Grupo H · Jornada 3\n🏟️ NRG Stadium\, Houston\, Estados U
+ nidos\n👥 Aforo: 72\,000\n🕐 Hora del estadio: 19:00 (UTC-5)\n🇲🇽
+  Hora CDMX: 18:00 del 26/06\n🔗 Marcador en vivo: https://www.google.com
+ /search?q=Cabo+Verde+vs+Arabia+Saudita+Mundial+2026\n—\nFuente: openfoot
+ ball/worldcup (dominio publico)
+URL:https://www.google.com/search?q=Cabo+Verde+vs+Arabia+Saudita+Mundial+20
+ 26
+CATEGORIES:Mundial 2026,Grupo H
+GEO:29.68472;-95.41083
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Falta 1 hora para el partido ⚽
+TRIGGER:-PT1H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:wc2026-m48@openfootball
+DTSTAMP:20260612T014416Z
+DTSTART:20260627T000000Z
+DTEND:20260627T020000Z
+SUMMARY:⚽ 🇺🇾 Uruguay vs 🇪🇸 España · Grupo H · J3
+LOCATION:Estadio Akron\, Guadalajara (Zapopan)\, México
+DESCRIPTION:Grupo H · Jornada 3\n🏟️ Estadio Akron\, Guadalajara (Zapo
+ pan)\, México\n👥 Aforo: 48\,000\n🕐 Hora del estadio: 18:00 (UTC-6)\
+ n🇲🇽 Hora CDMX: 18:00 del 26/06\n🔗 Marcador en vivo: https://www.g
+ oogle.com/search?q=Uruguay+vs+Espa%C3%B1a+Mundial+2026\n—\nFuente: openf
+ ootball/worldcup (dominio publico)
+URL:https://www.google.com/search?q=Uruguay+vs+Espa%C3%B1a+Mundial+2026
+CATEGORIES:Mundial 2026,Grupo H
+GEO:20.68167;-103.46278
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Falta 1 hora para el partido ⚽
+TRIGGER:-PT1H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:wc2026-m49@openfootball
+DTSTAMP:20260612T014416Z
+DTSTART:20260616T190000Z
+DTEND:20260616T210000Z
+SUMMARY:⚽ 🇫🇷 Francia vs 🇸🇳 Senegal · Grupo I · J1
+LOCATION:MetLife Stadium\, New York/New Jersey (East Rutherford)\, Estados 
+ Unidos
+DESCRIPTION:Grupo I · Jornada 1\n🏟️ MetLife Stadium\, New York/New Je
+ rsey (East Rutherford)\, Estados Unidos\n👥 Aforo: 82\,500\n🕐 Hora de
+ l estadio: 15:00 (UTC-4)\n🇲🇽 Hora CDMX: 13:00 del 16/06\n🔗 Marcad
+ or en vivo: https://www.google.com/search?q=Francia+vs+Senegal+Mundial+202
+ 6\n—\nFuente: openfootball/worldcup (dominio publico)
+URL:https://www.google.com/search?q=Francia+vs+Senegal+Mundial+2026
+CATEGORIES:Mundial 2026,Grupo I
+GEO:40.81353;-74.07436
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Falta 1 hora para el partido ⚽
+TRIGGER:-PT1H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:wc2026-m50@openfootball
+DTSTAMP:20260612T014416Z
+DTSTART:20260616T220000Z
+DTEND:20260617T000000Z
+SUMMARY:⚽ 🇮🇶 Irak vs 🇳🇴 Noruega · Grupo I · J1
+LOCATION:Gillette Stadium\, Boston (Foxborough)\, Estados Unidos
+DESCRIPTION:Grupo I · Jornada 1\n🏟️ Gillette Stadium\, Boston (Foxbor
+ ough)\, Estados Unidos\n👥 Aforo: 65\,000\n🕐 Hora del estadio: 18:00 
+ (UTC-4)\n🇲🇽 Hora CDMX: 16:00 del 16/06\n🔗 Marcador en vivo: https
+ ://www.google.com/search?q=Irak+vs+Noruega+Mundial+2026\n—\nFuente: open
+ football/worldcup (dominio publico)
+URL:https://www.google.com/search?q=Irak+vs+Noruega+Mundial+2026
+CATEGORIES:Mundial 2026,Grupo I
+GEO:42.091;-71.264
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Falta 1 hora para el partido ⚽
+TRIGGER:-PT1H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:wc2026-m51@openfootball
+DTSTAMP:20260612T014416Z
+DTSTART:20260622T210000Z
+DTEND:20260622T230000Z
+SUMMARY:⚽ 🇫🇷 Francia vs 🇮🇶 Irak · Grupo I · J2
+LOCATION:Lincoln Financial Field\, Philadelphia\, Estados Unidos
+DESCRIPTION:Grupo I · Jornada 2\n🏟️ Lincoln Financial Field\, Philade
+ lphia\, Estados Unidos\n👥 Aforo: 69\,000\n🕐 Hora del estadio: 17:00 
+ (UTC-4)\n🇲🇽 Hora CDMX: 15:00 del 22/06\n🔗 Marcador en vivo: https
+ ://www.google.com/search?q=Francia+vs+Irak+Mundial+2026\n—\nFuente: open
+ football/worldcup (dominio publico)
+URL:https://www.google.com/search?q=Francia+vs+Irak+Mundial+2026
+CATEGORIES:Mundial 2026,Grupo I
+GEO:39.90083;-75.1675
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Falta 1 hora para el partido ⚽
+TRIGGER:-PT1H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:wc2026-m52@openfootball
+DTSTAMP:20260612T014416Z
+DTSTART:20260623T000000Z
+DTEND:20260623T020000Z
+SUMMARY:⚽ 🇳🇴 Noruega vs 🇸🇳 Senegal · Grupo I · J2
+LOCATION:MetLife Stadium\, New York/New Jersey (East Rutherford)\, Estados 
+ Unidos
+DESCRIPTION:Grupo I · Jornada 2\n🏟️ MetLife Stadium\, New York/New Je
+ rsey (East Rutherford)\, Estados Unidos\n👥 Aforo: 82\,500\n🕐 Hora de
+ l estadio: 20:00 (UTC-4)\n🇲🇽 Hora CDMX: 18:00 del 22/06\n🔗 Marcad
+ or en vivo: https://www.google.com/search?q=Noruega+vs+Senegal+Mundial+202
+ 6\n—\nFuente: openfootball/worldcup (dominio publico)
+URL:https://www.google.com/search?q=Noruega+vs+Senegal+Mundial+2026
+CATEGORIES:Mundial 2026,Grupo I
+GEO:40.81353;-74.07436
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Falta 1 hora para el partido ⚽
+TRIGGER:-PT1H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:wc2026-m53@openfootball
+DTSTAMP:20260612T014416Z
+DTSTART:20260626T190000Z
+DTEND:20260626T210000Z
+SUMMARY:⚽ 🇳🇴 Noruega vs 🇫🇷 Francia · Grupo I · J3
+LOCATION:Gillette Stadium\, Boston (Foxborough)\, Estados Unidos
+DESCRIPTION:Grupo I · Jornada 3\n🏟️ Gillette Stadium\, Boston (Foxbor
+ ough)\, Estados Unidos\n👥 Aforo: 65\,000\n🕐 Hora del estadio: 15:00 
+ (UTC-4)\n🇲🇽 Hora CDMX: 13:00 del 26/06\n🔗 Marcador en vivo: https
+ ://www.google.com/search?q=Noruega+vs+Francia+Mundial+2026\n—\nFuente: o
+ penfootball/worldcup (dominio publico)
+URL:https://www.google.com/search?q=Noruega+vs+Francia+Mundial+2026
+CATEGORIES:Mundial 2026,Grupo I
+GEO:42.091;-71.264
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Falta 1 hora para el partido ⚽
+TRIGGER:-PT1H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:wc2026-m54@openfootball
+DTSTAMP:20260612T014416Z
+DTSTART:20260626T190000Z
+DTEND:20260626T210000Z
+SUMMARY:⚽ 🇸🇳 Senegal vs 🇮🇶 Irak · Grupo I · J3
+LOCATION:BMO Field\, Toronto\, Canadá
+DESCRIPTION:Grupo I · Jornada 3\n🏟️ BMO Field\, Toronto\, Canadá\n
+ 👥 Aforo: 45\,000\n🕐 Hora del estadio: 15:00 (UTC-4)\n🇲🇽 Hora C
+ DMX: 13:00 del 26/06\n🔗 Marcador en vivo: https://www.google.com/search
+ ?q=Senegal+vs+Irak+Mundial+2026\n—\nFuente: openfootball/worldcup (domin
+ io publico)
+URL:https://www.google.com/search?q=Senegal+vs+Irak+Mundial+2026
+CATEGORIES:Mundial 2026,Grupo I
+GEO:43.63333;-79.41861
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Falta 1 hora para el partido ⚽
+TRIGGER:-PT1H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:wc2026-m55@openfootball
+DTSTAMP:20260612T014416Z
+DTSTART:20260617T010000Z
+DTEND:20260617T030000Z
+SUMMARY:⚽ 🇦🇷 Argentina vs 🇩🇿 Argelia · Grupo J · J1
+LOCATION:Arrowhead Stadium\, Kansas City\, Estados Unidos
+DESCRIPTION:Grupo J · Jornada 1\n🏟️ Arrowhead Stadium\, Kansas City\,
+  Estados Unidos\n👥 Aforo: 73\,000\n🕐 Hora del estadio: 20:00 (UTC-5)
+ \n🇲🇽 Hora CDMX: 19:00 del 16/06\n🔗 Marcador en vivo: https://www.
+ google.com/search?q=Argentina+vs+Argelia+Mundial+2026\n—\nFuente: openfo
+ otball/worldcup (dominio publico)
+URL:https://www.google.com/search?q=Argentina+vs+Argelia+Mundial+2026
+CATEGORIES:Mundial 2026,Grupo J
+GEO:39.04889;-94.48389
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Falta 1 hora para el partido ⚽
+TRIGGER:-PT1H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:wc2026-m56@openfootball
+DTSTAMP:20260612T014416Z
+DTSTART:20260617T040000Z
+DTEND:20260617T060000Z
+SUMMARY:⚽ 🇦🇹 Austria vs 🇯🇴 Jordania · Grupo J · J1
+LOCATION:Levi's Stadium\, San Francisco Bay Area (Santa Clara)\, Estados Un
+ idos
+DESCRIPTION:Grupo J · Jornada 1\n🏟️ Levi's Stadium\, San Francisco Ba
+ y Area (Santa Clara)\, Estados Unidos\n👥 Aforo: 71\,000\n🕐 Hora del 
+ estadio: 21:00 (UTC-7)\n🇲🇽 Hora CDMX: 22:00 del 16/06\n🔗 Marcador
+  en vivo: https://www.google.com/search?q=Austria+vs+Jordania+Mundial+2026
+ \n—\nFuente: openfootball/worldcup (dominio publico)
+URL:https://www.google.com/search?q=Austria+vs+Jordania+Mundial+2026
+CATEGORIES:Mundial 2026,Grupo J
+GEO:37.403;-121.97
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Falta 1 hora para el partido ⚽
+TRIGGER:-PT1H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:wc2026-m57@openfootball
+DTSTAMP:20260612T014416Z
+DTSTART:20260622T170000Z
+DTEND:20260622T190000Z
+SUMMARY:⚽ 🇦🇷 Argentina vs 🇦🇹 Austria · Grupo J · J2
+LOCATION:AT&T Stadium\, Dallas (Arlington)\, Estados Unidos
+DESCRIPTION:Grupo J · Jornada 2\n🏟️ AT&T Stadium\, Dallas (Arlington)
+ \, Estados Unidos\n👥 Aforo: 94\,000\n🕐 Hora del estadio: 12:00 (UTC-
+ 5)\n🇲🇽 Hora CDMX: 11:00 del 22/06\n🔗 Marcador en vivo: https://ww
+ w.google.com/search?q=Argentina+vs+Austria+Mundial+2026\n—\nFuente: open
+ football/worldcup (dominio publico)
+URL:https://www.google.com/search?q=Argentina+vs+Austria+Mundial+2026
+CATEGORIES:Mundial 2026,Grupo J
+GEO:32.74778;-97.09278
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Falta 1 hora para el partido ⚽
+TRIGGER:-PT1H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:wc2026-m58@openfootball
+DTSTAMP:20260612T014416Z
+DTSTART:20260623T030000Z
+DTEND:20260623T050000Z
+SUMMARY:⚽ 🇯🇴 Jordania vs 🇩🇿 Argelia · Grupo J · J2
+LOCATION:Levi's Stadium\, San Francisco Bay Area (Santa Clara)\, Estados Un
+ idos
+DESCRIPTION:Grupo J · Jornada 2\n🏟️ Levi's Stadium\, San Francisco Ba
+ y Area (Santa Clara)\, Estados Unidos\n👥 Aforo: 71\,000\n🕐 Hora del 
+ estadio: 20:00 (UTC-7)\n🇲🇽 Hora CDMX: 21:00 del 22/06\n🔗 Marcador
+  en vivo: https://www.google.com/search?q=Jordania+vs+Argelia+Mundial+2026
+ \n—\nFuente: openfootball/worldcup (dominio publico)
+URL:https://www.google.com/search?q=Jordania+vs+Argelia+Mundial+2026
+CATEGORIES:Mundial 2026,Grupo J
+GEO:37.403;-121.97
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Falta 1 hora para el partido ⚽
+TRIGGER:-PT1H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:wc2026-m59@openfootball
+DTSTAMP:20260612T014416Z
+DTSTART:20260628T020000Z
+DTEND:20260628T040000Z
+SUMMARY:⚽ 🇩🇿 Argelia vs 🇦🇹 Austria · Grupo J · J3
+LOCATION:Arrowhead Stadium\, Kansas City\, Estados Unidos
+DESCRIPTION:Grupo J · Jornada 3\n🏟️ Arrowhead Stadium\, Kansas City\,
+  Estados Unidos\n👥 Aforo: 73\,000\n🕐 Hora del estadio: 21:00 (UTC-5)
+ \n🇲🇽 Hora CDMX: 20:00 del 27/06\n🔗 Marcador en vivo: https://www.
+ google.com/search?q=Argelia+vs+Austria+Mundial+2026\n—\nFuente: openfoot
+ ball/worldcup (dominio publico)
+URL:https://www.google.com/search?q=Argelia+vs+Austria+Mundial+2026
+CATEGORIES:Mundial 2026,Grupo J
+GEO:39.04889;-94.48389
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Falta 1 hora para el partido ⚽
+TRIGGER:-PT1H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:wc2026-m60@openfootball
+DTSTAMP:20260612T014416Z
+DTSTART:20260628T020000Z
+DTEND:20260628T040000Z
+SUMMARY:⚽ 🇯🇴 Jordania vs 🇦🇷 Argentina · Grupo J · J3
+LOCATION:AT&T Stadium\, Dallas (Arlington)\, Estados Unidos
+DESCRIPTION:Grupo J · Jornada 3\n🏟️ AT&T Stadium\, Dallas (Arlington)
+ \, Estados Unidos\n👥 Aforo: 94\,000\n🕐 Hora del estadio: 21:00 (UTC-
+ 5)\n🇲🇽 Hora CDMX: 20:00 del 27/06\n🔗 Marcador en vivo: https://ww
+ w.google.com/search?q=Jordania+vs+Argentina+Mundial+2026\n—\nFuente: ope
+ nfootball/worldcup (dominio publico)
+URL:https://www.google.com/search?q=Jordania+vs+Argentina+Mundial+2026
+CATEGORIES:Mundial 2026,Grupo J
+GEO:32.74778;-97.09278
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Falta 1 hora para el partido ⚽
+TRIGGER:-PT1H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:wc2026-m61@openfootball
+DTSTAMP:20260612T014416Z
+DTSTART:20260617T170000Z
+DTEND:20260617T190000Z
+SUMMARY:⚽ 🇵🇹 Portugal vs 🇨🇩 RD Congo · Grupo K · J1
+LOCATION:NRG Stadium\, Houston\, Estados Unidos
+DESCRIPTION:Grupo K · Jornada 1\n🏟️ NRG Stadium\, Houston\, Estados U
+ nidos\n👥 Aforo: 72\,000\n🕐 Hora del estadio: 12:00 (UTC-5)\n🇲🇽
+  Hora CDMX: 11:00 del 17/06\n🔗 Marcador en vivo: https://www.google.com
+ /search?q=Portugal+vs+RD+Congo+Mundial+2026\n—\nFuente: openfootball/wor
+ ldcup (dominio publico)
+URL:https://www.google.com/search?q=Portugal+vs+RD+Congo+Mundial+2026
+CATEGORIES:Mundial 2026,Grupo K
+GEO:29.68472;-95.41083
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Falta 1 hora para el partido ⚽
+TRIGGER:-PT1H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:wc2026-m62@openfootball
+DTSTAMP:20260612T014416Z
+DTSTART:20260618T020000Z
+DTEND:20260618T040000Z
+SUMMARY:⚽ 🇺🇿 Uzbekistán vs 🇨🇴 Colombia · Grupo K · J1
+LOCATION:Estadio Azteca\, Ciudad de México\, México
+DESCRIPTION:Grupo K · Jornada 1\n🏟️ Estadio Azteca\, Ciudad de Méxic
+ o\, México\n👥 Aforo: 83\,000\n🕐 Hora del estadio: 20:00 (UTC-6)\n
+ 🇲🇽 Hora CDMX: 20:00 del 17/06\n🔗 Marcador en vivo: https://www.go
+ ogle.com/search?q=Uzbekist%C3%A1n+vs+Colombia+Mundial+2026\n—\nFuente: o
+ penfootball/worldcup (dominio publico)
+URL:https://www.google.com/search?q=Uzbekist%C3%A1n+vs+Colombia+Mundial+202
+ 6
+CATEGORIES:Mundial 2026,Grupo K
+GEO:19.30306;-99.15056
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Falta 1 hora para el partido ⚽
+TRIGGER:-PT1H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:wc2026-m63@openfootball
+DTSTAMP:20260612T014416Z
+DTSTART:20260623T170000Z
+DTEND:20260623T190000Z
+SUMMARY:⚽ 🇵🇹 Portugal vs 🇺🇿 Uzbekistán · Grupo K · J2
+LOCATION:NRG Stadium\, Houston\, Estados Unidos
+DESCRIPTION:Grupo K · Jornada 2\n🏟️ NRG Stadium\, Houston\, Estados U
+ nidos\n👥 Aforo: 72\,000\n🕐 Hora del estadio: 12:00 (UTC-5)\n🇲🇽
+  Hora CDMX: 11:00 del 23/06\n🔗 Marcador en vivo: https://www.google.com
+ /search?q=Portugal+vs+Uzbekist%C3%A1n+Mundial+2026\n—\nFuente: openfootb
+ all/worldcup (dominio publico)
+URL:https://www.google.com/search?q=Portugal+vs+Uzbekist%C3%A1n+Mundial+202
+ 6
+CATEGORIES:Mundial 2026,Grupo K
+GEO:29.68472;-95.41083
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Falta 1 hora para el partido ⚽
+TRIGGER:-PT1H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:wc2026-m64@openfootball
+DTSTAMP:20260612T014416Z
+DTSTART:20260624T020000Z
+DTEND:20260624T040000Z
+SUMMARY:⚽ 🇨🇴 Colombia vs 🇨🇩 RD Congo · Grupo K · J2
+LOCATION:Estadio Akron\, Guadalajara (Zapopan)\, México
+DESCRIPTION:Grupo K · Jornada 2\n🏟️ Estadio Akron\, Guadalajara (Zapo
+ pan)\, México\n👥 Aforo: 48\,000\n🕐 Hora del estadio: 20:00 (UTC-6)\
+ n🇲🇽 Hora CDMX: 20:00 del 23/06\n🔗 Marcador en vivo: https://www.g
+ oogle.com/search?q=Colombia+vs+RD+Congo+Mundial+2026\n—\nFuente: openfoo
+ tball/worldcup (dominio publico)
+URL:https://www.google.com/search?q=Colombia+vs+RD+Congo+Mundial+2026
+CATEGORIES:Mundial 2026,Grupo K
+GEO:20.68167;-103.46278
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Falta 1 hora para el partido ⚽
+TRIGGER:-PT1H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:wc2026-m65@openfootball
+DTSTAMP:20260612T014416Z
+DTSTART:20260627T233000Z
+DTEND:20260628T013000Z
+SUMMARY:⚽ 🇨🇴 Colombia vs 🇵🇹 Portugal · Grupo K · J3
+LOCATION:Hard Rock Stadium\, Miami (Miami Gardens)\, Estados Unidos
+DESCRIPTION:Grupo K · Jornada 3\n🏟️ Hard Rock Stadium\, Miami (Miami 
+ Gardens)\, Estados Unidos\n👥 Aforo: 65\,000\n🕐 Hora del estadio: 19:
+ 30 (UTC-4)\n🇲🇽 Hora CDMX: 17:30 del 27/06\n🔗 Marcador en vivo: ht
+ tps://www.google.com/search?q=Colombia+vs+Portugal+Mundial+2026\n—\nFuen
+ te: openfootball/worldcup (dominio publico)
+URL:https://www.google.com/search?q=Colombia+vs+Portugal+Mundial+2026
+CATEGORIES:Mundial 2026,Grupo K
+GEO:25.95806;-80.23889
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Falta 1 hora para el partido ⚽
+TRIGGER:-PT1H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:wc2026-m66@openfootball
+DTSTAMP:20260612T014416Z
+DTSTART:20260627T233000Z
+DTEND:20260628T013000Z
+SUMMARY:⚽ 🇨🇩 RD Congo vs 🇺🇿 Uzbekistán · Grupo K · J3
+LOCATION:Mercedes-Benz Stadium\, Atlanta\, Estados Unidos
+DESCRIPTION:Grupo K · Jornada 3\n🏟️ Mercedes-Benz Stadium\, Atlanta\,
+  Estados Unidos\n👥 Aforo: 75\,000\n🕐 Hora del estadio: 19:30 (UTC-4)
+ \n🇲🇽 Hora CDMX: 17:30 del 27/06\n🔗 Marcador en vivo: https://www.
+ google.com/search?q=RD+Congo+vs+Uzbekist%C3%A1n+Mundial+2026\n—\nFuente:
+  openfootball/worldcup (dominio publico)
+URL:https://www.google.com/search?q=RD+Congo+vs+Uzbekist%C3%A1n+Mundial+202
+ 6
+CATEGORIES:Mundial 2026,Grupo K
+GEO:33.75556;-84.4
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Falta 1 hora para el partido ⚽
+TRIGGER:-PT1H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:wc2026-m67@openfootball
+DTSTAMP:20260612T014416Z
+DTSTART:20260617T200000Z
+DTEND:20260617T220000Z
+SUMMARY:⚽ 🏴󠁧󠁢󠁥󠁮󠁧󠁿 Inglaterra vs 🇭🇷 Croacia · 
+ Grupo L · J1
+LOCATION:AT&T Stadium\, Dallas (Arlington)\, Estados Unidos
+DESCRIPTION:Grupo L · Jornada 1\n🏟️ AT&T Stadium\, Dallas (Arlington)
+ \, Estados Unidos\n👥 Aforo: 94\,000\n🕐 Hora del estadio: 15:00 (UTC-
+ 5)\n🇲🇽 Hora CDMX: 14:00 del 17/06\n🔗 Marcador en vivo: https://ww
+ w.google.com/search?q=Inglaterra+vs+Croacia+Mundial+2026\n—\nFuente: ope
+ nfootball/worldcup (dominio publico)
+URL:https://www.google.com/search?q=Inglaterra+vs+Croacia+Mundial+2026
+CATEGORIES:Mundial 2026,Grupo L
+GEO:32.74778;-97.09278
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Falta 1 hora para el partido ⚽
+TRIGGER:-PT1H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:wc2026-m68@openfootball
+DTSTAMP:20260612T014416Z
+DTSTART:20260617T230000Z
+DTEND:20260618T010000Z
+SUMMARY:⚽ 🇬🇭 Ghana vs 🇵🇦 Panamá · Grupo L · J1
+LOCATION:BMO Field\, Toronto\, Canadá
+DESCRIPTION:Grupo L · Jornada 1\n🏟️ BMO Field\, Toronto\, Canadá\n
+ 👥 Aforo: 45\,000\n🕐 Hora del estadio: 19:00 (UTC-4)\n🇲🇽 Hora C
+ DMX: 17:00 del 17/06\n🔗 Marcador en vivo: https://www.google.com/search
+ ?q=Ghana+vs+Panam%C3%A1+Mundial+2026\n—\nFuente: openfootball/worldcup (
+ dominio publico)
+URL:https://www.google.com/search?q=Ghana+vs+Panam%C3%A1+Mundial+2026
+CATEGORIES:Mundial 2026,Grupo L
+GEO:43.63333;-79.41861
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Falta 1 hora para el partido ⚽
+TRIGGER:-PT1H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:wc2026-m69@openfootball
+DTSTAMP:20260612T014416Z
+DTSTART:20260623T200000Z
+DTEND:20260623T220000Z
+SUMMARY:⚽ 🏴󠁧󠁢󠁥󠁮󠁧󠁿 Inglaterra vs 🇬🇭 Ghana · Gr
+ upo L · J2
+LOCATION:Gillette Stadium\, Boston (Foxborough)\, Estados Unidos
+DESCRIPTION:Grupo L · Jornada 2\n🏟️ Gillette Stadium\, Boston (Foxbor
+ ough)\, Estados Unidos\n👥 Aforo: 65\,000\n🕐 Hora del estadio: 16:00 
+ (UTC-4)\n🇲🇽 Hora CDMX: 14:00 del 23/06\n🔗 Marcador en vivo: https
+ ://www.google.com/search?q=Inglaterra+vs+Ghana+Mundial+2026\n—\nFuente: 
+ openfootball/worldcup (dominio publico)
+URL:https://www.google.com/search?q=Inglaterra+vs+Ghana+Mundial+2026
+CATEGORIES:Mundial 2026,Grupo L
+GEO:42.091;-71.264
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Falta 1 hora para el partido ⚽
+TRIGGER:-PT1H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:wc2026-m70@openfootball
+DTSTAMP:20260612T014416Z
+DTSTART:20260623T230000Z
+DTEND:20260624T010000Z
+SUMMARY:⚽ 🇵🇦 Panamá vs 🇭🇷 Croacia · Grupo L · J2
+LOCATION:BMO Field\, Toronto\, Canadá
+DESCRIPTION:Grupo L · Jornada 2\n🏟️ BMO Field\, Toronto\, Canadá\n
+ 👥 Aforo: 45\,000\n🕐 Hora del estadio: 19:00 (UTC-4)\n🇲🇽 Hora C
+ DMX: 17:00 del 23/06\n🔗 Marcador en vivo: https://www.google.com/search
+ ?q=Panam%C3%A1+vs+Croacia+Mundial+2026\n—\nFuente: openfootball/worldcup
+  (dominio publico)
+URL:https://www.google.com/search?q=Panam%C3%A1+vs+Croacia+Mundial+2026
+CATEGORIES:Mundial 2026,Grupo L
+GEO:43.63333;-79.41861
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Falta 1 hora para el partido ⚽
+TRIGGER:-PT1H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:wc2026-m71@openfootball
+DTSTAMP:20260612T014416Z
+DTSTART:20260627T210000Z
+DTEND:20260627T230000Z
+SUMMARY:⚽ 🇵🇦 Panamá vs 🏴󠁧󠁢󠁥󠁮󠁧󠁿 Inglaterra · 
+ Grupo L · J3
+LOCATION:MetLife Stadium\, New York/New Jersey (East Rutherford)\, Estados 
+ Unidos
+DESCRIPTION:Grupo L · Jornada 3\n🏟️ MetLife Stadium\, New York/New Je
+ rsey (East Rutherford)\, Estados Unidos\n👥 Aforo: 82\,500\n🕐 Hora de
+ l estadio: 17:00 (UTC-4)\n🇲🇽 Hora CDMX: 15:00 del 27/06\n🔗 Marcad
+ or en vivo: https://www.google.com/search?q=Panam%C3%A1+vs+Inglaterra+Mund
+ ial+2026\n—\nFuente: openfootball/worldcup (dominio publico)
+URL:https://www.google.com/search?q=Panam%C3%A1+vs+Inglaterra+Mundial+2026
+CATEGORIES:Mundial 2026,Grupo L
+GEO:40.81353;-74.07436
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Falta 1 hora para el partido ⚽
+TRIGGER:-PT1H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:wc2026-m72@openfootball
+DTSTAMP:20260612T014416Z
+DTSTART:20260627T210000Z
+DTEND:20260627T230000Z
+SUMMARY:⚽ 🇭🇷 Croacia vs 🇬🇭 Ghana · Grupo L · J3
+LOCATION:Lincoln Financial Field\, Philadelphia\, Estados Unidos
+DESCRIPTION:Grupo L · Jornada 3\n🏟️ Lincoln Financial Field\, Philade
+ lphia\, Estados Unidos\n👥 Aforo: 69\,000\n🕐 Hora del estadio: 17:00 
+ (UTC-4)\n🇲🇽 Hora CDMX: 15:00 del 27/06\n🔗 Marcador en vivo: https
+ ://www.google.com/search?q=Croacia+vs+Ghana+Mundial+2026\n—\nFuente: ope
+ nfootball/worldcup (dominio publico)
+URL:https://www.google.com/search?q=Croacia+vs+Ghana+Mundial+2026
+CATEGORIES:Mundial 2026,Grupo L
+GEO:39.90083;-75.1675
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Falta 1 hora para el partido ⚽
+TRIGGER:-PT1H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:wc2026-m73@openfootball
+DTSTAMP:20260612T014416Z
+DTSTART:20260628T190000Z
+DTEND:20260628T210000Z
+SUMMARY:⚽ Dieciseisavos de final · 2º Grupo A vs 2º Grupo B
+LOCATION:SoFi Stadium\, Los Angeles (Inglewood)\, Estados Unidos
+DESCRIPTION:Dieciseisavos de final\n🏟️ SoFi Stadium\, Los Angeles (Ing
+ lewood)\, Estados Unidos\n👥 Aforo: 70\,000\n🕐 Hora del estadio: 12:0
+ 0 (UTC-7)\n🇲🇽 Hora CDMX: 13:00 del 28/06\nPartido oficial #73 de 104
+ \nEquipos por definir según resultados.\n🔗 Marcador en vivo: https://w
+ ww.google.com/search?q=Mundial+2026+Dieciseisavos+de+final\n—\nFuente: o
+ penfootball/worldcup (dominio publico)
+URL:https://www.google.com/search?q=Mundial+2026+Dieciseisavos+de+final
+CATEGORIES:Mundial 2026,Dieciseisavos de final
+GEO:33.953;-118.339
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Falta 1 hora para el partido ⚽
+TRIGGER:-PT1H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:wc2026-m74@openfootball
+DTSTAMP:20260612T014416Z
+DTSTART:20260629T203000Z
+DTEND:20260629T223000Z
+SUMMARY:⚽ Dieciseisavos de final · 1º Grupo E vs 3º (A/B/C/D/F)
+LOCATION:Gillette Stadium\, Boston (Foxborough)\, Estados Unidos
+DESCRIPTION:Dieciseisavos de final\n🏟️ Gillette Stadium\, Boston (Foxb
+ orough)\, Estados Unidos\n👥 Aforo: 65\,000\n🕐 Hora del estadio: 16:3
+ 0 (UTC-4)\n🇲🇽 Hora CDMX: 14:30 del 29/06\nPartido oficial #74 de 104
+ \nEquipos por definir según resultados.\n🔗 Marcador en vivo: https://w
+ ww.google.com/search?q=Mundial+2026+Dieciseisavos+de+final\n—\nFuente: o
+ penfootball/worldcup (dominio publico)
+URL:https://www.google.com/search?q=Mundial+2026+Dieciseisavos+de+final
+CATEGORIES:Mundial 2026,Dieciseisavos de final
+GEO:42.091;-71.264
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Falta 1 hora para el partido ⚽
+TRIGGER:-PT1H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:wc2026-m75@openfootball
+DTSTAMP:20260612T014416Z
+DTSTART:20260630T010000Z
+DTEND:20260630T030000Z
+SUMMARY:⚽ Dieciseisavos de final · 1º Grupo F vs 2º Grupo C
+LOCATION:Estadio BBVA\, Monterrey (Guadalupe)\, México
+DESCRIPTION:Dieciseisavos de final\n🏟️ Estadio BBVA\, Monterrey (Guada
+ lupe)\, México\n👥 Aforo: 53\,500\n🕐 Hora del estadio: 19:00 (UTC-6)
+ \n🇲🇽 Hora CDMX: 19:00 del 29/06\nPartido oficial #75 de 104\nEquipos
+  por definir según resultados.\n🔗 Marcador en vivo: https://www.google
+ .com/search?q=Mundial+2026+Dieciseisavos+de+final\n—\nFuente: openfootba
+ ll/worldcup (dominio publico)
+URL:https://www.google.com/search?q=Mundial+2026+Dieciseisavos+de+final
+CATEGORIES:Mundial 2026,Dieciseisavos de final
+GEO:25.66917;-100.24444
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Falta 1 hora para el partido ⚽
+TRIGGER:-PT1H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:wc2026-m76@openfootball
+DTSTAMP:20260612T014416Z
+DTSTART:20260629T170000Z
+DTEND:20260629T190000Z
+SUMMARY:⚽ Dieciseisavos de final · 1º Grupo C vs 2º Grupo F
+LOCATION:NRG Stadium\, Houston\, Estados Unidos
+DESCRIPTION:Dieciseisavos de final\n🏟️ NRG Stadium\, Houston\, Estados
+  Unidos\n👥 Aforo: 72\,000\n🕐 Hora del estadio: 12:00 (UTC-5)\n🇲
+ 🇽 Hora CDMX: 11:00 del 29/06\nPartido oficial #76 de 104\nEquipos por d
+ efinir según resultados.\n🔗 Marcador en vivo: https://www.google.com/s
+ earch?q=Mundial+2026+Dieciseisavos+de+final\n—\nFuente: openfootball/wor
+ ldcup (dominio publico)
+URL:https://www.google.com/search?q=Mundial+2026+Dieciseisavos+de+final
+CATEGORIES:Mundial 2026,Dieciseisavos de final
+GEO:29.68472;-95.41083
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Falta 1 hora para el partido ⚽
+TRIGGER:-PT1H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:wc2026-m77@openfootball
+DTSTAMP:20260612T014416Z
+DTSTART:20260630T210000Z
+DTEND:20260630T230000Z
+SUMMARY:⚽ Dieciseisavos de final · 1º Grupo I vs 3º (C/D/F/G/H)
+LOCATION:MetLife Stadium\, New York/New Jersey (East Rutherford)\, Estados 
+ Unidos
+DESCRIPTION:Dieciseisavos de final\n🏟️ MetLife Stadium\, New York/New 
+ Jersey (East Rutherford)\, Estados Unidos\n👥 Aforo: 82\,500\n🕐 Hora 
+ del estadio: 17:00 (UTC-4)\n🇲🇽 Hora CDMX: 15:00 del 30/06\nPartido o
+ ficial #77 de 104\nEquipos por definir según resultados.\n🔗 Marcador e
+ n vivo: https://www.google.com/search?q=Mundial+2026+Dieciseisavos+de+fina
+ l\n—\nFuente: openfootball/worldcup (dominio publico)
+URL:https://www.google.com/search?q=Mundial+2026+Dieciseisavos+de+final
+CATEGORIES:Mundial 2026,Dieciseisavos de final
+GEO:40.81353;-74.07436
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Falta 1 hora para el partido ⚽
+TRIGGER:-PT1H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:wc2026-m78@openfootball
+DTSTAMP:20260612T014416Z
+DTSTART:20260630T170000Z
+DTEND:20260630T190000Z
+SUMMARY:⚽ Dieciseisavos de final · 2º Grupo E vs 2º Grupo I
+LOCATION:AT&T Stadium\, Dallas (Arlington)\, Estados Unidos
+DESCRIPTION:Dieciseisavos de final\n🏟️ AT&T Stadium\, Dallas (Arlingto
+ n)\, Estados Unidos\n👥 Aforo: 94\,000\n🕐 Hora del estadio: 12:00 (UT
+ C-5)\n🇲🇽 Hora CDMX: 11:00 del 30/06\nPartido oficial #78 de 104\nEqu
+ ipos por definir según resultados.\n🔗 Marcador en vivo: https://www.go
+ ogle.com/search?q=Mundial+2026+Dieciseisavos+de+final\n—\nFuente: openfo
+ otball/worldcup (dominio publico)
+URL:https://www.google.com/search?q=Mundial+2026+Dieciseisavos+de+final
+CATEGORIES:Mundial 2026,Dieciseisavos de final
+GEO:32.74778;-97.09278
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Falta 1 hora para el partido ⚽
+TRIGGER:-PT1H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:wc2026-m79@openfootball
+DTSTAMP:20260612T014416Z
+DTSTART:20260701T010000Z
+DTEND:20260701T030000Z
+SUMMARY:⚽ Dieciseisavos de final · 1º Grupo A vs 3º (C/E/F/H/I)
+LOCATION:Estadio Azteca\, Ciudad de México\, México
+DESCRIPTION:Dieciseisavos de final\n🏟️ Estadio Azteca\, Ciudad de Méx
+ ico\, México\n👥 Aforo: 83\,000\n🕐 Hora del estadio: 19:00 (UTC-6)\n
+ 🇲🇽 Hora CDMX: 19:00 del 30/06\nPartido oficial #79 de 104\nEquipos p
+ or definir según resultados.\n🔗 Marcador en vivo: https://www.google.c
+ om/search?q=Mundial+2026+Dieciseisavos+de+final\n—\nFuente: openfootball
+ /worldcup (dominio publico)
+URL:https://www.google.com/search?q=Mundial+2026+Dieciseisavos+de+final
+CATEGORIES:Mundial 2026,Dieciseisavos de final
+GEO:19.30306;-99.15056
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Falta 1 hora para el partido ⚽
+TRIGGER:-PT1H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:wc2026-m80@openfootball
+DTSTAMP:20260612T014416Z
+DTSTART:20260701T160000Z
+DTEND:20260701T180000Z
+SUMMARY:⚽ Dieciseisavos de final · 1º Grupo L vs 3º (E/H/I/J/K)
+LOCATION:Mercedes-Benz Stadium\, Atlanta\, Estados Unidos
+DESCRIPTION:Dieciseisavos de final\n🏟️ Mercedes-Benz Stadium\, Atlanta
+ \, Estados Unidos\n👥 Aforo: 75\,000\n🕐 Hora del estadio: 12:00 (UTC-
+ 4)\n🇲🇽 Hora CDMX: 10:00 del 01/07\nPartido oficial #80 de 104\nEquip
+ os por definir según resultados.\n🔗 Marcador en vivo: https://www.goog
+ le.com/search?q=Mundial+2026+Dieciseisavos+de+final\n—\nFuente: openfoot
+ ball/worldcup (dominio publico)
+URL:https://www.google.com/search?q=Mundial+2026+Dieciseisavos+de+final
+CATEGORIES:Mundial 2026,Dieciseisavos de final
+GEO:33.75556;-84.4
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Falta 1 hora para el partido ⚽
+TRIGGER:-PT1H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:wc2026-m81@openfootball
+DTSTAMP:20260612T014416Z
+DTSTART:20260702T000000Z
+DTEND:20260702T020000Z
+SUMMARY:⚽ Dieciseisavos de final · 1º Grupo D vs 3º (B/E/F/I/J)
+LOCATION:Levi's Stadium\, San Francisco Bay Area (Santa Clara)\, Estados Un
+ idos
+DESCRIPTION:Dieciseisavos de final\n🏟️ Levi's Stadium\, San Francisco 
+ Bay Area (Santa Clara)\, Estados Unidos\n👥 Aforo: 71\,000\n🕐 Hora de
+ l estadio: 17:00 (UTC-7)\n🇲🇽 Hora CDMX: 18:00 del 01/07\nPartido ofi
+ cial #81 de 104\nEquipos por definir según resultados.\n🔗 Marcador en 
+ vivo: https://www.google.com/search?q=Mundial+2026+Dieciseisavos+de+final\
+ n—\nFuente: openfootball/worldcup (dominio publico)
+URL:https://www.google.com/search?q=Mundial+2026+Dieciseisavos+de+final
+CATEGORIES:Mundial 2026,Dieciseisavos de final
+GEO:37.403;-121.97
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Falta 1 hora para el partido ⚽
+TRIGGER:-PT1H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:wc2026-m82@openfootball
+DTSTAMP:20260612T014416Z
+DTSTART:20260701T200000Z
+DTEND:20260701T220000Z
+SUMMARY:⚽ Dieciseisavos de final · 1º Grupo G vs 3º (A/E/H/I/J)
+LOCATION:Lumen Field\, Seattle\, Estados Unidos
+DESCRIPTION:Dieciseisavos de final\n🏟️ Lumen Field\, Seattle\, Estados
+  Unidos\n👥 Aforo: 69\,000\n🕐 Hora del estadio: 13:00 (UTC-7)\n🇲
+ 🇽 Hora CDMX: 14:00 del 01/07\nPartido oficial #82 de 104\nEquipos por d
+ efinir según resultados.\n🔗 Marcador en vivo: https://www.google.com/s
+ earch?q=Mundial+2026+Dieciseisavos+de+final\n—\nFuente: openfootball/wor
+ ldcup (dominio publico)
+URL:https://www.google.com/search?q=Mundial+2026+Dieciseisavos+de+final
+CATEGORIES:Mundial 2026,Dieciseisavos de final
+GEO:47.59528;-122.33167
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Falta 1 hora para el partido ⚽
+TRIGGER:-PT1H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:wc2026-m83@openfootball
+DTSTAMP:20260612T014416Z
+DTSTART:20260702T230000Z
+DTEND:20260703T010000Z
+SUMMARY:⚽ Dieciseisavos de final · 2º Grupo K vs 2º Grupo L
+LOCATION:BMO Field\, Toronto\, Canadá
+DESCRIPTION:Dieciseisavos de final\n🏟️ BMO Field\, Toronto\, Canadá\n
+ 👥 Aforo: 45\,000\n🕐 Hora del estadio: 19:00 (UTC-4)\n🇲🇽 Hora C
+ DMX: 17:00 del 02/07\nPartido oficial #83 de 104\nEquipos por definir seg
+ ún resultados.\n🔗 Marcador en vivo: https://www.google.com/search?q=Mu
+ ndial+2026+Dieciseisavos+de+final\n—\nFuente: openfootball/worldcup (dom
+ inio publico)
+URL:https://www.google.com/search?q=Mundial+2026+Dieciseisavos+de+final
+CATEGORIES:Mundial 2026,Dieciseisavos de final
+GEO:43.63333;-79.41861
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Falta 1 hora para el partido ⚽
+TRIGGER:-PT1H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:wc2026-m84@openfootball
+DTSTAMP:20260612T014416Z
+DTSTART:20260702T190000Z
+DTEND:20260702T210000Z
+SUMMARY:⚽ Dieciseisavos de final · 1º Grupo H vs 2º Grupo J
+LOCATION:SoFi Stadium\, Los Angeles (Inglewood)\, Estados Unidos
+DESCRIPTION:Dieciseisavos de final\n🏟️ SoFi Stadium\, Los Angeles (Ing
+ lewood)\, Estados Unidos\n👥 Aforo: 70\,000\n🕐 Hora del estadio: 12:0
+ 0 (UTC-7)\n🇲🇽 Hora CDMX: 13:00 del 02/07\nPartido oficial #84 de 104
+ \nEquipos por definir según resultados.\n🔗 Marcador en vivo: https://w
+ ww.google.com/search?q=Mundial+2026+Dieciseisavos+de+final\n—\nFuente: o
+ penfootball/worldcup (dominio publico)
+URL:https://www.google.com/search?q=Mundial+2026+Dieciseisavos+de+final
+CATEGORIES:Mundial 2026,Dieciseisavos de final
+GEO:33.953;-118.339
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Falta 1 hora para el partido ⚽
+TRIGGER:-PT1H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:wc2026-m85@openfootball
+DTSTAMP:20260612T014416Z
+DTSTART:20260703T030000Z
+DTEND:20260703T050000Z
+SUMMARY:⚽ Dieciseisavos de final · 1º Grupo B vs 3º (E/F/G/I/J)
+LOCATION:BC Place\, Vancouver\, Canadá
+DESCRIPTION:Dieciseisavos de final\n🏟️ BC Place\, Vancouver\, Canadá\
+ n👥 Aforo: 54\,000\n🕐 Hora del estadio: 20:00 (UTC-7)\n🇲🇽 Hora 
+ CDMX: 21:00 del 02/07\nPartido oficial #85 de 104\nEquipos por definir seg
+ ún resultados.\n🔗 Marcador en vivo: https://www.google.com/search?q=Mu
+ ndial+2026+Dieciseisavos+de+final\n—\nFuente: openfootball/worldcup (dom
+ inio publico)
+URL:https://www.google.com/search?q=Mundial+2026+Dieciseisavos+de+final
+CATEGORIES:Mundial 2026,Dieciseisavos de final
+GEO:49.27667;-123.11194
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Falta 1 hora para el partido ⚽
+TRIGGER:-PT1H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:wc2026-m86@openfootball
+DTSTAMP:20260612T014416Z
+DTSTART:20260703T220000Z
+DTEND:20260704T000000Z
+SUMMARY:⚽ Dieciseisavos de final · 1º Grupo J vs 2º Grupo H
+LOCATION:Hard Rock Stadium\, Miami (Miami Gardens)\, Estados Unidos
+DESCRIPTION:Dieciseisavos de final\n🏟️ Hard Rock Stadium\, Miami (Miam
+ i Gardens)\, Estados Unidos\n👥 Aforo: 65\,000\n🕐 Hora del estadio: 1
+ 8:00 (UTC-4)\n🇲🇽 Hora CDMX: 16:00 del 03/07\nPartido oficial #86 de 
+ 104\nEquipos por definir según resultados.\n🔗 Marcador en vivo: https:
+ //www.google.com/search?q=Mundial+2026+Dieciseisavos+de+final\n—\nFuente
+ : openfootball/worldcup (dominio publico)
+URL:https://www.google.com/search?q=Mundial+2026+Dieciseisavos+de+final
+CATEGORIES:Mundial 2026,Dieciseisavos de final
+GEO:25.95806;-80.23889
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Falta 1 hora para el partido ⚽
+TRIGGER:-PT1H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:wc2026-m87@openfootball
+DTSTAMP:20260612T014416Z
+DTSTART:20260704T013000Z
+DTEND:20260704T033000Z
+SUMMARY:⚽ Dieciseisavos de final · 1º Grupo K vs 3º (D/E/I/J/L)
+LOCATION:Arrowhead Stadium\, Kansas City\, Estados Unidos
+DESCRIPTION:Dieciseisavos de final\n🏟️ Arrowhead Stadium\, Kansas City
+ \, Estados Unidos\n👥 Aforo: 73\,000\n🕐 Hora del estadio: 20:30 (UTC-
+ 5)\n🇲🇽 Hora CDMX: 19:30 del 03/07\nPartido oficial #87 de 104\nEquip
+ os por definir según resultados.\n🔗 Marcador en vivo: https://www.goog
+ le.com/search?q=Mundial+2026+Dieciseisavos+de+final\n—\nFuente: openfoot
+ ball/worldcup (dominio publico)
+URL:https://www.google.com/search?q=Mundial+2026+Dieciseisavos+de+final
+CATEGORIES:Mundial 2026,Dieciseisavos de final
+GEO:39.04889;-94.48389
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Falta 1 hora para el partido ⚽
+TRIGGER:-PT1H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:wc2026-m88@openfootball
+DTSTAMP:20260612T014416Z
+DTSTART:20260703T180000Z
+DTEND:20260703T200000Z
+SUMMARY:⚽ Dieciseisavos de final · 2º Grupo D vs 2º Grupo G
+LOCATION:AT&T Stadium\, Dallas (Arlington)\, Estados Unidos
+DESCRIPTION:Dieciseisavos de final\n🏟️ AT&T Stadium\, Dallas (Arlingto
+ n)\, Estados Unidos\n👥 Aforo: 94\,000\n🕐 Hora del estadio: 13:00 (UT
+ C-5)\n🇲🇽 Hora CDMX: 12:00 del 03/07\nPartido oficial #88 de 104\nEqu
+ ipos por definir según resultados.\n🔗 Marcador en vivo: https://www.go
+ ogle.com/search?q=Mundial+2026+Dieciseisavos+de+final\n—\nFuente: openfo
+ otball/worldcup (dominio publico)
+URL:https://www.google.com/search?q=Mundial+2026+Dieciseisavos+de+final
+CATEGORIES:Mundial 2026,Dieciseisavos de final
+GEO:32.74778;-97.09278
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Falta 1 hora para el partido ⚽
+TRIGGER:-PT1H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:wc2026-m89@openfootball
+DTSTAMP:20260612T014416Z
+DTSTART:20260704T210000Z
+DTEND:20260704T230000Z
+SUMMARY:⚽ Octavos de final · Ganador M74 vs Ganador M77
+LOCATION:Lincoln Financial Field\, Philadelphia\, Estados Unidos
+DESCRIPTION:Octavos de final\n🏟️ Lincoln Financial Field\, Philadelphi
+ a\, Estados Unidos\n👥 Aforo: 69\,000\n🕐 Hora del estadio: 17:00 (UTC
+ -4)\n🇲🇽 Hora CDMX: 15:00 del 04/07\nPartido oficial #89 de 104\nEqui
+ pos por definir según resultados.\n🔗 Marcador en vivo: https://www.goo
+ gle.com/search?q=Mundial+2026+Octavos+de+final\n—\nFuente: openfootball/
+ worldcup (dominio publico)
+URL:https://www.google.com/search?q=Mundial+2026+Octavos+de+final
+CATEGORIES:Mundial 2026,Octavos de final
+GEO:39.90083;-75.1675
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Falta 1 hora para el partido ⚽
+TRIGGER:-PT1H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:wc2026-m90@openfootball
+DTSTAMP:20260612T014416Z
+DTSTART:20260704T170000Z
+DTEND:20260704T190000Z
+SUMMARY:⚽ Octavos de final · Ganador M73 vs Ganador M75
+LOCATION:NRG Stadium\, Houston\, Estados Unidos
+DESCRIPTION:Octavos de final\n🏟️ NRG Stadium\, Houston\, Estados Unido
+ s\n👥 Aforo: 72\,000\n🕐 Hora del estadio: 12:00 (UTC-5)\n🇲🇽 Hor
+ a CDMX: 11:00 del 04/07\nPartido oficial #90 de 104\nEquipos por definir s
+ egún resultados.\n🔗 Marcador en vivo: https://www.google.com/search?q=
+ Mundial+2026+Octavos+de+final\n—\nFuente: openfootball/worldcup (dominio
+  publico)
+URL:https://www.google.com/search?q=Mundial+2026+Octavos+de+final
+CATEGORIES:Mundial 2026,Octavos de final
+GEO:29.68472;-95.41083
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Falta 1 hora para el partido ⚽
+TRIGGER:-PT1H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:wc2026-m91@openfootball
+DTSTAMP:20260612T014416Z
+DTSTART:20260705T200000Z
+DTEND:20260705T220000Z
+SUMMARY:⚽ Octavos de final · Ganador M76 vs Ganador M78
+LOCATION:MetLife Stadium\, New York/New Jersey (East Rutherford)\, Estados 
+ Unidos
+DESCRIPTION:Octavos de final\n🏟️ MetLife Stadium\, New York/New Jersey
+  (East Rutherford)\, Estados Unidos\n👥 Aforo: 82\,500\n🕐 Hora del es
+ tadio: 16:00 (UTC-4)\n🇲🇽 Hora CDMX: 14:00 del 05/07\nPartido oficial
+  #91 de 104\nEquipos por definir según resultados.\n🔗 Marcador en vivo
+ : https://www.google.com/search?q=Mundial+2026+Octavos+de+final\n—\nFuen
+ te: openfootball/worldcup (dominio publico)
+URL:https://www.google.com/search?q=Mundial+2026+Octavos+de+final
+CATEGORIES:Mundial 2026,Octavos de final
+GEO:40.81353;-74.07436
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Falta 1 hora para el partido ⚽
+TRIGGER:-PT1H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:wc2026-m92@openfootball
+DTSTAMP:20260612T014416Z
+DTSTART:20260706T000000Z
+DTEND:20260706T020000Z
+SUMMARY:⚽ Octavos de final · Ganador M79 vs Ganador M80
+LOCATION:Estadio Azteca\, Ciudad de México\, México
+DESCRIPTION:Octavos de final\n🏟️ Estadio Azteca\, Ciudad de México\, 
+ México\n👥 Aforo: 83\,000\n🕐 Hora del estadio: 18:00 (UTC-6)\n🇲
+ 🇽 Hora CDMX: 18:00 del 05/07\nPartido oficial #92 de 104\nEquipos por d
+ efinir según resultados.\n🔗 Marcador en vivo: https://www.google.com/s
+ earch?q=Mundial+2026+Octavos+de+final\n—\nFuente: openfootball/worldcup 
+ (dominio publico)
+URL:https://www.google.com/search?q=Mundial+2026+Octavos+de+final
+CATEGORIES:Mundial 2026,Octavos de final
+GEO:19.30306;-99.15056
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Falta 1 hora para el partido ⚽
+TRIGGER:-PT1H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:wc2026-m93@openfootball
+DTSTAMP:20260612T014416Z
+DTSTART:20260706T190000Z
+DTEND:20260706T210000Z
+SUMMARY:⚽ Octavos de final · Ganador M83 vs Ganador M84
+LOCATION:AT&T Stadium\, Dallas (Arlington)\, Estados Unidos
+DESCRIPTION:Octavos de final\n🏟️ AT&T Stadium\, Dallas (Arlington)\, E
+ stados Unidos\n👥 Aforo: 94\,000\n🕐 Hora del estadio: 14:00 (UTC-5)\n
+ 🇲🇽 Hora CDMX: 13:00 del 06/07\nPartido oficial #93 de 104\nEquipos p
+ or definir según resultados.\n🔗 Marcador en vivo: https://www.google.c
+ om/search?q=Mundial+2026+Octavos+de+final\n—\nFuente: openfootball/world
+ cup (dominio publico)
+URL:https://www.google.com/search?q=Mundial+2026+Octavos+de+final
+CATEGORIES:Mundial 2026,Octavos de final
+GEO:32.74778;-97.09278
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Falta 1 hora para el partido ⚽
+TRIGGER:-PT1H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:wc2026-m94@openfootball
+DTSTAMP:20260612T014416Z
+DTSTART:20260707T000000Z
+DTEND:20260707T020000Z
+SUMMARY:⚽ Octavos de final · Ganador M81 vs Ganador M82
+LOCATION:Lumen Field\, Seattle\, Estados Unidos
+DESCRIPTION:Octavos de final\n🏟️ Lumen Field\, Seattle\, Estados Unido
+ s\n👥 Aforo: 69\,000\n🕐 Hora del estadio: 17:00 (UTC-7)\n🇲🇽 Hor
+ a CDMX: 18:00 del 06/07\nPartido oficial #94 de 104\nEquipos por definir s
+ egún resultados.\n🔗 Marcador en vivo: https://www.google.com/search?q=
+ Mundial+2026+Octavos+de+final\n—\nFuente: openfootball/worldcup (dominio
+  publico)
+URL:https://www.google.com/search?q=Mundial+2026+Octavos+de+final
+CATEGORIES:Mundial 2026,Octavos de final
+GEO:47.59528;-122.33167
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Falta 1 hora para el partido ⚽
+TRIGGER:-PT1H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:wc2026-m95@openfootball
+DTSTAMP:20260612T014416Z
+DTSTART:20260707T160000Z
+DTEND:20260707T180000Z
+SUMMARY:⚽ Octavos de final · Ganador M86 vs Ganador M88
+LOCATION:Mercedes-Benz Stadium\, Atlanta\, Estados Unidos
+DESCRIPTION:Octavos de final\n🏟️ Mercedes-Benz Stadium\, Atlanta\, Est
+ ados Unidos\n👥 Aforo: 75\,000\n🕐 Hora del estadio: 12:00 (UTC-4)\n
+ 🇲🇽 Hora CDMX: 10:00 del 07/07\nPartido oficial #95 de 104\nEquipos p
+ or definir según resultados.\n🔗 Marcador en vivo: https://www.google.c
+ om/search?q=Mundial+2026+Octavos+de+final\n—\nFuente: openfootball/world
+ cup (dominio publico)
+URL:https://www.google.com/search?q=Mundial+2026+Octavos+de+final
+CATEGORIES:Mundial 2026,Octavos de final
+GEO:33.75556;-84.4
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Falta 1 hora para el partido ⚽
+TRIGGER:-PT1H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:wc2026-m96@openfootball
+DTSTAMP:20260612T014416Z
+DTSTART:20260707T200000Z
+DTEND:20260707T220000Z
+SUMMARY:⚽ Octavos de final · Ganador M85 vs Ganador M87
+LOCATION:BC Place\, Vancouver\, Canadá
+DESCRIPTION:Octavos de final\n🏟️ BC Place\, Vancouver\, Canadá\n👥 
+ Aforo: 54\,000\n🕐 Hora del estadio: 13:00 (UTC-7)\n🇲🇽 Hora CDMX: 
+ 14:00 del 07/07\nPartido oficial #96 de 104\nEquipos por definir según re
+ sultados.\n🔗 Marcador en vivo: https://www.google.com/search?q=Mundial+
+ 2026+Octavos+de+final\n—\nFuente: openfootball/worldcup (dominio publico
+ )
+URL:https://www.google.com/search?q=Mundial+2026+Octavos+de+final
+CATEGORIES:Mundial 2026,Octavos de final
+GEO:49.27667;-123.11194
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Falta 1 hora para el partido ⚽
+TRIGGER:-PT1H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:wc2026-m97@openfootball
+DTSTAMP:20260612T014416Z
+DTSTART:20260709T200000Z
+DTEND:20260709T220000Z
+SUMMARY:⚽ Cuartos de final · Ganador M89 vs Ganador M90
+LOCATION:Gillette Stadium\, Boston (Foxborough)\, Estados Unidos
+DESCRIPTION:Cuartos de final\n🏟️ Gillette Stadium\, Boston (Foxborough
+ )\, Estados Unidos\n👥 Aforo: 65\,000\n🕐 Hora del estadio: 16:00 (UTC
+ -4)\n🇲🇽 Hora CDMX: 14:00 del 09/07\nPartido oficial #97 de 104\nEqui
+ pos por definir según resultados.\n🔗 Marcador en vivo: https://www.goo
+ gle.com/search?q=Mundial+2026+Cuartos+de+final\n—\nFuente: openfootball/
+ worldcup (dominio publico)
+URL:https://www.google.com/search?q=Mundial+2026+Cuartos+de+final
+CATEGORIES:Mundial 2026,Cuartos de final
+GEO:42.091;-71.264
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Falta 1 hora para el partido ⚽
+TRIGGER:-PT1H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:wc2026-m98@openfootball
+DTSTAMP:20260612T014416Z
+DTSTART:20260710T190000Z
+DTEND:20260710T210000Z
+SUMMARY:⚽ Cuartos de final · Ganador M93 vs Ganador M94
+LOCATION:SoFi Stadium\, Los Angeles (Inglewood)\, Estados Unidos
+DESCRIPTION:Cuartos de final\n🏟️ SoFi Stadium\, Los Angeles (Inglewood
+ )\, Estados Unidos\n👥 Aforo: 70\,000\n🕐 Hora del estadio: 12:00 (UTC
+ -7)\n🇲🇽 Hora CDMX: 13:00 del 10/07\nPartido oficial #98 de 104\nEqui
+ pos por definir según resultados.\n🔗 Marcador en vivo: https://www.goo
+ gle.com/search?q=Mundial+2026+Cuartos+de+final\n—\nFuente: openfootball/
+ worldcup (dominio publico)
+URL:https://www.google.com/search?q=Mundial+2026+Cuartos+de+final
+CATEGORIES:Mundial 2026,Cuartos de final
+GEO:33.953;-118.339
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Falta 1 hora para el partido ⚽
+TRIGGER:-PT1H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:wc2026-m99@openfootball
+DTSTAMP:20260612T014416Z
+DTSTART:20260711T210000Z
+DTEND:20260711T230000Z
+SUMMARY:⚽ Cuartos de final · Ganador M91 vs Ganador M92
+LOCATION:Hard Rock Stadium\, Miami (Miami Gardens)\, Estados Unidos
+DESCRIPTION:Cuartos de final\n🏟️ Hard Rock Stadium\, Miami (Miami Gard
+ ens)\, Estados Unidos\n👥 Aforo: 65\,000\n🕐 Hora del estadio: 17:00 (
+ UTC-4)\n🇲🇽 Hora CDMX: 15:00 del 11/07\nPartido oficial #99 de 104\nE
+ quipos por definir según resultados.\n🔗 Marcador en vivo: https://www.
+ google.com/search?q=Mundial+2026+Cuartos+de+final\n—\nFuente: openfootba
+ ll/worldcup (dominio publico)
+URL:https://www.google.com/search?q=Mundial+2026+Cuartos+de+final
+CATEGORIES:Mundial 2026,Cuartos de final
+GEO:25.95806;-80.23889
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Falta 1 hora para el partido ⚽
+TRIGGER:-PT1H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:wc2026-m100@openfootball
+DTSTAMP:20260612T014416Z
+DTSTART:20260712T010000Z
+DTEND:20260712T030000Z
+SUMMARY:⚽ Cuartos de final · Ganador M95 vs Ganador M96
+LOCATION:Arrowhead Stadium\, Kansas City\, Estados Unidos
+DESCRIPTION:Cuartos de final\n🏟️ Arrowhead Stadium\, Kansas City\, Est
+ ados Unidos\n👥 Aforo: 73\,000\n🕐 Hora del estadio: 20:00 (UTC-5)\n
+ 🇲🇽 Hora CDMX: 19:00 del 11/07\nPartido oficial #100 de 104\nEquipos 
+ por definir según resultados.\n🔗 Marcador en vivo: https://www.google.
+ com/search?q=Mundial+2026+Cuartos+de+final\n—\nFuente: openfootball/worl
+ dcup (dominio publico)
+URL:https://www.google.com/search?q=Mundial+2026+Cuartos+de+final
+CATEGORIES:Mundial 2026,Cuartos de final
+GEO:39.04889;-94.48389
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Falta 1 hora para el partido ⚽
+TRIGGER:-PT1H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:wc2026-m101@openfootball
+DTSTAMP:20260612T014416Z
+DTSTART:20260714T190000Z
+DTEND:20260714T210000Z
+SUMMARY:⚽ Semifinal · Ganador M97 vs Ganador M98
+LOCATION:AT&T Stadium\, Dallas (Arlington)\, Estados Unidos
+DESCRIPTION:Semifinal\n🏟️ AT&T Stadium\, Dallas (Arlington)\, Estados 
+ Unidos\n👥 Aforo: 94\,000\n🕐 Hora del estadio: 14:00 (UTC-5)\n🇲
+ 🇽 Hora CDMX: 13:00 del 14/07\nPartido oficial #101 de 104\nEquipos por 
+ definir según resultados.\n🔗 Marcador en vivo: https://www.google.com/
+ search?q=Mundial+2026+Semifinal\n—\nFuente: openfootball/worldcup (domin
+ io publico)
+URL:https://www.google.com/search?q=Mundial+2026+Semifinal
+CATEGORIES:Mundial 2026,Semifinal
+GEO:32.74778;-97.09278
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Falta 1 hora para el partido ⚽
+TRIGGER:-PT1H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:wc2026-m102@openfootball
+DTSTAMP:20260612T014416Z
+DTSTART:20260715T190000Z
+DTEND:20260715T210000Z
+SUMMARY:⚽ Semifinal · Ganador M99 vs Ganador M100
+LOCATION:Mercedes-Benz Stadium\, Atlanta\, Estados Unidos
+DESCRIPTION:Semifinal\n🏟️ Mercedes-Benz Stadium\, Atlanta\, Estados Un
+ idos\n👥 Aforo: 75\,000\n🕐 Hora del estadio: 15:00 (UTC-4)\n🇲🇽 
+ Hora CDMX: 13:00 del 15/07\nPartido oficial #102 de 104\nEquipos por defin
+ ir según resultados.\n🔗 Marcador en vivo: https://www.google.com/searc
+ h?q=Mundial+2026+Semifinal\n—\nFuente: openfootball/worldcup (dominio pu
+ blico)
+URL:https://www.google.com/search?q=Mundial+2026+Semifinal
+CATEGORIES:Mundial 2026,Semifinal
+GEO:33.75556;-84.4
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Falta 1 hora para el partido ⚽
+TRIGGER:-PT1H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:wc2026-m103@openfootball
+DTSTAMP:20260612T014416Z
+DTSTART:20260718T210000Z
+DTEND:20260718T230000Z
+SUMMARY:🥉 Tercer lugar · Perdedor M101 vs Perdedor M102
+LOCATION:Hard Rock Stadium\, Miami (Miami Gardens)\, Estados Unidos
+DESCRIPTION:Tercer lugar\n🏟️ Hard Rock Stadium\, Miami (Miami Gardens)
+ \, Estados Unidos\n👥 Aforo: 65\,000\n🕐 Hora del estadio: 17:00 (UTC-
+ 4)\n🇲🇽 Hora CDMX: 15:00 del 18/07\nPartido oficial #103 de 104\nEqui
+ pos por definir según resultados.\n🔗 Marcador en vivo: https://www.goo
+ gle.com/search?q=Mundial+2026+Tercer+lugar\n—\nFuente: openfootball/worl
+ dcup (dominio publico)
+URL:https://www.google.com/search?q=Mundial+2026+Tercer+lugar
+CATEGORIES:Mundial 2026,Tercer lugar
+GEO:25.95806;-80.23889
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Falta 1 hora para el partido ⚽
+TRIGGER:-PT1H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:wc2026-m104@openfootball
+DTSTAMP:20260612T014416Z
+DTSTART:20260719T190000Z
+DTEND:20260719T210000Z
+SUMMARY:🏆 Final · Ganador M101 vs Ganador M102
+LOCATION:MetLife Stadium\, New York/New Jersey (East Rutherford)\, Estados 
+ Unidos
+DESCRIPTION:Final\n🏟️ MetLife Stadium\, New York/New Jersey (East Ruth
+ erford)\, Estados Unidos\n👥 Aforo: 82\,500\n🕐 Hora del estadio: 15:0
+ 0 (UTC-4)\n🇲🇽 Hora CDMX: 13:00 del 19/07\nPartido oficial #104 de 10
+ 4\nEquipos por definir según resultados.\n🔗 Marcador en vivo: https://
+ www.google.com/search?q=Mundial+2026+Final\n—\nFuente: openfootball/worl
+ dcup (dominio publico)
+URL:https://www.google.com/search?q=Mundial+2026+Final
+CATEGORIES:Mundial 2026,Final
+GEO:40.81353;-74.07436
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Falta 1 hora para el partido ⚽
+TRIGGER:-PT1H
+END:VALARM
+END:VEVENT
+END:VCALENDAR
