@@ -26,9 +26,79 @@ const TABS = [
   { id: 'final', label: 'Final', stage: 'final' },
 ]
 
+function ScoreBreakdown({ match, pred, actual, breakdown, total }) {
+  const rows = [
+    {
+      label: 'Ganador / empate',
+      detail: 'Acertar quién gana (o empate)',
+      pts: breakdown.outcome,
+      max: 5,
+    },
+    {
+      label: 'Marcador exacto',
+      detail: 'Acertar el marcador idéntico',
+      pts: breakdown.exact,
+      max: 5,
+    },
+    {
+      label: `Goles de ${match.team1}`,
+      detail: `Pusiste ${pred?.score1}, fue ${actual?.score1}`,
+      pts: breakdown.home,
+      max: 2,
+    },
+    {
+      label: `Goles de ${match.team2}`,
+      detail: `Pusiste ${pred?.score2}, fue ${actual?.score2}`,
+      pts: breakdown.away,
+      max: 2,
+    },
+    {
+      label: 'Diferencia de gol',
+      detail: `Tu dif: ${signed(pred?.score1 - pred?.score2)}, real: ${signed(actual?.score1 - actual?.score2)}`,
+      pts: breakdown.diff,
+      max: 1,
+    },
+  ]
+
+  return (
+    <div className="mb-3 bg-ink-900/60 rounded-lg p-3 text-sm">
+      <div className="text-xs text-ink-300 uppercase tracking-wider mb-2">Cómo se calcularon tus puntos</div>
+      <div className="space-y-1.5">
+        {rows.map((r, i) => (
+          <div key={i} className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2 min-w-0">
+              <span className={r.pts > 0 ? 'text-green-400' : 'text-ink-500'}>
+                {r.pts > 0 ? '✓' : '✗'}
+              </span>
+              <div className="min-w-0">
+                <div className={`truncate ${r.pts > 0 ? 'text-ink-100' : 'text-ink-400'}`}>{r.label}</div>
+                <div className="text-[10px] text-ink-500 truncate">{r.detail}</div>
+              </div>
+            </div>
+            <span className={`font-mono text-xs whitespace-nowrap ${r.pts > 0 ? 'text-green-400 font-bold' : 'text-ink-500'}`}>
+              +{r.pts}{r.pts === 0 ? ` / ${r.max}` : ''}
+            </span>
+          </div>
+        ))}
+      </div>
+      <div className="flex items-center justify-between border-t border-ink-700 mt-2 pt-2 font-semibold">
+        <span>Total</span>
+        <span className="text-brand-400 font-mono">+{total}</span>
+      </div>
+    </div>
+  )
+}
+
+function signed(n) {
+  if (n == null || isNaN(n)) return '—'
+  return n > 0 ? `+${n}` : `${n}`
+}
+
 function MatchRow({ match, pred, actual, onChange, locked, knockoutsEnabled, userName, user, profile, profilesById, isAdmin }) {
   const disabled = locked || (match.stage !== 'group' && !knockoutsEnabled)
-  const points = pred && actual ? scoreMatch(pred, actual).total : null
+  const scored = pred && actual ? scoreMatch(pred, actual) : null
+  const points = scored ? scored.total : null
+  const [showBreakdown, setShowBreakdown] = useState(false)
 
   const set = (field, val) => {
     const v = val === '' ? '' : Math.max(0, Math.min(30, parseInt(val) || 0))
@@ -53,10 +123,22 @@ function MatchRow({ match, pred, actual, onChange, locked, knockoutsEnabled, use
             </span>
           )}
           {points != null && (
-            <span className="pill bg-brand-600 text-white">+{points}</span>
+            <button
+              type="button"
+              onClick={() => setShowBreakdown(v => !v)}
+              className="pill bg-brand-600 text-white hover:bg-brand-500 transition cursor-pointer"
+              title="Ver desglose de puntos"
+            >
+              +{points} {showBreakdown ? '▲' : '▼'}
+            </button>
           )}
         </span>
       </div>
+
+      {showBreakdown && scored && (
+        <ScoreBreakdown match={match} pred={pred} actual={actual} breakdown={scored.breakdown} total={scored.total} />
+      )}
+
       <div className="flex items-center gap-2">
         <div className="flex-1 text-right font-medium text-sm">{teamWithFlag(match.team1)}</div>
         <input
