@@ -9,6 +9,14 @@ export function isMatchLocked(match, now = new Date()) {
   return now.getTime() >= ko - 10 * 60 * 1000
 }
 
+/** Returns true if the match has actually kicked off (exact start time or after).
+ * Used to reveal community stats and per-player scores without giving an edge. */
+export function hasMatchStarted(match, now = new Date()) {
+  if (!match?.kickoff_utc) return false
+  const ko = new Date(match.kickoff_utc).getTime()
+  return now.getTime() >= ko
+}
+
 /** All matches grouped by stage and fecha */
 export function groupedMatches() {
   const out = {
