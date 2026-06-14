@@ -40,6 +40,18 @@ export default function Progress() {
     }
 
     const ach = achievements(rows, evolution, allRowsByUser, user.id)
+
+    // Medalla GOAT: ¿es el #1 de la tabla general por puntos de partidos?
+    const totalsByUser = []
+    for (const [uid, urows] of allRowsByUser) {
+      totalsByUser.push({ uid, pts: urows.reduce((s, x) => s + x.points, 0) })
+    }
+    totalsByUser.sort((a, b) => b.pts - a.pts)
+    const myTotal = totalsByUser.find(t => t.uid === user.id)
+    const isGoat = totalsByUser.length > 1 && myTotal && myTotal.pts > 0 &&
+      totalsByUser[0].uid === user.id
+    const goat = ach.find(a => a.id === 'goat')
+    if (goat) goat.unlocked = isGoat
     const totalPoints = rows.reduce((s, r) => s + r.points, 0)
     const exactCount = rows.filter(r => r.exact).length
 

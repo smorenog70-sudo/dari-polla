@@ -10,6 +10,7 @@ import {
 } from '../lib/scoring'
 import PendingMatchesBanner from '../components/PendingMatchesBanner'
 import NewResultsBanner from '../components/NewResultsBanner'
+import NewAchievementsBanner from '../components/NewAchievementsBanner'
 import { useNewResults } from '../lib/useNewResults'
 
 function formatCOP(n) {
@@ -91,6 +92,9 @@ export default function Home() {
 
       {/* Banner de partidos pendientes (auto-refresh cada 30s) */}
       <PendingMatchesBanner userPredictions={myPreds} />
+
+      {/* Banner de medallas nuevas desbloqueadas */}
+      <NewAchievementsBanner />
 
       <div className="grid grid-cols-2 gap-3">
         <div className="card text-center">
