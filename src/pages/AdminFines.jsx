@@ -41,6 +41,19 @@ export default function AdminFines() {
       .sort((a, b) => b.points - a.points)
   }, [data, selected])
 
+  // IDs que pagan multa: los 2 peores puestos por puntaje; con empates, pagan todos.
+  const finedSet = useMemo(() => {
+    const set = new Set()
+    if (ranking.length <= 2) {
+      ranking.forEach(r => set.add(r.id))
+      return set
+    }
+    const uniqueScores = [...new Set(ranking.map(r => r.points))].sort((a, b) => a - b)
+    const worstTwo = new Set(uniqueScores.slice(0, 2))
+    for (const r of ranking) if (worstTwo.has(r.points)) set.add(r.id)
+    return set
+  }, [ranking])
+
   const allDone = useMemo(() => {
     const ids = fechaMatchIds(selected)
     const resIds = new Set(data.results.map(r => r.match_id))
@@ -56,8 +69,9 @@ export default function AdminFines() {
     setWorking(true)
     setMsg('')
     const fineAmount = Number(data.config.fine_amount || 5000)
-    const lastTwo = ranking.slice(-2) // dos últimos
-    const rows = lastTwo.map(r => ({
+    // Los 2 peores puestos por puntaje; si hay empates, pagan todos.
+    const toFine = ranking.filter(r => finedSet.has(r.id))
+    const rows = toFine.map(r => ({
       user_id: r.id,
       fecha_id: selected,
       amount: fineAmount,
@@ -79,7 +93,7 @@ export default function AdminFines() {
         { fecha_id: selected, closed_at: new Date().toISOString(), closed_by: user.id },
         { onConflict: 'fecha_id' }
       )
-      setMsg(`✅ Multas aplicadas a ${lastTwo.map(r => r.name).join(' y ')}`)
+      setMsg(`✅ Multas aplicadas a ${toFine.map(r => r.name).join(', ')}`)
       data.refresh()
       setTimeout(() => setMsg(''), 3000)
     }
@@ -104,7 +118,7 @@ export default function AdminFines() {
         <h1 className="text-xl font-bold mb-1">🔧 Multas por fecha</h1>
         <p className="text-xs text-ink-300">
           Cuando termines de meter los marcadores de una fecha, aplica la multa de
-          5.000 COP a los 2 últimos.
+          5.000 COP a los 2 últimos puestos. Si hay empate en esos puestos, pagan todos los empatados.
         </p>
       </div>
 
@@ -127,7 +141,7 @@ export default function AdminFines() {
         <table className="w-full text-sm">
           <tbody>
             {ranking.map((r, idx) => {
-              const isBottom2 = idx >= ranking.length - 2 && ranking.length > 2
+              const isBottom2 = finedSet.has(r.id)
               return (
                 <tr key={r.id} className={`border-t border-ink-700 ${isBottom2 ? 'bg-red-900/20' : ''}`}>
                   <td className="py-2 px-2 text-ink-300">{idx + 1}</td>

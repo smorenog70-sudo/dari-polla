@@ -1,12 +1,11 @@
 import { useMemo, useState } from 'react'
 import { useLeagueData } from '../lib/useLeagueData'
-import { fechaMatchIds, FECHA_LABELS } from '../lib/matches'
+import { fechaMatchIds, FECHA_LABELS, matchById } from '../lib/matches'
 import {
   scoreMatch,
   scoreGroupPositions,
   scoreThirds,
 } from '../lib/scoring'
-import { FECHA_ORDER, lastCompletedFecha } from '../lib/playerStats'
 import { useAuth } from '../lib/auth'
 
 const FECHA_FILTERS = [
@@ -21,6 +20,17 @@ const FECHA_FILTERS = [
   { id: 'third', label: '3er' },
   { id: 'final', label: 'Final' },
 ]
+
+// Etiqueta de puesto estilo golf: medalla si es podio (compartida en empates),
+// y "T" delante cuando hay empate (T2, T5...). En vistas de fecha no usamos medallas.
+function golfLabel(rank, tied, filter) {
+  if (filter === 'total' && rank <= 3) {
+    const medal = rank === 1 ? '🥇' : rank === 2 ? '🥈' : '🥉'
+    // En empate del podio, mostramos medalla + "T" pequeña para que se entienda
+    return tied ? `${medal}ᵀ` : medal
+  }
+  return `${tied ? 'T' : ''}${rank}`
+}
 
 export default function Standings() {
   const data = useLeagueData()
@@ -58,7 +68,7 @@ export default function Standings() {
       return ids.includes(matchId)
     }
 
-    return data.profiles.map(prof => {
+    const sorted = data.profiles.map(prof => {
       const myPreds = predsByUser.get(prof.id) || []
       let matchPts = 0
       for (const p of myPreds) {
@@ -84,62 +94,76 @@ export default function Standings() {
         fines: finesByUser.get(prof.id) || 0,
       }
     }).sort((a, b) => b.total - a.total)
+
+    // Ranking estilo golf: los empatados comparten puesto (T2) y el siguiente salta.
+    // rank = índice del primer jugador con ese mismo puntaje + 1.
+    sorted.forEach((r, i) => {
+      if (i > 0 && r.total === sorted[i - 1].total) {
+        r.rank = sorted[i - 1].rank          // mismo puntaje => mismo puesto
+        r.tied = true
+        sorted[i - 1].tied = true            // marcar también al de arriba
+      } else {
+        r.rank = i + 1                       // salta al puesto correspondiente
+        r.tied = false
+      }
+    })
+    return sorted
   }, [data, filter])
 
   const { user } = useAuth()
 
-  // Historial de posición: comparar ranking actual vs ranking hasta la fecha anterior.
+  // Historial de posición EN VIVO: compara el ranking actual contra el ranking
+  // justo ANTES del último partido con resultado. Cada partido nuevo mueve las flechas.
   // Devuelve un mapa userId -> cambio de puestos (positivo = subió).
   const positionDelta = useMemo(() => {
     if (data.loading || filter !== 'total') return {}
-    const lastFecha = lastCompletedFecha(new Map(data.results.map(r => [r.match_id, r])))
-    if (!lastFecha) return {}
-    const lastIdx = FECHA_ORDER.indexOf(lastFecha)
-    if (lastIdx <= 0) return {} // no hay fecha previa con la cual comparar
 
-    // Conjunto de match_ids que cuentan HASTA la fecha anterior (excluye la última)
-    const prevFechas = FECHA_ORDER.slice(0, lastIdx)
-    const prevMatchIds = new Set()
-    for (const f of prevFechas) for (const id of fechaMatchIds(f)) prevMatchIds.add(id)
+    const results = data.results || []
+    if (results.length === 0) return {}
 
-    const resultsById = new Map(data.results.map(r => [r.match_id, r]))
+    const resultsById = new Map(results.map(r => [r.match_id, r]))
+
+    // Identificar el último partido con resultado (por hora de pitazo).
+    // Ese es el que "acaba de pasar"; lo excluimos para el ranking "antes".
+    let lastMatchId = null
+    let lastKo = -Infinity
+    for (const r of results) {
+      const m = matchById(r.match_id)
+      const ko = m?.kickoff_utc ? new Date(m.kickoff_utc).getTime() : 0
+      if (ko >= lastKo) { lastKo = ko; lastMatchId = r.match_id }
+    }
+    if (!lastMatchId) return {}
+
     const predsByUser = new Map()
     for (const p of data.predictions) {
       if (!predsByUser.has(p.user_id)) predsByUser.set(p.user_id, [])
       predsByUser.get(p.user_id).push(p)
     }
 
-    // Ranking "anterior": solo partidos de fechas previas (sin bonus de grupos/terceros,
-    // que se resuelven al final y no aplican fecha a fecha)
-    const prevScores = data.profiles.map(prof => {
-      let pts = 0
-      for (const p of (predsByUser.get(prof.id) || [])) {
-        if (!prevMatchIds.has(p.match_id)) continue
-        const r = resultsById.get(p.match_id)
-        if (r) pts += scoreMatch(p, r).total
-      }
-      return { id: prof.id, pts }
-    }).sort((a, b) => b.pts - a.pts)
+    const scoreWith = (excludeMatchId) => {
+      const arr = data.profiles.map(prof => {
+        let pts = 0
+        for (const p of (predsByUser.get(prof.id) || [])) {
+          if (excludeMatchId && p.match_id === excludeMatchId) continue
+          const r = resultsById.get(p.match_id)
+          if (r) pts += scoreMatch(p, r).total
+        }
+        return { id: prof.id, pts }
+      }).sort((a, b) => b.pts - a.pts)
+      const rank = {}
+      arr.forEach((s, i) => { rank[s.id] = i + 1 })
+      return rank
+    }
 
-    const prevRank = {}
-    prevScores.forEach((s, i) => { prevRank[s.id] = i + 1 })
-
-    // Ranking actual (mismo criterio: solo partidos, para comparar manzanas con manzanas)
-    const currScores = data.profiles.map(prof => {
-      let pts = 0
-      for (const p of (predsByUser.get(prof.id) || [])) {
-        const r = resultsById.get(p.match_id)
-        if (r) pts += scoreMatch(p, r).total
-      }
-      return { id: prof.id, pts }
-    }).sort((a, b) => b.pts - a.pts)
+    const beforeRank = scoreWith(lastMatchId)  // ranking sin el último partido
+    const afterRank = scoreWith(null)          // ranking con todo
 
     const delta = {}
-    currScores.forEach((s, i) => {
-      const currRank = i + 1
-      const prev = prevRank[s.id]
-      delta[s.id] = prev ? prev - currRank : 0 // positivo = subió de puesto
-    })
+    for (const prof of data.profiles) {
+      const before = beforeRank[prof.id]
+      const after = afterRank[prof.id]
+      delta[prof.id] = (before && after) ? before - after : 0 // positivo = subió
+    }
     return delta
   }, [data, filter])
 
@@ -195,6 +219,20 @@ export default function Standings() {
     }
   }
 
+  // IDs que pagan multa en una vista de fecha: los 2 PEORES PUESTOS por puntaje,
+  // y si hay empates en esos puestos, pagan todos los empatados.
+  const finedIds = useMemo(() => {
+    const set = new Set()
+    if (filter === 'total' || rows.length <= 2) return set
+    // Puntajes únicos, de menor a mayor (los dos primeros son los dos peores puestos)
+    const uniqueScores = [...new Set(rows.map(r => r.total))].sort((a, b) => a - b)
+    const worstTwo = new Set(uniqueScores.slice(0, 2))
+    for (const r of rows) {
+      if (worstTwo.has(r.total)) set.add(r.id)
+    }
+    return set
+  }, [rows, filter])
+
   if (data.loading) return <div className="text-center text-ink-300 py-8">Cargando…</div>
 
   return (
@@ -204,7 +242,7 @@ export default function Standings() {
         <p className="text-xs text-ink-300">
           {filter === 'total'
             ? 'Acumulado total con todas las predicciones.'
-            : `Solo los puntos de ${FECHA_LABELS[filter] || filter}. Los dos últimos pagan 5.000 COP.`}
+            : `Solo los puntos de ${FECHA_LABELS[filter] || filter}. Los dos últimos puestos pagan 5.000 COP (si hay empate, pagan todos).`}
         </p>
       </div>
 
@@ -275,7 +313,7 @@ export default function Standings() {
           </thead>
           <tbody>
             {rows.map((r, idx) => {
-              const isBottom2 = filter !== 'total' && idx >= rows.length - 2 && rows.length > 2
+              const isBottom2 = finedIds.has(r.id)
               return (
                 <tr
                   key={r.id}
@@ -287,7 +325,7 @@ export default function Standings() {
                 >
                   <td className="py-2 px-3 font-mono text-ink-300">
                     <div className="flex items-center gap-1">
-                      <span>{idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : idx + 1}</span>
+                      <span>{golfLabel(r.rank, r.tied, filter)}</span>
                       {filter === 'total' && positionDelta[r.id] != null && positionDelta[r.id] !== 0 && (
                         <span className={`text-[10px] ${positionDelta[r.id] > 0 ? 'text-green-400' : 'text-red-400'}`}>
                           {positionDelta[r.id] > 0 ? `▲${positionDelta[r.id]}` : `▼${Math.abs(positionDelta[r.id])}`}
@@ -322,7 +360,7 @@ export default function Standings() {
 
       {filter !== 'total' && rows.length > 2 && (
         <p className="text-xs text-ink-500 text-center">
-          🔴 Los dos últimos de esta fecha pagan 5.000 COP cada uno.
+          🔴 Los dos últimos puestos de esta fecha pagan 5.000 COP cada uno. Si hay empate en esos puestos, pagan todos los empatados.
           {' '}El admin debe cerrar la fecha para registrar las multas.
         </p>
       )}
@@ -384,7 +422,7 @@ async function renderTableImage(rows, filter) {
   let y = headerH
   for (let i = 0; i < top.length; i++) {
     const r = top[i]
-    const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `${i + 1}`
+    const medal = r.tied ? `T${r.rank}` : (r.rank === 1 ? '🥇' : r.rank === 2 ? '🥈' : r.rank === 3 ? '🥉' : `${r.rank}`)
     if (i < 3) {
       ctx.fillStyle = i === 0 ? 'rgba(234,179,8,0.12)' : 'rgba(255,255,255,0.04)'
       ctx.fillRect(40, y - rowH + 12, W - 80, rowH - 6)
