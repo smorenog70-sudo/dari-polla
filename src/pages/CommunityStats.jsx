@@ -4,8 +4,16 @@ import { TOURNAMENT, matchById, formatKickoff, isMatchLocked, hasMatchStarted } 
 import { useNowTick } from '../lib/useNowTick'
 import { teamWithFlag } from '../lib/flags'
 import { displayName, displayAvatar } from '../lib/playerDisplay'
+import {
+  groupGoalBias,
+  matchDifficulty,
+  teamReality,
+  outcomeDistribution,
+} from '../lib/analytics'
+import { CompareBar, BiasGauge, DonutChart } from '../components/DataViz'
 
 const VIEWS = [
+  { id: 'analysis', label: '🔬 Análisis' },
   { id: 'matches', label: '⚽ Por partido' },
   { id: 'players', label: '🧑‍🤝‍🧑 Marcadores por persona' },
   { id: 'teams', label: '🏆 Equipos favoritos' },
@@ -15,7 +23,7 @@ const VIEWS = [
 
 export default function CommunityStats() {
   const data = useLeagueData()
-  const [view, setView] = useState('matches')
+  const [view, setView] = useState('analysis')
   useNowTick(30000) // refresca para reflejar pitazos
 
   // Agrupar predicciones por partido
@@ -85,6 +93,7 @@ export default function CommunityStats() {
         ))}
       </div>
 
+      {view === 'analysis' && <AnalysisView predictions={data.predictions} results={data.results} />}
       {view === 'overview' && <OverviewView overview={overview} />}
       {view === 'matches' && <MatchesView predsByMatch={predsByMatch} />}
       {view === 'players' && <PlayersView predsByMatch={predsByMatch} profilesById={profilesById} />}
@@ -583,6 +592,139 @@ function ScoresView({ predictions }) {
 // ===================================================================
 // helpers
 // ===================================================================
+function AnalysisView({ predictions, results }) {
+  const resultsById = useMemo(() => new Map(results.map(r => [r.match_id, r])), [results])
+
+  const analysis = useMemo(() => {
+    if (resultsById.size === 0) return null
+    return {
+      goalBias: groupGoalBias(predictions, resultsById),
+      difficulty: matchDifficulty(predictions, resultsById),
+      teams: teamReality(predictions, resultsById),
+      outcomes: outcomeDistribution(predictions, resultsById),
+    }
+  }, [predictions, resultsById])
+
+  if (!analysis) {
+    return (
+      <div className="card text-center py-8 text-ink-300">
+        <div className="text-3xl mb-2">🔬</div>
+        <div>Aún no hay partidos jugados para analizar.</div>
+        <div className="text-xs mt-1">Los análisis aparecen cuando se carguen resultados.</div>
+      </div>
+    )
+  }
+
+  const { goalBias, difficulty, teams, outcomes } = analysis
+  const goalDiff = goalBias.predAvg - goalBias.realAvg
+
+  return (
+    <div className="space-y-3">
+      {/* Sesgo de goles del grupo */}
+      <div className="card">
+        <h3 className="font-semibold mb-1">⚽ ¿El grupo es optimista con los goles?</h3>
+        <p className="text-xs text-ink-300 mb-3">
+          Promedio de goles que predice la comunidad vs los que pasan de verdad.
+        </p>
+        <BiasGauge predAvg={goalBias.predAvg} realAvg={goalBias.realAvg} max={6} />
+        <p className="text-sm mt-3 text-ink-100">
+          {Math.abs(goalDiff) < 0.15
+            ? '🎯 El grupo le atina al ritmo de goles del torneo, casi sin sesgo.'
+            : goalDiff > 0
+              ? `📈 El grupo es optimista: predice ${goalDiff.toFixed(2)} goles de más por partido. La realidad es más tacaña.`
+              : `📉 El grupo es pesimista: predice ${Math.abs(goalDiff).toFixed(2)} goles de menos por partido. Hay más goles de los que esperaban.`}
+        </p>
+      </div>
+
+      {/* Distribución de resultados */}
+      <div className="card">
+        <h3 className="font-semibold mb-1">🥅 Local, empate o visitante</h3>
+        <p className="text-xs text-ink-300 mb-3">
+          Cómo reparte el grupo sus apuestas vs cómo terminan los partidos.
+        </p>
+        <CompareBar label="Gana el local" predPct={outcomes.pred.L} realPct={outcomes.real.L} />
+        <CompareBar label="Empate" predPct={outcomes.pred.E} realPct={outcomes.real.E} />
+        <CompareBar label="Gana el visitante" predPct={outcomes.pred.V} realPct={outcomes.real.V} />
+        <p className="text-xs text-ink-400 mt-2">
+          {outcomes.pred.E > outcomes.real.E + 0.08
+            ? '🤝 El grupo predice más empates de los que ocurren — cuidado con jugar al empate.'
+            : outcomes.real.E > outcomes.pred.E + 0.08
+              ? '😮 Hubo más empates de los que el grupo esperaba.'
+              : '⚖️ El grupo lee bastante bien el tipo de resultado.'}
+        </p>
+      </div>
+
+      {/* Partido más fácil y más trampa */}
+      <div className="card">
+        <h3 className="font-semibold mb-1">🎯 Los partidos fáciles y las trampas</h3>
+        <p className="text-xs text-ink-300 mb-3">
+          Dónde acertó casi todo el mundo y dónde casi nadie vio venir el resultado.
+        </p>
+        <div className="space-y-2">
+          <div className="text-[10px] text-green-400 uppercase tracking-wider">Los que todos clavaron</div>
+          {difficulty.easiest.map(m => (
+            <DifficultyRow key={m.matchId} m={m} good />
+          ))}
+          <div className="text-[10px] text-red-400 uppercase tracking-wider mt-3">Las trampas (casi nadie acertó)</div>
+          {difficulty.trickiest.map(m => (
+            <DifficultyRow key={m.matchId} m={m} />
+          ))}
+        </div>
+      </div>
+
+      {/* Equipos sobre/infravalorados */}
+      {(teams.overrated.length > 0 || teams.underrated.length > 0) && (
+        <div className="card">
+          <h3 className="font-semibold mb-1">📊 Equipos que engañaron al grupo</h3>
+          <p className="text-xs text-ink-300 mb-3">
+            Comparación entre las victorias que el grupo les apostó y las que realmente lograron.
+          </p>
+          {teams.overrated.length > 0 && (
+            <div className="mb-3">
+              <div className="text-[10px] text-red-400 uppercase tracking-wider mb-1">Sobrevalorados (les creyeron de más)</div>
+              <div className="flex flex-wrap gap-1.5">
+                {teams.overrated.map(t => (
+                  <span key={t.team} className="pill bg-red-900/40 text-red-200 text-xs">
+                    {teamWithFlag(t.team)} <span className="opacity-70">({t.predictedWins}→{t.actualWins})</span>
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+          {teams.underrated.length > 0 && (
+            <div>
+              <div className="text-[10px] text-green-400 uppercase tracking-wider mb-1">Infravalorados (sorprendieron)</div>
+              <div className="flex flex-wrap gap-1.5">
+                {teams.underrated.map(t => (
+                  <span key={t.team} className="pill bg-green-900/40 text-green-200 text-xs">
+                    {teamWithFlag(t.team)} <span className="opacity-70">({t.predictedWins}→{t.actualWins})</span>
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+          <p className="text-[10px] text-ink-500 mt-2">
+            (victorias predichas por el grupo → victorias reales)
+          </p>
+        </div>
+      )}
+    </div>
+  )
+}
+
+function DifficultyRow({ m, good }) {
+  const pct = Math.round(m.hitRate * 100)
+  return (
+    <div className="flex items-center gap-2 text-sm">
+      <span className="flex-1 truncate text-xs">{m.label}</span>
+      <div className="w-20 h-1.5 bg-ink-900 rounded-full overflow-hidden">
+        <div className={`h-full ${good ? 'bg-green-500' : 'bg-red-500'}`} style={{ width: `${pct}%` }} />
+      </div>
+      <span className="text-[10px] text-ink-300 w-14 text-right">{m.hits}/{m.total} ({pct}%)</span>
+    </div>
+  )
+}
+
 function StatCard({ label, value, icon }) {
   return (
     <div className="card text-center">

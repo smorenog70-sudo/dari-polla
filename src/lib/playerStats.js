@@ -97,6 +97,37 @@ export function evolutionByFecha(userPreds, resultsById) {
 }
 
 /**
+ * Evolución del puntaje acumulado PARTIDO POR PARTIDO, en orden cronológico.
+ * Devuelve [{ matchId, label, points, cumulative, kickoff }]
+ * Solo incluye partidos que ya tienen resultado.
+ */
+export function evolutionByMatch(userPreds, resultsById) {
+  const rows = playedMatches(userPreds, resultsById) // ya viene ordenado por kickoff
+  const out = []
+  let cumulative = 0
+  let n = 0
+  for (const r of rows) {
+    cumulative += r.points
+    n++
+    out.push({
+      matchId: r.match.id,
+      label: shortMatchLabel(r.match, n),
+      teams: `${r.match.team1} vs ${r.match.team2}`,
+      points: r.points,
+      cumulative,
+      kickoff: r.kickoff,
+    })
+  }
+  return out
+}
+
+function shortMatchLabel(match, index) {
+  // Etiqueta corta para el eje X: iniciales de los equipos
+  const ini = (name) => (name || '').slice(0, 3).toUpperCase()
+  return `${ini(match.team1)}-${ini(match.team2)}`
+}
+
+/**
  * Resumen de una fecha específica para un usuario.
  */
 export function fechaSummary(userPreds, resultsById, fechaId) {
