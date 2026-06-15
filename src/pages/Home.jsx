@@ -3,11 +3,14 @@ import { useMemo } from 'react'
 import { useAuth } from '../lib/auth'
 import { useLeagueData } from '../lib/useLeagueData'
 import { TOURNAMENT, formatKickoff, isMatchLocked } from '../lib/matches'
+import { teamWithFlag, flagFor } from '../lib/flags'
+import { useNowTick } from '../lib/useNowTick'
 import {
   scoreMatch,
   scoreGroupPositions,
   scoreThirds,
 } from '../lib/scoring'
+import { playedMatches, streaks } from '../lib/playerStats'
 import PendingMatchesBanner from '../components/PendingMatchesBanner'
 import NewResultsBanner from '../components/NewResultsBanner'
 import NewAchievementsBanner from '../components/NewAchievementsBanner'
@@ -17,10 +20,26 @@ function formatCOP(n) {
   return new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(n)
 }
 
+// Cuenta regresiva compacta
+function countdown(kickoffUtc, now) {
+  const ms = new Date(kickoffUtc).getTime() - now
+  if (ms <= 0) return null
+  const h = Math.floor(ms / 3600000)
+  const m = Math.floor((ms % 3600000) / 60000)
+  if (h >= 24) {
+    const d = Math.floor(h / 24)
+    return `${d}d ${h % 24}h`
+  }
+  if (h >= 1) return `${h}h ${m}m`
+  return `${m}m`
+}
+
 export default function Home() {
   const { user, profile } = useAuth()
   const data = useLeagueData()
   const { newResults, totalNewPoints, dismiss: dismissResults } = useNewResults(user.id)
+  useNowTick(30000)
+  const now = Date.now()
 
   const myPreds = useMemo(
     () => data.predictions.filter(p => p.user_id === user.id),
@@ -31,7 +50,6 @@ export default function Home() {
     const myGroupPreds = data.groupPreds.filter(p => p.user_id === user.id)
     const myThirdPreds = data.thirdPreds.filter(p => p.user_id === user.id)
 
-    // calc total points for current user
     const resultsById = new Map(data.results.map(r => [r.match_id, r]))
     let pts = 0
     for (const p of myPreds) {
@@ -49,85 +67,162 @@ export default function Home() {
 
     const myFines = data.fines.filter(f => f.user_id === user.id)
 
+    // Posición actual en la tabla general (por puntos de partidos + bonus)
+    const predsByUser = new Map()
+    for (const p of data.predictions) {
+      if (!predsByUser.has(p.user_id)) predsByUser.set(p.user_id, [])
+      predsByUser.get(p.user_id).push(p)
+    }
+    const gpByUser = new Map()
+    for (const g of data.groupPreds) {
+      if (!gpByUser.has(g.user_id)) gpByUser.set(g.user_id, [])
+      gpByUser.get(g.user_id).push(g)
+    }
+    const tpByUser = new Map()
+    for (const t of data.thirdPreds) {
+      if (!tpByUser.has(t.user_id)) tpByUser.set(t.user_id, [])
+      tpByUser.get(t.user_id).push(t.team)
+    }
+    const actualThirds = data.thirdResults.map(r => r.team)
+    const totals = data.profiles.map(prof => {
+      let p2 = 0
+      for (const p of (predsByUser.get(prof.id) || [])) {
+        const r = resultsById.get(p.match_id)
+        if (r) p2 += scoreMatch(p, r).total
+      }
+      p2 += scoreGroupPositions(gpByUser.get(prof.id) || [], data.groupResults).total
+      p2 += scoreThirds(tpByUser.get(prof.id) || [], actualThirds).total
+      return { id: prof.id, pts: p2 }
+    }).sort((a, b) => b.pts - a.pts)
+    const myRank = totals.findIndex(t => t.id === user.id) + 1
+
+    // Racha actual
+    const myRows = playedMatches(myPreds, resultsById)
+    const { current: streak } = streaks(myRows)
+
     return {
       myPreds: myPreds.length,
       myGroupPreds: myGroupPreds.length,
       myThirdPreds: myThirdPreds.length,
       myPoints: pts,
+      myRank,
+      streak,
       myFines: myFines.length,
       myFinesCOP: myFines.reduce((s, f) => s + (f.amount || fineAmount), 0),
       bolsa,
       players: data.profiles.length,
       playersPaid: paidProfiles.length,
+      totalPlayers: totals.length,
     }
   }, [data, user.id, myPreds])
 
   const nextMatch = useMemo(() => {
-    const now = Date.now()
     return TOURNAMENT.matches
       .filter(m => m.kickoff_utc && new Date(m.kickoff_utc).getTime() > now)
+      .filter(m => !m.team1?.match(/^[0-9WL]/) && !m.team2?.match(/^[0-9WL]/))
       .sort((a, b) => new Date(a.kickoff_utc) - new Date(b.kickoff_utc))[0]
-  }, [])
+  }, [now])
+
+  // ¿Ya pronostiqué el próximo partido?
+  const nextPredicted = useMemo(() => {
+    if (!nextMatch) return false
+    return myPreds.some(p => p.match_id === nextMatch.id)
+  }, [nextMatch, myPreds])
 
   if (data.loading) return <div className="text-center text-ink-300 py-8">Cargando…</div>
 
+  const firstName = profile?.display_name ? profile.display_name.split(' ')[0] : ''
+  const rankSuffix = stats.myRank === 1 ? 'er' : stats.myRank === 2 ? 'do' : stats.myRank === 3 ? 'er' : 'º'
+
   return (
     <div className="space-y-4">
-      <div className="card">
-        <p className="text-sm text-ink-300">¡Hola{profile?.display_name ? `, ${profile.display_name.split(' ')[0]}` : ''}! 👋</p>
-        <h1 className="text-xl font-bold mt-1">Mundial 2026</h1>
-        {!profile?.paid && (
-          <div className="mt-3 p-3 rounded-lg bg-yellow-900/40 border border-yellow-700 text-yellow-200 text-sm">
-            ⚠️ Tu pago de 50.000 COP aún no está confirmado. Transfiérele a Dari y avísale.
-          </div>
-        )}
+      {/* Saludo */}
+      <div>
+        <p className="text-sm text-ink-300">¡Hola{firstName ? `, ${firstName}` : ''}! 👋</p>
+        <h1 className="text-2xl font-bold mt-0.5">Mundial 2026 🐔</h1>
       </div>
 
-      {/* Notificación de resultados nuevos */}
-      <NewResultsBanner
-        newResults={newResults}
-        totalNewPoints={totalNewPoints}
-        dismiss={dismissResults}
-      />
-
-      {/* Banner de partidos pendientes (auto-refresh cada 30s) */}
-      <PendingMatchesBanner userPredictions={myPreds} />
-
-      {/* Banner de medallas nuevas desbloqueadas */}
-      <NewAchievementsBanner />
-
-      <div className="grid grid-cols-2 gap-3">
-        <div className="card text-center">
-          <div className="text-xs text-ink-300 uppercase tracking-wider">Mis puntos</div>
-          <div className="text-3xl font-bold text-brand-500 mt-1">{stats.myPoints}</div>
-        </div>
-        <div className="card text-center">
-          <div className="text-xs text-ink-300 uppercase tracking-wider">Bolsa</div>
-          <div className="text-2xl font-bold text-brand-500 mt-1">{formatCOP(stats.bolsa)}</div>
-          <div className="text-xs text-ink-500 mt-0.5">{stats.playersPaid}/{stats.players} pagos</div>
-        </div>
-      </div>
-
-      {nextMatch && (
-        <div className="card">
-          <div className="text-xs uppercase text-ink-300 tracking-wider mb-2">Próximo partido</div>
-          <div className="flex items-center justify-between">
-            <div className="flex-1 text-center">
-              <div className="font-semibold">{nextMatch.team1}</div>
-            </div>
-            <div className="px-3 text-ink-500 text-sm">vs</div>
-            <div className="flex-1 text-center">
-              <div className="font-semibold">{nextMatch.team2}</div>
-            </div>
-          </div>
-          <div className="text-center text-xs text-ink-300 mt-2">
-            {formatKickoff(nextMatch.kickoff_utc)}
-            {isMatchLocked(nextMatch) && <span className="ml-2 text-red-400">🔒 Cerrado</span>}
-          </div>
+      {!profile?.paid && (
+        <div className="p-3 rounded-lg bg-yellow-900/40 border border-yellow-700 text-yellow-200 text-sm">
+          ⚠️ Tu pago de 50.000 COP aún no está confirmado. Transfiérele a Dari y avísale.
         </div>
       )}
 
-      <div className="card space-y-2">
+      {/* Banners */}
+      <NewResultsBanner newResults={newResults} totalNewPoints={totalNewPoints} dismiss={dismissResults} />
+      <PendingMatchesBanner userPredictions={myPreds} />
+      <NewAchievementsBanner />
+
+      {/* HERO: próximo partido */}
+      {nextMatch && (
+        <Link
+          to="/predicciones"
+          className="block rounded-2xl p-4 bg-gradient-to-br from-brand-700/50 via-brand-900/30 to-ink-900 border border-brand-600/40 hover:border-brand-500 transition"
+        >
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-[10px] uppercase tracking-wider text-brand-300 font-semibold">⚡ Próximo partido</span>
+            <span className="text-xs font-mono text-brand-300">
+              {countdown(nextMatch.kickoff_utc, now) ? `⏱ ${countdown(nextMatch.kickoff_utc, now)}` : ''}
+            </span>
+          </div>
+          <div className="flex items-center justify-center gap-3">
+            <div className="flex-1 text-center">
+              <div className="text-4xl mb-1">{flagFor(nextMatch.team1) || '⚽'}</div>
+              <div className="font-bold text-sm leading-tight">{nextMatch.team1}</div>
+            </div>
+            <div className="text-ink-500 font-bold text-lg px-2">VS</div>
+            <div className="flex-1 text-center">
+              <div className="text-4xl mb-1">{flagFor(nextMatch.team2) || '⚽'}</div>
+              <div className="font-bold text-sm leading-tight">{nextMatch.team2}</div>
+            </div>
+          </div>
+          <div className="text-center text-xs text-ink-300 mt-3">
+            {formatKickoff(nextMatch.kickoff_utc)}
+          </div>
+          <div className={`mt-3 text-center text-sm font-medium rounded-lg py-2 ${
+            nextPredicted
+              ? 'bg-green-900/30 text-green-300'
+              : 'bg-brand-600 text-white'
+          }`}>
+            {nextPredicted ? '✓ Ya pronosticaste' : '✏️ Pronosticar ahora →'}
+          </div>
+        </Link>
+      )}
+
+      {/* Tarjeta de estatus personal */}
+      <div className="grid grid-cols-3 gap-3">
+        <div className="card text-center">
+          <div className="text-[10px] text-ink-400 uppercase tracking-wider">Puntos</div>
+          <div className="text-2xl font-bold text-brand-500 mt-1">{stats.myPoints}</div>
+        </div>
+        <div className="card text-center">
+          <div className="text-[10px] text-ink-400 uppercase tracking-wider">Posición</div>
+          <div className="text-2xl font-bold text-brand-500 mt-1">
+            {stats.myRank > 0 ? `${stats.myRank}${rankSuffix}` : '—'}
+          </div>
+          <div className="text-[10px] text-ink-500">de {stats.totalPlayers}</div>
+        </div>
+        <div className="card text-center">
+          <div className="text-[10px] text-ink-400 uppercase tracking-wider">Racha</div>
+          <div className="text-2xl font-bold text-brand-500 mt-1">
+            {stats.streak > 0 ? `${stats.streak}🔥` : '0'}
+          </div>
+        </div>
+      </div>
+
+      {/* Bolsa */}
+      <div className="card flex items-center justify-between">
+        <div>
+          <div className="text-[10px] text-ink-400 uppercase tracking-wider">Bolsa acumulada</div>
+          <div className="text-xl font-bold text-brand-500">{formatCOP(stats.bolsa)}</div>
+        </div>
+        <div className="text-right text-xs text-ink-400">
+          {stats.playersPaid}/{stats.players}<br/>pagos
+        </div>
+      </div>
+
+      {/* Mis pronósticos */}
+      <div className="card space-y-1">
         <h3 className="font-semibold mb-2">Mis pronósticos</h3>
         <Link to="/predicciones" className="flex items-center justify-between py-2 border-b border-ink-700">
           <span>⚽ Partidos</span>
@@ -152,29 +247,42 @@ export default function Home() {
         </div>
       )}
 
-      <Link to="/bracket" className="block card text-center text-brand-500 hover:bg-ink-700">
-        🏆 Ver el camino a la final
-      </Link>
+      {/* Grid de accesos rápidos */}
+      <div>
+        <h3 className="font-semibold mb-2 text-sm text-ink-300">Explora</h3>
+        <div className="grid grid-cols-3 gap-2">
+          <QuickLink to="/tabla" icon="🏆" label="Tabla" />
+          <QuickLink to="/progreso" icon="📈" label="Mi progreso" />
+          <QuickLink to="/simulador" icon="🔮" label="Simulador" />
+          <QuickLink to="/bracket" icon="🗺️" label="Camino" />
+          <QuickLink to="/comunidad" icon="📊" label="Stats" />
+          <QuickLink to="/revive" icon="🎬" label="Revive" />
+          <QuickLink to="/muro" icon="💬" label="Muro" />
+          <QuickLink to="/reglas" icon="📜" label="Reglas" />
+          <QuickLink to="/resumen" icon="📋" label="Resumen" />
+        </div>
+      </div>
 
-      <Link to="/progreso" className="block card text-center text-brand-500 hover:bg-ink-700">
-        📈 Ver mi progreso y logros
-      </Link>
-
-      <Link to="/comunidad" className="block card text-center text-brand-500 hover:bg-ink-700">
-        📊 Ver estadísticas comunales
-      </Link>
-
-      <Link to="/reglas" className="block card text-center text-brand-500 hover:bg-ink-700">
-        📜 Ver reglas y premios
-      </Link>
-
+      {/* Calendario */}
       <a
         href="/mundial-2026.ics"
         download="Mundial-2026.ics"
-        className="block card text-center text-brand-500 hover:bg-ink-700"
+        className="block card text-center text-sm text-ink-300 hover:bg-ink-700"
       >
-        📅 Agregar partidos a mi calendario
+        📅 Agregar todos los partidos a mi calendario
       </a>
     </div>
+  )
+}
+
+function QuickLink({ to, icon, label }) {
+  return (
+    <Link
+      to={to}
+      className="flex flex-col items-center justify-center gap-1 card py-3 hover:bg-ink-700 transition"
+    >
+      <span className="text-2xl">{icon}</span>
+      <span className="text-[11px] text-ink-300 text-center leading-tight">{label}</span>
+    </Link>
   )
 }

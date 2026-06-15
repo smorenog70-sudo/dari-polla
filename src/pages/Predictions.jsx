@@ -187,7 +187,9 @@ function MatchRow({ match, pred, actual, onChange, locked, knockoutsEnabled, use
 
 export default function Predictions() {
   const { user, profile } = useAuth()
+  const [viewMode, setViewMode] = useState('fase') // 'fase' | 'calendario'
   const [tab, setTab] = useState('closing')
+  const [selectedDay, setSelectedDay] = useState(null) // YYYY-MM-DD
   const [preds, setPreds] = useState({})       // match_id -> {score1, score2}
   const [original, setOriginal] = useState({}) // last saved state
   const [results, setResults] = useState({})   // match_id -> {score1, score2}
@@ -264,6 +266,55 @@ export default function Predictions() {
 
   const knockoutsEnabled = config.knockouts_enabled === true
 
+  // === Modo calendario: agrupar partidos por día ===
+  const daysWithMatches = useMemo(() => {
+    const map = new Map() // 'YYYY-MM-DD' -> { dateKey, label, matches[] }
+    const knockoutsEnabledNow = config.knockouts_enabled === true
+    for (const m of TOURNAMENT.matches) {
+      if (!m.kickoff_utc) continue
+      // Ocultar eliminatorias con placeholders si aún no se habilitan
+      if (m.stage !== 'group' && !knockoutsEnabledNow) continue
+      const d = new Date(m.kickoff_utc)
+      const dateKey = d.toLocaleDateString('en-CA') // YYYY-MM-DD en hora local
+      if (!map.has(dateKey)) map.set(dateKey, { dateKey, date: d, matches: [] })
+      map.get(dateKey).matches.push(m)
+    }
+    const arr = [...map.values()].sort((a, b) => a.date - b.date)
+    for (const day of arr) {
+      day.matches.sort((a, b) => new Date(a.kickoff_utc) - new Date(b.kickoff_utc))
+    }
+    return arr
+  }, [config.knockouts_enabled])
+
+  // Etiqueta amigable para un día (Hoy / Mañana / Sáb 14 jun)
+  const dayLabel = (date) => {
+    const today = new Date(); today.setHours(0, 0, 0, 0)
+    const d = new Date(date); d.setHours(0, 0, 0, 0)
+    const diff = Math.round((d - today) / 86400000)
+    if (diff === 0) return 'Hoy'
+    if (diff === 1) return 'Mañana'
+    if (diff === -1) return 'Ayer'
+    return d.toLocaleDateString('es-CO', { weekday: 'short', day: 'numeric', month: 'short' })
+  }
+
+  // Día seleccionado por defecto: hoy si tiene partidos, si no el próximo con partidos
+  const effectiveDay = useMemo(() => {
+    if (selectedDay) return selectedDay
+    const todayKey = new Date().toLocaleDateString('en-CA')
+    if (daysWithMatches.some(d => d.dateKey === todayKey)) return todayKey
+    const now = Date.now()
+    const upcoming = daysWithMatches.find(d => d.date.getTime() >= now - 86400000)
+    return upcoming ? upcoming.dateKey : (daysWithMatches[0]?.dateKey || null)
+  }, [selectedDay, daysWithMatches])
+
+  const calendarMatches = useMemo(() => {
+    const day = daysWithMatches.find(d => d.dateKey === effectiveDay)
+    return day ? day.matches : []
+  }, [daysWithMatches, effectiveDay])
+
+  // Partidos a mostrar según el modo
+  const displayMatches = viewMode === 'calendario' ? calendarMatches : matches
+
   const dirty = useMemo(() => {
     const keys = new Set([...Object.keys(preds), ...Object.keys(original)])
     for (const k of keys) {
@@ -330,27 +381,75 @@ export default function Predictions() {
         </p>
       </div>
 
-      <div className="flex gap-1 overflow-x-auto -mx-1 px-1 pb-1 sticky top-14 bg-ink-900 z-20 py-1">
-        {TABS.map(t => (
-          <button
-            key={t.id}
-            onClick={() => setTab(t.id)}
-            className={`px-3 py-1.5 rounded-lg text-sm whitespace-nowrap ${
-              tab === t.id ? 'bg-brand-600 text-white' : 'bg-ink-800 text-ink-300'
-            }`}
-          >
-            {t.label}
-          </button>
-        ))}
+      {/* Toggle de modo de vista */}
+      <div className="flex gap-2 -mx-1 px-1">
+        <button
+          onClick={() => setViewMode('fase')}
+          className={`flex-1 py-2 rounded-lg text-sm font-medium transition ${
+            viewMode === 'fase' ? 'bg-brand-600 text-white' : 'bg-ink-800 text-ink-300'
+          }`}
+        >
+          🗂️ Por fase
+        </button>
+        <button
+          onClick={() => setViewMode('calendario')}
+          className={`flex-1 py-2 rounded-lg text-sm font-medium transition ${
+            viewMode === 'calendario' ? 'bg-brand-600 text-white' : 'bg-ink-800 text-ink-300'
+          }`}
+        >
+          📅 Calendario
+        </button>
       </div>
 
-      {isKnockoutTab && !knockoutsEnabled && (
+      {/* Tabs de fase (solo en modo fase) */}
+      {viewMode === 'fase' && (
+        <div className="flex gap-1 overflow-x-auto -mx-1 px-1 pb-1 sticky top-14 bg-ink-900 z-20 py-1">
+          {TABS.map(t => (
+            <button
+              key={t.id}
+              onClick={() => setTab(t.id)}
+              className={`px-3 py-1.5 rounded-lg text-sm whitespace-nowrap ${
+                tab === t.id ? 'bg-brand-600 text-white' : 'bg-ink-800 text-ink-300'
+              }`}
+            >
+              {t.label}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {/* Selector de día (solo en modo calendario) */}
+      {viewMode === 'calendario' && (
+        <div className="flex gap-1 overflow-x-auto -mx-1 px-1 pb-1 sticky top-14 bg-ink-900 z-20 py-1">
+          {daysWithMatches.map(day => {
+            const isToday = day.dateKey === new Date().toLocaleDateString('en-CA')
+            const active = day.dateKey === effectiveDay
+            return (
+              <button
+                key={day.dateKey}
+                onClick={() => setSelectedDay(day.dateKey)}
+                className={`px-3 py-1.5 rounded-lg text-xs whitespace-nowrap flex flex-col items-center min-w-[58px] ${
+                  active ? 'bg-brand-600 text-white' : 'bg-ink-800 text-ink-300'
+                }`}
+              >
+                <span className="font-semibold capitalize">{dayLabel(day.date)}</span>
+                <span className={`text-[9px] ${active ? 'text-brand-100' : 'text-ink-500'}`}>
+                  {day.matches.length} {day.matches.length === 1 ? 'partido' : 'partidos'}
+                  {isToday && !active ? ' •' : ''}
+                </span>
+              </button>
+            )
+          })}
+        </div>
+      )}
+
+      {viewMode === 'fase' && isKnockoutTab && !knockoutsEnabled && (
         <div className="card bg-yellow-900/30 border-yellow-700/50 text-yellow-100 text-sm">
           🔒 Las predicciones de eliminatorias se habilitarán cuando terminen los grupos.
         </div>
       )}
 
-      {tab === 'closing' && matches.length === 0 && (
+      {viewMode === 'fase' && tab === 'closing' && matches.length === 0 && (
         <div className="card text-center py-8 text-ink-300">
           <div className="text-3xl mb-2">🌴</div>
           <div className="font-medium">Sin partidos próximos a cerrar</div>
@@ -360,13 +459,20 @@ export default function Predictions() {
         </div>
       )}
 
-      {tab === 'closing' && matches.length > 0 && (
+      {viewMode === 'fase' && tab === 'closing' && matches.length > 0 && (
         <div className="text-xs text-ink-300 px-1">
           Mostrando partidos que cierran en las próximas 24 horas, ordenados por urgencia.
         </div>
       )}
 
-      {matches.map(m => (
+      {viewMode === 'calendario' && calendarMatches.length === 0 && (
+        <div className="card text-center py-8 text-ink-300">
+          <div className="text-3xl mb-2">📅</div>
+          <div className="font-medium">No hay partidos este día</div>
+        </div>
+      )}
+
+      {displayMatches.map(m => (
         <MatchRow
           key={m.id}
           match={m}
