@@ -314,10 +314,12 @@ export default function Standings() {
           <tbody>
             {rows.map((r, idx) => {
               const isBottom2 = finedIds.has(r.id)
+              const isMe = r.id === user.id
               return (
                 <tr
                   key={r.id}
                   className={`border-t border-ink-700 ${
+                    isMe ? 'bg-brand-900/30 outline outline-1 outline-brand-500/50' :
                     idx === 0 && filter === 'total' ? 'bg-yellow-900/20' :
                     idx === 1 && filter === 'total' ? 'bg-ink-700/40' :
                     isBottom2 ? 'bg-red-900/20' : ''
@@ -334,7 +336,10 @@ export default function Standings() {
                     </div>
                   </td>
                   <td className="py-2 px-2">
-                    <div className="font-medium">{r.avatar} {r.name}</div>
+                    <div className="font-medium">
+                      {r.avatar} {r.name}
+                      {isMe && <span className="ml-1 text-[10px] text-brand-400 font-bold">(tú)</span>}
+                    </div>
                     <div className="text-xs text-ink-500">
                       {!r.paid && <span className="text-yellow-500">⚠ sin pagar</span>}
                       {r.is_admin && <span className="ml-1 text-brand-500">admin</span>}

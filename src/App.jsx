@@ -16,6 +16,7 @@ import Profile from './pages/Profile'
 import Duel from './pages/Duel'
 import ActivityWall from './pages/ActivityWall'
 import Progress from './pages/Progress'
+import Simulator from './pages/Simulator'
 import FechaRecap from './pages/FechaRecap'
 import Bracket from './pages/Bracket'
 import MatchReplay from './pages/MatchReplay'
@@ -51,6 +52,7 @@ export default function App() {
           <Route path="tabla" element={<Standings />} />
           <Route path="comunidad" element={<CommunityStats />} />
           <Route path="progreso" element={<Progress />} />
+          <Route path="simulador" element={<Simulator />} />
           <Route path="resumen" element={<FechaRecap />} />
           <Route path="bracket" element={<Bracket />} />
           <Route path="revive" element={<MatchReplay />} />

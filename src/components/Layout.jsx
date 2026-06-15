@@ -59,6 +59,9 @@ export default function Layout() {
             <NavLink to="/progreso" onClick={() => setMenuOpen(false)} className="block px-3 py-2 rounded hover:bg-ink-700">
               📈 Mi progreso
             </NavLink>
+            <NavLink to="/simulador" onClick={() => setMenuOpen(false)} className="block px-3 py-2 rounded hover:bg-ink-700">
+              🔮 Simulador en vivo
+            </NavLink>
             <NavLink to="/resumen" onClick={() => setMenuOpen(false)} className="block px-3 py-2 rounded hover:bg-ink-700">
               📋 Resumen de fecha
             </NavLink>

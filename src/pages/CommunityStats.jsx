@@ -4,6 +4,7 @@ import { TOURNAMENT, matchById, formatKickoff, isMatchLocked, hasMatchStarted } 
 import { useNowTick } from '../lib/useNowTick'
 import { teamWithFlag } from '../lib/flags'
 import { displayName, displayAvatar } from '../lib/playerDisplay'
+import { useAuth } from '../lib/auth'
 import {
   groupGoalBias,
   matchDifficulty,
@@ -312,6 +313,7 @@ function PlayersView({ predsByMatch, profilesById }) {
 }
 
 function PlayerScoresCard({ match, predictions, profilesById }) {
+  const { user } = useAuth()
   // Resumen agregado
   const agg = useMemo(() => {
     let local = 0, empate = 0, visitante = 0
@@ -331,6 +333,7 @@ function PlayerScoresCard({ match, predictions, profilesById }) {
   const rows = useMemo(() => {
     return predictions
       .map(p => ({
+        userId: p.user_id,
         prof: profilesById[p.user_id],
         score1: p.score1,
         score2: p.score2,
@@ -398,16 +401,25 @@ function PlayerScoresCard({ match, predictions, profilesById }) {
       <div className="border-t border-ink-700 pt-2">
         <div className="text-[10px] text-ink-400 uppercase tracking-wider mb-1.5">Qué puso cada quien</div>
         <div className="space-y-1 max-h-72 overflow-y-auto">
-          {rows.map((r, idx) => (
-            <div key={idx} className="flex items-center gap-2 text-sm py-0.5">
-              <span className="flex-1 truncate">
-                {r.prof ? `${displayAvatar(r.prof)} ${displayName(r.prof)}` : 'Jugador'}
-              </span>
-              <span className="font-mono font-bold text-brand-400 whitespace-nowrap">
-                {r.score1} - {r.score2}
-              </span>
-            </div>
-          ))}
+          {rows.map((r, idx) => {
+            const isMe = r.userId === user.id
+            return (
+              <div
+                key={idx}
+                className={`flex items-center gap-2 text-sm py-0.5 px-1.5 rounded ${
+                  isMe ? 'bg-brand-900/40 outline outline-1 outline-brand-500/50' : ''
+                }`}
+              >
+                <span className="flex-1 truncate">
+                  {r.prof ? `${displayAvatar(r.prof)} ${displayName(r.prof)}` : 'Jugador'}
+                  {isMe && <span className="ml-1 text-[10px] text-brand-400 font-bold">(tú)</span>}
+                </span>
+                <span className="font-mono font-bold text-brand-400 whitespace-nowrap">
+                  {r.score1} - {r.score2}
+                </span>
+              </div>
+            )
+          })}
         </div>
       </div>
     </div>

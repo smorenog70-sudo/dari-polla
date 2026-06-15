@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import { useAuth } from '../lib/auth'
 import { useLeagueData } from '../lib/useLeagueData'
+import { matchById } from '../lib/matches'
 import {
   playedMatches,
   streaks,
@@ -62,9 +63,77 @@ export default function Progress() {
     const extremes = bestAndWorst(myPreds, resultsById)
     const goalBias = personalGoalBias(myPreds, resultsById)
 
+    // === Comparativa con el top 3 de la tabla ===
+    // Eje común: todos los partidos con resultado, en orden cronológico.
+    const playedMatchIds = [...resultsById.keys()]
+      .map(id => matchById(id))
+      .filter(Boolean)
+      .sort((a, b) => new Date(a.kickoff_utc) - new Date(b.kickoff_utc))
+      .map(m => m.id)
+
+    // Para un usuario, puntos acumulados a lo largo de esos partidos
+    const cumulativeFor = (uid) => {
+      const urows = allRowsByUser.get(uid) || []
+      const ptsByMatch = new Map(urows.map(r => [r.match.id, r.points]))
+      let cum = 0
+      return playedMatchIds.map(mid => {
+        cum += ptsByMatch.get(mid) || 0
+        return cum
+      })
+    }
+
+    // Top 3 por puntos totales (excluyendo al usuario para no duplicar su línea)
+    const top3 = totalsByUser.slice(0, 3)
+    const profById = {}
+    for (const p of data.profiles) profById[p.id] = p
+
+    const compareSeries = []
+    // Mi línea primero (destacada)
+    compareSeries.push({
+      uid: user.id,
+      name: 'Tú',
+      isMe: true,
+      data: cumulativeFor(user.id),
+    })
+    for (const t of top3) {
+      if (t.uid === user.id) continue // ya está mi línea
+      const prof = profById[t.uid]
+      compareSeries.push({
+        uid: t.uid,
+        name: (prof?.nickname || '').trim() || prof?.display_name || 'Jugador',
+        isMe: false,
+        data: cumulativeFor(t.uid),
+      })
+    }
+
+    const compareLabels = playedMatchIds.map((mid, i) => {
+      const m = matchById(mid)
+      const ini = (s) => (s || '').slice(0, 3).toUpperCase()
+      return m ? `${ini(m.team1)}-${ini(m.team2)}` : `P${i + 1}`
+    })
+
+    // === Quién más tiene cada medalla ===
+    // Corremos achievements para cada usuario y contamos por medalla.
+    const holdersByBadge = {} // badgeId -> [{name, isMe}]
+    for (const [uid, urows] of allRowsByUser) {
+      const uAch = achievements(urows, [], allRowsByUser, uid)
+      // GOAT aparte (mismo criterio que arriba)
+      const goatU = uAch.find(a => a.id === 'goat')
+      if (goatU) goatU.unlocked = totalsByUser.length > 1 && totalsByUser[0].uid === uid &&
+        (totalsByUser.find(t => t.uid === uid)?.pts || 0) > 0
+      const prof = profById[uid]
+      const name = (prof?.nickname || '').trim() || prof?.display_name || 'Jugador'
+      for (const a of uAch) {
+        if (!a.unlocked) continue
+        if (!holdersByBadge[a.id]) holdersByBadge[a.id] = []
+        holdersByBadge[a.id].push({ name, isMe: uid === user.id })
+      }
+    }
+
     return {
       rows, evolution, st, ach, totalPoints, exactCount, played: rows.length,
       profile, breakdown, efficiency, extremes, goalBias,
+      compareSeries, compareLabels, holdersByBadge,
     }
   }, [data, user.id])
 
@@ -129,6 +198,17 @@ export default function Progress() {
         )}
       </div>
 
+      {/* Comparativa con el top 3 */}
+      {stats.compareSeries && stats.compareSeries.length > 1 && stats.compareLabels.length > 0 && (
+        <div className="card">
+          <h2 className="font-semibold mb-1">🥇 Tú vs el top 3</h2>
+          <p className="text-xs text-ink-300 mb-3">
+            Cómo se compara tu acumulado con el de los punteros, partido a partido.
+          </p>
+          <CompareChart series={stats.compareSeries} labels={stats.compareLabels} />
+        </div>
+      )}
+
       {/* === ANÁLISIS PERSONAL (data scientist) === */}
       {stats.played > 0 && (
         <PersonalAnalysis stats={stats} />
@@ -141,27 +221,45 @@ export default function Progress() {
           <span className="text-xs text-ink-300">{unlockedCount} / {stats.ach.length}</span>
         </div>
         <div className="grid grid-cols-2 gap-2">
-          {stats.ach.map(a => (
-            <div
-              key={a.id}
-              className={`rounded-lg p-2.5 border ${
-                a.unlocked
-                  ? 'bg-brand-900/30 border-brand-600'
-                  : 'bg-ink-900/40 border-ink-700 opacity-50'
-              }`}
-            >
-              <div className="flex items-center gap-2">
-                <span className={`text-2xl ${a.unlocked ? '' : 'grayscale'}`}>{a.icon}</span>
-                <div className="min-w-0">
-                  <div className="text-sm font-medium truncate">{a.name}</div>
-                  <div className="text-[10px] text-ink-400 leading-tight">{a.desc}</div>
+          {stats.ach.map(a => {
+            const holders = stats.holdersByBadge[a.id] || []
+            const others = holders.filter(h => !h.isMe)
+            return (
+              <div
+                key={a.id}
+                className={`rounded-lg p-2.5 border ${
+                  a.unlocked
+                    ? 'bg-brand-900/30 border-brand-600'
+                    : 'bg-ink-900/40 border-ink-700 opacity-50'
+                }`}
+              >
+                <div className="flex items-center gap-2">
+                  <span className={`text-2xl ${a.unlocked ? '' : 'grayscale'}`}>{a.icon}</span>
+                  <div className="min-w-0 flex-1">
+                    <div className="text-sm font-medium truncate">{a.name}</div>
+                    <div className="text-[10px] text-ink-400 leading-tight">{a.desc}</div>
+                  </div>
                 </div>
+                {a.unlocked && (
+                  <div className="text-[10px] text-brand-400 mt-1 text-right">✓ desbloqueado</div>
+                )}
+                {/* Quién más la tiene */}
+                {holders.length > 0 && (
+                  <div className="text-[10px] text-ink-500 mt-1.5 border-t border-ink-700/60 pt-1.5 leading-tight">
+                    {a.unlocked ? (
+                      others.length === 0
+                        ? '🏅 Solo tú la tienes'
+                        : others.length <= 3
+                          ? `También: ${others.map(h => h.name).join(', ')}`
+                          : `Tú y ${others.length} más`
+                    ) : (
+                      `La tienen ${holders.length}: ${holders.slice(0, 3).map(h => h.name).join(', ')}${holders.length > 3 ? ` +${holders.length - 3}` : ''}`
+                    )}
+                  </div>
+                )}
               </div>
-              {a.unlocked && (
-                <div className="text-[10px] text-brand-400 mt-1 text-right">✓ desbloqueado</div>
-              )}
-            </div>
-          ))}
+            )
+          })}
         </div>
       </div>
     </div>
@@ -288,6 +386,82 @@ function PersonalAnalysis({ stats }) {
         </div>
       )}
     </>
+  )
+}
+
+function CompareChart({ series, labels }) {
+  const n = labels.length
+  const H = 200
+  const PAD = { top: 16, right: 14, bottom: 30, left: 30 }
+  const innerW = Math.max(260, n * 26)
+  const W = innerW + PAD.left + PAD.right
+  const innerH = H - PAD.top - PAD.bottom
+
+  // máximo entre todas las series
+  const maxCum = Math.max(1, ...series.flatMap(s => s.data))
+
+  const x = (i) => PAD.left + (n === 1 ? innerW / 2 : (i / (n - 1)) * innerW)
+  const y = (v) => PAD.top + innerH - (v / maxCum) * innerH
+
+  // Colores: yo = naranja marca destacado; otros = tonos distintos
+  const colors = ['#f97316', '#38bdf8', '#a78bfa', '#f472b6']
+
+  const step = n <= 12 ? 1 : n <= 30 ? 3 : Math.ceil(n / 12)
+
+  const pathFor = (data) =>
+    data.map((v, i) => `${i === 0 ? 'M' : 'L'} ${x(i).toFixed(1)} ${y(v).toFixed(1)}`).join(' ')
+
+  return (
+    <div className="w-full overflow-x-auto">
+      <svg viewBox={`0 0 ${W} ${H}`} style={{ width: W, maxWidth: 'none' }}>
+        {/* Líneas de referencia */}
+        {[0, 0.5, 1].map(t => {
+          const yy = PAD.top + innerH - t * innerH
+          return (
+            <g key={t}>
+              <line x1={PAD.left} y1={yy} x2={W - PAD.right} y2={yy} stroke="#334155" strokeWidth="0.5" strokeDasharray="3 3" />
+              <text x={PAD.left - 4} y={yy + 3} textAnchor="end" fontSize="8" fill="#64748b">
+                {Math.round(t * maxCum)}
+              </text>
+            </g>
+          )
+        })}
+
+        {/* Etiquetas eje X */}
+        {labels.map((lab, i) => (
+          (i === 0 || i === n - 1 || i % step === 0) && (
+            <text key={i} x={x(i)} y={H - 14} textAnchor="middle" fontSize="7" fill="#cbd5e1">
+              {lab}
+            </text>
+          )
+        ))}
+
+        {/* Líneas (los otros primero, yo encima) */}
+        {series.map((s, idx) => {
+          if (s.isMe) return null
+          const color = colors[(idx) % colors.length]
+          return <path key={s.uid} d={pathFor(s.data)} fill="none" stroke={color} strokeWidth="1.5" strokeOpacity="0.8" />
+        })}
+        {series.filter(s => s.isMe).map(s => (
+          <path key={s.uid} d={pathFor(s.data)} fill="none" stroke="#f97316" strokeWidth="3" strokeLinejoin="round" />
+        ))}
+      </svg>
+
+      {/* Leyenda */}
+      <div className="flex flex-wrap gap-3 mt-2 justify-center">
+        {series.map((s, idx) => (
+          <div key={s.uid} className="flex items-center gap-1.5 text-xs">
+            <span
+              className="inline-block w-3 h-1.5 rounded-full"
+              style={{ background: s.isMe ? '#f97316' : colors[idx % colors.length] }}
+            />
+            <span className={s.isMe ? 'text-brand-400 font-bold' : 'text-ink-300'}>
+              {s.name}
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
   )
 }
 
