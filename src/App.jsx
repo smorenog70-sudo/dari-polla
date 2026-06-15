@@ -17,6 +17,7 @@ import Duel from './pages/Duel'
 import ActivityWall from './pages/ActivityWall'
 import Progress from './pages/Progress'
 import Simulator from './pages/Simulator'
+import GroupTables from './pages/GroupTables'
 import FechaRecap from './pages/FechaRecap'
 import Bracket from './pages/Bracket'
 import MatchReplay from './pages/MatchReplay'
@@ -54,6 +55,7 @@ export default function App() {
           <Route path="progreso" element={<Progress />} />
           <Route path="progreso/:userId" element={<Progress />} />
           <Route path="simulador" element={<Simulator />} />
+          <Route path="grupos-mundial" element={<GroupTables />} />
           <Route path="resumen" element={<FechaRecap />} />
           <Route path="bracket" element={<Bracket />} />
           <Route path="revive" element={<MatchReplay />} />

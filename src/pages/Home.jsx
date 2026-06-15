@@ -315,6 +315,7 @@ export default function Home() {
         <h3 className="font-semibold mb-2 text-sm text-ink-300">Explora</h3>
         <div className="grid grid-cols-3 gap-2">
           <QuickLink to="/tabla" icon="🏆" label="Tabla" />
+          <QuickLink to="/grupos-mundial" icon="🌍" label="Grupos FIFA" />
           <QuickLink to="/progreso" icon="📈" label="Mi progreso" />
           <QuickLink to="/simulador" icon="🔮" label="Simulador" />
           <QuickLink to="/bracket" icon="🗺️" label="Camino" />
