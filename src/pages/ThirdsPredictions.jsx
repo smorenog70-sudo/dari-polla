@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../lib/auth'
 import { TOURNAMENT } from '../lib/matches'
+import { teamWithFlag } from '../lib/flags'
 
 const LETTERS = 'ABCDEFGHIJKL'.split('')
 const MAX_THIRDS = 8
@@ -123,7 +124,7 @@ export default function ThirdsPredictions() {
                 'bg-ink-800 border-ink-700'
               } ${locked || (!selected && picks.size >= MAX_THIRDS) ? 'opacity-60' : ''}`}
             >
-              <div className="font-medium">{team}</div>
+              <div className="font-medium">{teamWithFlag(team)}</div>
               <div className="text-xs opacity-70">Grupo {group}</div>
             </button>
           )

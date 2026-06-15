@@ -20,10 +20,12 @@ export default function Simulator() {
 
   const simulableMatches = useMemo(() => {
     return TOURNAMENT.matches
-      .filter(m => !realResultIds.has(m.id))
+      // Solo partidos que YA EMPEZARON (predicciones ya cerradas y visibles)
+      // y que aún NO tienen resultado oficial cargado. Así nadie puede simular
+      // partidos futuros para deducir las predicciones secretas de los demás.
+      .filter(m => hasMatchStarted(m) && !realResultIds.has(m.id))
       .filter(m => !m.team1?.match(/^[0-9WL]/) && !m.team2?.match(/^[0-9WL]/)) // sin placeholders
-      .sort((a, b) => new Date(a.kickoff_utc) - new Date(b.kickoff_utc))
-      .slice(0, 16) // los próximos 16 para no saturar
+      .sort((a, b) => new Date(b.kickoff_utc) - new Date(a.kickoff_utc)) // más reciente primero
   }, [realResultIds])
 
   const setScore = (matchId, side, value) => {
@@ -126,11 +128,19 @@ export default function Simulator() {
 
       {/* Partidos para simular */}
       <div className="card">
-        <h2 className="font-semibold mb-3">⚽ Pon los marcadores</h2>
+        <h2 className="font-semibold mb-1">⚽ Pon los marcadores</h2>
+        <p className="text-xs text-ink-300 mb-3">
+          Solo puedes simular partidos que ya arrancaron. Los partidos futuros no se pueden
+          simular porque las predicciones de los demás todavía son secretas.
+        </p>
         {simulableMatches.length === 0 ? (
-          <p className="text-sm text-ink-500 italic text-center py-4">
-            No hay partidos pendientes para simular ahora mismo.
-          </p>
+          <div className="text-center py-6 text-ink-400">
+            <div className="text-3xl mb-2">⏳</div>
+            <div className="text-sm font-medium">No hay partidos en curso ahora mismo</div>
+            <div className="text-xs mt-1 text-ink-500">
+              Cuando arranque un partido que aún no tenga resultado oficial, aparecerá aquí para simular.
+            </div>
+          </div>
         ) : (
           <div className="space-y-3">
             {simulableMatches.map(m => {

@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../lib/auth'
 import { TOURNAMENT } from '../lib/matches'
+import { teamWithFlag } from '../lib/flags'
 
 const LETTERS = 'ABCDEFGHIJKL'.split('')
 
@@ -23,7 +24,7 @@ function GroupCard({ letter, teams, picks, actuals, onChange, locked }) {
           const wrong = actualPos && picks[t] && picks[t] !== actualPos
           return (
             <div key={t} className="flex items-center gap-2">
-              <span className="flex-1 text-sm">{t}</span>
+              <span className="flex-1 text-sm">{teamWithFlag(t)}</span>
               {actualPos && (
                 <span className="text-xs text-ink-500">Real: {actualPos}º</span>
               )}

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../lib/auth'
 import {
@@ -382,6 +383,12 @@ export default function Predictions() {
         <p className="text-xs text-ink-300">
           Cada partido cierra 10 min antes del pitazo inicial.
         </p>
+        <Link
+          to="/grupos-mundial"
+          className="mt-3 flex items-center justify-center gap-2 text-sm bg-ink-700 hover:bg-ink-600 text-brand-300 rounded-lg py-2 transition"
+        >
+          🌍 Ver cómo van los grupos antes de apostar →
+        </Link>
       </div>
 
       {/* Toggle de modo de vista */}
