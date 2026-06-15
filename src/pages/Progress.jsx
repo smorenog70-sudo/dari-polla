@@ -1,4 +1,5 @@
 import { useMemo } from 'react'
+import { useParams, Link } from 'react-router-dom'
 import { useAuth } from '../lib/auth'
 import { useLeagueData } from '../lib/useLeagueData'
 import { matchById } from '../lib/matches'
@@ -19,12 +20,22 @@ import { BiasGauge, DonutChart } from '../components/DataViz'
 
 export default function Progress() {
   const { user } = useAuth()
+  const { userId: routeUserId } = useParams()
   const data = useLeagueData()
+
+  // Si la URL trae un userId, vemos el perfil de esa persona; si no, el nuestro.
+  const viewedUserId = routeUserId || user.id
+  const isOwn = viewedUserId === user.id
+
+  const viewedProfile = useMemo(
+    () => data.profiles.find(p => p.id === viewedUserId),
+    [data.profiles, viewedUserId]
+  )
 
   const stats = useMemo(() => {
     if (data.loading) return null
     const resultsById = new Map(data.results.map(r => [r.match_id, r]))
-    const myPreds = data.predictions.filter(p => p.user_id === user.id)
+    const myPreds = data.predictions.filter(p => p.user_id === viewedUserId)
     const rows = playedMatches(myPreds, resultsById)
     const evolution = evolutionByMatch(myPreds, resultsById)
     const st = streaks(rows)
@@ -40,7 +51,7 @@ export default function Progress() {
       allRowsByUser.set(uid, playedMatches(preds, resultsById))
     }
 
-    const ach = achievements(rows, evolution, allRowsByUser, user.id)
+    const ach = achievements(rows, evolution, allRowsByUser, viewedUserId)
 
     // Medalla GOAT: ¿es el #1 de la tabla general por puntos de partidos?
     const totalsByUser = []
@@ -48,9 +59,9 @@ export default function Progress() {
       totalsByUser.push({ uid, pts: urows.reduce((s, x) => s + x.points, 0) })
     }
     totalsByUser.sort((a, b) => b.pts - a.pts)
-    const myTotal = totalsByUser.find(t => t.uid === user.id)
+    const myTotal = totalsByUser.find(t => t.uid === viewedUserId)
     const isGoat = totalsByUser.length > 1 && myTotal && myTotal.pts > 0 &&
-      totalsByUser[0].uid === user.id
+      totalsByUser[0].uid === viewedUserId
     const goat = ach.find(a => a.id === 'goat')
     if (goat) goat.unlocked = isGoat
     const totalPoints = rows.reduce((s, r) => s + r.points, 0)
@@ -59,7 +70,7 @@ export default function Progress() {
     // Análisis personal estilo data scientist
     const profile = bettingProfile(myPreds, resultsById)
     const breakdown = pointsBreakdown(myPreds, resultsById)
-    const efficiency = efficiencyVsGroup(user.id, data.predictions, resultsById)
+    const efficiency = efficiencyVsGroup(viewedUserId, data.predictions, resultsById)
     const extremes = bestAndWorst(myPreds, resultsById)
     const goalBias = personalGoalBias(myPreds, resultsById)
 
@@ -90,13 +101,13 @@ export default function Progress() {
     const compareSeries = []
     // Mi línea primero (destacada)
     compareSeries.push({
-      uid: user.id,
+      uid: viewedUserId,
       name: 'Tú',
       isMe: true,
-      data: cumulativeFor(user.id),
+      data: cumulativeFor(viewedUserId),
     })
     for (const t of top3) {
-      if (t.uid === user.id) continue // ya está mi línea
+      if (t.uid === viewedUserId) continue // ya está mi línea
       const prof = profById[t.uid]
       compareSeries.push({
         uid: t.uid,
@@ -126,7 +137,7 @@ export default function Progress() {
       for (const a of uAch) {
         if (!a.unlocked) continue
         if (!holdersByBadge[a.id]) holdersByBadge[a.id] = []
-        holdersByBadge[a.id].push({ name, isMe: uid === user.id })
+        holdersByBadge[a.id].push({ name, isMe: uid === viewedUserId })
       }
     }
 
@@ -135,7 +146,7 @@ export default function Progress() {
       profile, breakdown, efficiency, extremes, goalBias,
       compareSeries, compareLabels, holdersByBadge,
     }
-  }, [data, user.id])
+  }, [data, viewedUserId, user.id])
 
   if (data.loading || !stats) return <div className="text-center text-ink-300 py-8">Cargando…</div>
 
@@ -143,10 +154,28 @@ export default function Progress() {
 
   return (
     <div className="space-y-3 pb-20">
-      <div className="card">
-        <h1 className="text-xl font-bold mb-1">📈 Mi progreso</h1>
-        <p className="text-xs text-ink-300">Tu rendimiento, rachas y logros en la polla.</p>
-      </div>
+      {isOwn ? (
+        <div className="card">
+          <h1 className="text-xl font-bold mb-1">📈 Mi progreso</h1>
+          <p className="text-xs text-ink-300">Tu rendimiento, rachas y logros en la polla.</p>
+        </div>
+      ) : (
+        <div className="card">
+          <Link to="/tabla" className="text-xs text-brand-400 mb-2 inline-block">← Volver a la tabla</Link>
+          <div className="flex items-center gap-3">
+            <div className="text-4xl">{(viewedProfile?.avatar || '').trim() || '⚽'}</div>
+            <div>
+              <h1 className="text-xl font-bold leading-tight">
+                {(viewedProfile?.nickname || '').trim() || viewedProfile?.display_name || 'Jugador'}
+              </h1>
+              {(viewedProfile?.nickname || '').trim() && (
+                <p className="text-xs text-ink-400">{viewedProfile?.display_name}</p>
+              )}
+              <p className="text-xs text-ink-300 mt-0.5">Progreso, rachas y logros</p>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Métricas rápidas */}
       <div className="grid grid-cols-3 gap-2">

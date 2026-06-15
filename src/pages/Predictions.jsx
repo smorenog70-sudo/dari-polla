@@ -291,10 +291,13 @@ export default function Predictions() {
     const today = new Date(); today.setHours(0, 0, 0, 0)
     const d = new Date(date); d.setHours(0, 0, 0, 0)
     const diff = Math.round((d - today) / 86400000)
-    if (diff === 0) return 'Hoy'
-    if (diff === 1) return 'Mañana'
-    if (diff === -1) return 'Ayer'
-    return d.toLocaleDateString('es-CO', { weekday: 'short', day: 'numeric', month: 'short' })
+    if (diff === 0) return { top: 'Hoy', bottom: d.toLocaleDateString('es-CO', { day: 'numeric', month: 'short' }) }
+    if (diff === 1) return { top: 'Mañana', bottom: d.toLocaleDateString('es-CO', { day: 'numeric', month: 'short' }) }
+    if (diff === -1) return { top: 'Ayer', bottom: d.toLocaleDateString('es-CO', { day: 'numeric', month: 'short' }) }
+    // weekday corto (lun, mar...) arriba; día + mes abreviado abajo
+    const wd = d.toLocaleDateString('es-CO', { weekday: 'short' }).replace('.', '')
+    const dm = d.toLocaleDateString('es-CO', { day: 'numeric', month: 'short' }).replace('.', '')
+    return { top: wd, bottom: dm }
   }
 
   // Día seleccionado por defecto: hoy si tiene partidos, si no el próximo con partidos
@@ -420,21 +423,25 @@ export default function Predictions() {
 
       {/* Selector de día (solo en modo calendario) */}
       {viewMode === 'calendario' && (
-        <div className="flex gap-1 overflow-x-auto -mx-1 px-1 pb-1 sticky top-14 bg-ink-900 z-20 py-1">
+        <div className="flex gap-1.5 overflow-x-auto -mx-1 px-1 pb-1 sticky top-14 bg-ink-900 z-20 py-1">
           {daysWithMatches.map(day => {
             const isToday = day.dateKey === new Date().toLocaleDateString('en-CA')
             const active = day.dateKey === effectiveDay
+            const lab = dayLabel(day.date)
             return (
               <button
                 key={day.dateKey}
                 onClick={() => setSelectedDay(day.dateKey)}
-                className={`px-3 py-1.5 rounded-lg text-xs whitespace-nowrap flex flex-col items-center min-w-[58px] ${
+                className={`px-2.5 py-1.5 rounded-lg flex flex-col items-center justify-center shrink-0 min-w-[64px] ${
                   active ? 'bg-brand-600 text-white' : 'bg-ink-800 text-ink-300'
                 }`}
               >
-                <span className="font-semibold capitalize">{dayLabel(day.date)}</span>
-                <span className={`text-[9px] ${active ? 'text-brand-100' : 'text-ink-500'}`}>
-                  {day.matches.length} {day.matches.length === 1 ? 'partido' : 'partidos'}
+                <span className="font-semibold text-xs capitalize leading-tight">{lab.top}</span>
+                <span className={`text-[10px] capitalize leading-tight ${active ? 'text-brand-100' : 'text-ink-400'}`}>
+                  {lab.bottom}
+                </span>
+                <span className={`text-[9px] leading-tight mt-0.5 ${active ? 'text-brand-100' : 'text-ink-500'}`}>
+                  {day.matches.length} {day.matches.length === 1 ? 'part.' : 'part.'}
                   {isToday && !active ? ' •' : ''}
                 </span>
               </button>

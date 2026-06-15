@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom'
 import { useMemo } from 'react'
 import { useAuth } from '../lib/auth'
 import { useLeagueData } from '../lib/useLeagueData'
-import { TOURNAMENT, formatKickoff, isMatchLocked } from '../lib/matches'
+import { TOURNAMENT, formatKickoff, isMatchLocked, fechaMatchIds, FECHA_LABELS } from '../lib/matches'
 import { teamWithFlag, flagFor } from '../lib/flags'
 import { useNowTick } from '../lib/useNowTick'
 import {
@@ -10,7 +10,7 @@ import {
   scoreGroupPositions,
   scoreThirds,
 } from '../lib/scoring'
-import { playedMatches, streaks } from '../lib/playerStats'
+import { playedMatches, streaks, lastCompletedFecha } from '../lib/playerStats'
 import PendingMatchesBanner from '../components/PendingMatchesBanner'
 import NewResultsBanner from '../components/NewResultsBanner'
 import NewAchievementsBanner from '../components/NewAchievementsBanner'
@@ -96,6 +96,35 @@ export default function Home() {
     }).sort((a, b) => b.pts - a.pts)
     const myRank = totals.findIndex(t => t.id === user.id) + 1
 
+    // Líderes destacados: GOAT (#1 general) y rey de la última fecha jugada
+    const profById = {}
+    for (const p of data.profiles) profById[p.id] = p
+    const nameOf = (id) => {
+      const p = profById[id]
+      return p ? ((p.nickname || '').trim() || p.display_name) : '—'
+    }
+    const goatId = totals[0] && totals[0].pts > 0 ? totals[0].id : null
+
+    // Rey de la última fecha completada
+    let kingName = null, kingFecha = null
+    const lastFecha = lastCompletedFecha(resultsById)
+    if (lastFecha) {
+      const ids = new Set(fechaMatchIds(lastFecha))
+      const fechaScores = data.profiles.map(prof => {
+        let p2 = 0
+        for (const p of (predsByUser.get(prof.id) || [])) {
+          if (!ids.has(p.match_id)) continue
+          const r = resultsById.get(p.match_id)
+          if (r) p2 += scoreMatch(p, r).total
+        }
+        return { id: prof.id, pts: p2 }
+      }).sort((a, b) => b.pts - a.pts)
+      if (fechaScores[0] && fechaScores[0].pts > 0) {
+        kingName = nameOf(fechaScores[0].id)
+        kingFecha = FECHA_LABELS[lastFecha] || lastFecha
+      }
+    }
+
     // Racha actual
     const myRows = playedMatches(myPreds, resultsById)
     const { current: streak } = streaks(myRows)
@@ -113,6 +142,10 @@ export default function Home() {
       players: data.profiles.length,
       playersPaid: paidProfiles.length,
       totalPlayers: totals.length,
+      goatName: goatId ? nameOf(goatId) : null,
+      goatIsMe: goatId === user.id,
+      kingName,
+      kingFecha,
     }
   }, [data, user.id, myPreds])
 
@@ -137,9 +170,17 @@ export default function Home() {
   return (
     <div className="space-y-4">
       {/* Saludo */}
-      <div>
-        <p className="text-sm text-ink-300">¡Hola{firstName ? `, ${firstName}` : ''}! 👋</p>
-        <h1 className="text-2xl font-bold mt-0.5">Mundial 2026 🐔</h1>
+      <div className="flex items-center gap-3">
+        <img
+          src="/logo.png"
+          alt="Dari-polla"
+          className="w-14 h-14 rounded-2xl shadow-lg shadow-brand-900/40 shrink-0"
+        />
+        <div>
+          <p className="text-sm text-ink-300">¡Hola{firstName ? `, ${firstName}` : ''}! 👋</p>
+          <h1 className="text-2xl font-bold mt-0.5 leading-none">Dari-polla</h1>
+          <p className="text-xs text-ink-400 mt-0.5">Mundial 2026</p>
+        </div>
       </div>
 
       {!profile?.paid && (
@@ -187,6 +228,28 @@ export default function Home() {
             {nextPredicted ? '✓ Ya pronosticaste' : '✏️ Pronosticar ahora →'}
           </div>
         </Link>
+      )}
+
+      {/* Líderes actuales */}
+      {(stats.goatName || stats.kingName) && (
+        <div className="grid grid-cols-2 gap-3">
+          {stats.goatName && (
+            <Link to="/tabla" className="card text-center hover:bg-ink-700 transition">
+              <div className="text-2xl">🐐</div>
+              <div className="text-[10px] text-ink-400 uppercase tracking-wider mt-0.5">Líder (GOAT)</div>
+              <div className={`text-sm font-bold mt-0.5 truncate ${stats.goatIsMe ? 'text-brand-400' : 'text-ink-100'}`}>
+                {stats.goatIsMe ? '¡Tú! 🎉' : stats.goatName}
+              </div>
+            </Link>
+          )}
+          {stats.kingName && (
+            <Link to="/tabla" className="card text-center hover:bg-ink-700 transition">
+              <div className="text-2xl">👑</div>
+              <div className="text-[10px] text-ink-400 uppercase tracking-wider mt-0.5">Rey · {stats.kingFecha}</div>
+              <div className="text-sm font-bold mt-0.5 truncate text-ink-100">{stats.kingName}</div>
+            </Link>
+          )}
+        </div>
       )}
 
       {/* Tarjeta de estatus personal */}

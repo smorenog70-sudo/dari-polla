@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { useLeagueData } from '../lib/useLeagueData'
 import { fechaMatchIds, FECHA_LABELS, matchById } from '../lib/matches'
 import {
@@ -336,10 +337,11 @@ export default function Standings() {
                     </div>
                   </td>
                   <td className="py-2 px-2">
-                    <div className="font-medium">
+                    <Link to={isMe ? '/progreso' : `/progreso/${r.id}`} className="font-medium hover:text-brand-400 transition">
                       {r.avatar} {r.name}
                       {isMe && <span className="ml-1 text-[10px] text-brand-400 font-bold">(tú)</span>}
-                    </div>
+                      <span className="ml-1 text-[10px] text-ink-500">›</span>
+                    </Link>
                     <div className="text-xs text-ink-500">
                       {!r.paid && <span className="text-yellow-500">⚠ sin pagar</span>}
                       {r.is_admin && <span className="ml-1 text-brand-500">admin</span>}

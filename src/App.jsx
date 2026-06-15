@@ -52,6 +52,7 @@ export default function App() {
           <Route path="tabla" element={<Standings />} />
           <Route path="comunidad" element={<CommunityStats />} />
           <Route path="progreso" element={<Progress />} />
+          <Route path="progreso/:userId" element={<Progress />} />
           <Route path="simulador" element={<Simulator />} />
           <Route path="resumen" element={<FechaRecap />} />
           <Route path="bracket" element={<Bracket />} />
