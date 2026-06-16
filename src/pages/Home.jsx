@@ -42,8 +42,15 @@ function countdownTo(targetMs, now) {
 // Tiempos: 1T 45'+7' rep · descanso 15' · 2T 45'+7' rep.
 function liveStatus(kickoffUtc, now) {
   const ko = new Date(kickoffUtc).getTime()
-  const elapsedMin = (now - ko) / 60000
-  if (elapsedMin < 0) return null
+  // Los partidos suelen arrancar ~6 min tarde (publicidad antes del pitazo).
+  // Descontamos ese retraso para que el minuto estimado no vaya adelantado.
+  const KICKOFF_DELAY = 6
+  const elapsedMin = (now - ko) / 60000 - KICKOFF_DELAY
+  if (elapsedMin < 0) {
+    // Entre la hora oficial y el pitazo real: marcamos "Por comenzar"
+    if ((now - ko) / 60000 >= 0) return { phase: 'PRE', label: 'Por comenzar', live: true }
+    return null
+  }
 
   const FIRST_END = 45 + 7          // 52'
   const HALFTIME_END = FIRST_END + 15  // 67'
@@ -320,7 +327,9 @@ export default function Home() {
                   En vivo
                 </span>
                 <span className="text-xs font-mono font-bold text-red-300">
-                  {status.phase === 'HT' ? '⏸ Descanso' : `⏱ ~${status.label}`}
+                  {status.phase === 'HT' ? '⏸ Descanso'
+                    : status.phase === 'PRE' ? '🟢 Por comenzar'
+                    : `⏱ ~${status.label}`}
                 </span>
               </div>
               <div className="flex items-center justify-center gap-3">
