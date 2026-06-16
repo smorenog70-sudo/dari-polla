@@ -1,5 +1,6 @@
 import { scoreMatch } from './scoring'
 import { matchById, fechaMatchIds, FECHA_LABELS } from './matches'
+import { confederationOf } from './confederations'
 
 /**
  * Funciones puras para calcular gamificación a partir de los datos que ya
@@ -203,6 +204,119 @@ export function achievements(rows, evolution, allRowsByUser, userId) {
     r.result.score1 !== r.result.score2
   )
 
+  // --- Métricas para las 13 medallas nuevas ---
+
+  // Goleada anunciada: marcador EXACTO con 3+ goles de diferencia
+  const bigExact = rows.some(r => r.exact && Math.abs(r.result.score1 - r.result.score2) >= 3)
+  // Maestro del cero: aciertos exactos de partidos 0-0
+  const zeroZeroHits = rows.filter(r => r.exact && r.result.score1 === 0 && r.result.score2 === 0).length
+  // Number cruncher: acertó la diferencia de gol (breakdown.diff) en 10 partidos
+  const diffHits = rows.filter(r => r.breakdown.diff > 0).length
+  // Sangre fría: aciertos de ganador en partidos definidos por 1 gol
+  const oneGoalHits = rows.filter(r => r.hitOutcome && Math.abs(r.result.score1 - r.result.score2) === 1).length
+  // Imparable total: racha de 10
+  // (bestStreak ya calculado)
+
+  // Regionales: aciertos de ganador en partidos por confederación de los equipos
+  const confHits = {} // conf -> set de partidos acertados
+  const confsSeen = new Set()
+  for (const r of rows) {
+    if (!r.hitOutcome) continue
+    const c1 = confederationOf(r.match.team1)
+    const c2 = confederationOf(r.match.team2)
+    for (const c of [c1, c2]) {
+      if (!c) continue
+      confHits[c] = (confHits[c] || 0) + 1
+      confsSeen.add(c)
+    }
+  }
+  const sudacaHits = confHits['CONMEBOL'] || 0
+  const europeoHits = confHits['UEFA'] || 0
+  const trotamundos = confsSeen.size >= 4
+
+  // Madrugador: pronosticó con +1 día de anticipación (si hay timestamp de creación)
+  let earlyBirdCount = 0
+  for (const r of rows) {
+    const created = r.pred?.created_at ? new Date(r.pred.created_at).getTime() : null
+    const ko = r.match?.kickoff_utc ? new Date(r.match.kickoff_utc).getTime() : null
+    if (created && ko && (ko - created) >= 24 * 3600 * 1000) earlyBirdCount++
+  }
+
+  // Francotirador de fecha: acertó TODOS los ganadores de una fecha completa
+  let perfectFechaOutcomes = false
+  for (const fechaId of FECHA_ORDER) {
+    const ids = fechaMatchIds(fechaId)
+    const playedInFecha = rows.filter(r => ids.includes(r.match.id))
+    if (playedInFecha.length >= 4 && playedInFecha.length === ids.length &&
+        playedInFecha.every(r => r.hitOutcome)) {
+      perfectFechaOutcomes = true
+      break
+    }
+  }
+
+  // Rey del partido / Rey del día: ¿fue el máximo puntaje de algún partido / día?
+  let matchKing = false, dayKing = false
+  if (allRowsByUser && userId) {
+    // Rey del partido: en algún partido, mi puntaje fue el más alto (y > 0)
+    const allMatchIds = new Set()
+    for (const urows of allRowsByUser.values()) for (const x of urows) allMatchIds.add(x.match.id)
+    for (const mid of allMatchIds) {
+      let myPts = -1, maxPts = -1
+      for (const [uid, urows] of allRowsByUser) {
+        const x = urows.find(y => y.match.id === mid)
+        const pts = x ? x.points : 0
+        if (uid === userId) myPts = pts
+        if (pts > maxPts) maxPts = pts
+      }
+      if (myPts > 0 && myPts === maxPts) { matchKing = true; break }
+    }
+    // Rey del día: agrupar partidos por día y ver si gané alguno
+    const dayMap = new Map() // dayKey -> Set(matchId)
+    for (const mid of allMatchIds) {
+      const m = matchById(mid)
+      if (!m?.kickoff_utc) continue
+      const dayKey = new Date(m.kickoff_utc).toLocaleDateString('en-CA')
+      if (!dayMap.has(dayKey)) dayMap.set(dayKey, new Set())
+      dayMap.get(dayKey).add(mid)
+    }
+    for (const [, mids] of dayMap) {
+      let myPts = 0
+      const totalsByU = new Map()
+      for (const [uid, urows] of allRowsByUser) {
+        let s = 0
+        for (const x of urows) if (mids.has(x.match.id)) s += x.points
+        totalsByU.set(uid, s)
+        if (uid === userId) myPts = s
+      }
+      const maxPts = Math.max(...totalsByU.values(), 0)
+      if (myPts > 0 && myPts === maxPts) { dayKing = true; break }
+    }
+  }
+
+  // Remontada: estuvo fuera del top 10 y llegó al top 5 (acumulado entre fechas)
+  let comeback = false
+  if (allRowsByUser && userId) {
+    const ranksByFecha = []
+    for (const fechaId of FECHA_ORDER) {
+      const idx = FECHA_ORDER.indexOf(fechaId)
+      const cumIds = new Set()
+      for (let i = 0; i <= idx; i++) for (const id of fechaMatchIds(FECHA_ORDER[i])) cumIds.add(id)
+      const scoreFor = (uid) => (allRowsByUser.get(uid) || [])
+        .filter(x => cumIds.has(x.match.id)).reduce((s, x) => s + x.points, 0)
+      const mine = scoreFor(userId)
+      const scores = []
+      let any = false
+      for (const uid of allRowsByUser.keys()) { const sc = scoreFor(uid); scores.push(sc); if (sc > 0) any = true }
+      if (!any) continue
+      scores.sort((a, b) => b - a)
+      ranksByFecha.push(scores.filter(s => s > mine).length + 1)
+    }
+    const wasOut = ranksByFecha.some(r => r > 10)
+    const gotTop5 = ranksByFecha.length > 0 && ranksByFecha[ranksByFecha.length - 1] <= 5
+    comeback = wasOut && gotTop5 && ranksByFecha.length >= 2
+  }
+
+
   // ¿Ganó alguna fecha? + ¿podio en alguna fecha? (Top 3)
   let wonAFecha = false
   let podiumFecha = false
@@ -329,6 +443,24 @@ export function achievements(rows, evolution, allRowsByUser, userId) {
     // Divertidas
     { id: 'knockout', icon: '🪦', name: 'Knock out', desc: '0 puntos en un partido que casi todos acertaron', unlocked: knockout },
     { id: 'opposite', icon: '🎭', name: 'El opuesto', desc: 'Predijiste el marcador exactamente al revés', unlocked: reversed },
+    // Reyes rotativos
+    { id: 'match_king', icon: '⚽👑', name: 'Rey del partido', desc: 'Fuiste quien más puntos sacó en un partido', unlocked: matchKing },
+    { id: 'day_king', icon: '📅👑', name: 'Rey del día', desc: 'Fuiste quien más puntos sumó en un día', unlocked: dayKing },
+    // Goles y diferencia
+    { id: 'big_exact', icon: '💥', name: 'Goleada anunciada', desc: 'Acierta un marcador exacto con 3+ goles de diferencia', unlocked: bigExact },
+    { id: 'zero_master', icon: '🥅', name: 'Maestro del cero', desc: 'Acierta 3 partidos que terminaron 0-0', unlocked: zeroZeroHits >= 3 },
+    { id: 'number_cruncher', icon: '🎰', name: 'Number cruncher', desc: 'Acierta la diferencia de gol en 10 partidos', unlocked: diffHits >= 10 },
+    { id: 'cold_blood', icon: '🧊', name: 'Sangre fría', desc: 'Acierta 3 partidos definidos por 1 solo gol', unlocked: oneGoalHits >= 3 },
+    // Regionales
+    { id: 'sudaca', icon: '🌎', name: 'Hincha sudaca', desc: 'Acierta 5 partidos de equipos sudamericanos', unlocked: sudacaHits >= 5 },
+    { id: 'europeo', icon: '🌍', name: 'Conocedor europeo', desc: 'Acierta 5 partidos de equipos europeos', unlocked: europeoHits >= 5 },
+    { id: 'trotamundos', icon: '⚜️', name: 'Trotamundos', desc: 'Acierta partidos de 4 confederaciones distintas', unlocked: trotamundos },
+    // Comportamiento
+    { id: 'early_bird', icon: '🦉', name: 'Madrugador', desc: 'Pronostica 10 partidos con +1 día de anticipación', unlocked: earlyBirdCount >= 10 },
+    { id: 'fecha_sniper', icon: '🎯', name: 'Francotirador de fecha', desc: 'Acierta todos los ganadores de una fecha completa', unlocked: perfectFechaOutcomes },
+    { id: 'comeback', icon: '📈', name: 'Remontada', desc: 'Llega al top 5 tras haber estado fuera del top 10', unlocked: comeback },
+    { id: 'streak_10', icon: '🔥🔥', name: 'Imparable total', desc: 'Racha de 10 aciertos seguidos', unlocked: bestStreak >= 10 },
+
     { id: 'goat', icon: '🐐', name: 'La cabra (GOAT)', desc: 'Llega al puesto #1 de la tabla general', unlocked: false }, // se calcula fuera
   ]
   return defs
