@@ -21,16 +21,20 @@ function formatCOP(n) {
 }
 
 // Cuenta regresiva compacta
-function countdown(kickoffUtc, now) {
-  const ms = new Date(kickoffUtc).getTime() - now
+// Devuelve el tiempo restante hasta `target` (ms). Incluye segundos solo si
+// faltan 15 min o menos, para que el segundero corra en la recta final.
+function countdownTo(targetMs, now) {
+  const ms = targetMs - now
   if (ms <= 0) return null
-  const h = Math.floor(ms / 3600000)
-  const m = Math.floor((ms % 3600000) / 60000)
-  if (h >= 24) {
-    const d = Math.floor(h / 24)
-    return `${d}d ${h % 24}h`
-  }
+  const totalSec = Math.floor(ms / 1000)
+  const d = Math.floor(totalSec / 86400)
+  const h = Math.floor((totalSec % 86400) / 3600)
+  const m = Math.floor((totalSec % 3600) / 60)
+  const s = totalSec % 60
+  const showSeconds = ms <= 15 * 60 * 1000 // 15 min
+  if (d >= 1) return `${d}d ${h}h`
   if (h >= 1) return `${h}h ${m}m`
+  if (showSeconds) return `${m}:${String(s).padStart(2, '0')}`
   return `${m}m`
 }
 
@@ -38,8 +42,7 @@ export default function Home() {
   const { user, profile } = useAuth()
   const data = useLeagueData()
   const { newResults, totalNewPoints, dismiss: dismissResults } = useNewResults(user.id)
-  useNowTick(30000)
-  const now = Date.now()
+  const now = useNowTick(1000)
 
   const myPreds = useMemo(
     () => data.predictions.filter(p => p.user_id === user.id),
@@ -259,16 +262,19 @@ export default function Home() {
       <NewAchievementsBanner />
 
       {/* HERO: próximo partido */}
-      {nextMatch && (
+      {nextMatch && (() => {
+        const ko = new Date(nextMatch.kickoff_utc).getTime()
+        const closeMs = ko - 10 * 60 * 1000 // cierre de predicciones: 10 min antes
+        const predCountdown = countdownTo(closeMs, now)   // tiempo para predecir
+        const startCountdown = countdownTo(ko, now)        // tiempo para el pitazo
+        const predClosed = predCountdown === null
+        return (
         <Link
           to="/predicciones"
           className="block rounded-2xl p-4 bg-gradient-to-br from-brand-700/50 via-brand-900/30 to-ink-900 border border-brand-600/40 hover:border-brand-500 transition"
         >
           <div className="flex items-center justify-between mb-3">
             <span className="text-[10px] uppercase tracking-wider text-brand-300 font-semibold">⚡ Próximo partido</span>
-            <span className="text-xs font-mono text-brand-300">
-              {countdown(nextMatch.kickoff_utc, now) ? `⏱ ${countdown(nextMatch.kickoff_utc, now)}` : ''}
-            </span>
           </div>
           <div className="flex items-center justify-center gap-3">
             <div className="flex-1 text-center">
@@ -284,15 +290,43 @@ export default function Home() {
           <div className="text-center text-xs text-ink-300 mt-3">
             {formatKickoff(nextMatch.kickoff_utc)}
           </div>
+
+          {/* Dos contadores */}
+          <div className="grid grid-cols-2 gap-2 mt-3">
+            <div className={`rounded-lg py-2 px-2 text-center ${predClosed ? 'bg-ink-800/60' : 'bg-ink-900/60'}`}>
+              <div className="text-[9px] uppercase tracking-wider text-ink-400 leading-tight">
+                ✏️ Para predecir
+              </div>
+              <div className={`font-mono font-bold mt-0.5 ${
+                predClosed ? 'text-ink-500 text-xs' : predCountdown.includes(':') ? 'text-red-400 text-lg' : 'text-brand-300 text-base'
+              }`}>
+                {predClosed ? 'Cerrado' : predCountdown}
+              </div>
+            </div>
+            <div className="rounded-lg py-2 px-2 text-center bg-ink-900/60">
+              <div className="text-[9px] uppercase tracking-wider text-ink-400 leading-tight">
+                ⏱ Para el pitazo
+              </div>
+              <div className={`font-mono font-bold mt-0.5 ${
+                startCountdown && startCountdown.includes(':') ? 'text-green-400 text-lg' : 'text-ink-200 text-base'
+              }`}>
+                {startCountdown || '¡En juego!'}
+              </div>
+            </div>
+          </div>
+
           <div className={`mt-3 text-center text-sm font-medium rounded-lg py-2 ${
             nextPredicted
               ? 'bg-green-900/30 text-green-300'
-              : 'bg-brand-600 text-white'
+              : predClosed
+                ? 'bg-ink-700 text-ink-400'
+                : 'bg-brand-600 text-white'
           }`}>
-            {nextPredicted ? '✓ Ya pronosticaste' : '✏️ Pronosticar ahora →'}
+            {nextPredicted ? '✓ Ya pronosticaste' : predClosed ? '🔒 Predicciones cerradas' : '✏️ Pronosticar ahora →'}
           </div>
         </Link>
-      )}
+        )
+      })()}
 
       {/* Líderes actuales */}
       {(stats.goatName || stats.kingName) && (
