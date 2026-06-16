@@ -38,6 +38,37 @@ function countdownTo(targetMs, now) {
   return `${m}m`
 }
 
+// Estado estimado de un partido en curso desde su pitazo.
+// Tiempos: 1T 45'+7' rep · descanso 15' · 2T 45'+7' rep.
+function liveStatus(kickoffUtc, now) {
+  const ko = new Date(kickoffUtc).getTime()
+  const elapsedMin = (now - ko) / 60000
+  if (elapsedMin < 0) return null
+
+  const FIRST_END = 45 + 7          // 52'
+  const HALFTIME_END = FIRST_END + 15  // 67'
+  const SECOND_END = HALFTIME_END + 45 + 7 // 119'
+
+  if (elapsedMin <= FIRST_END) {
+    const m = Math.floor(elapsedMin)
+    return { phase: '1T', label: m > 45 ? `45+${m - 45}'` : `${m}'`, live: true }
+  }
+  if (elapsedMin <= HALFTIME_END) {
+    return { phase: 'HT', label: 'Descanso', live: true }
+  }
+  if (elapsedMin <= SECOND_END) {
+    const since = elapsedMin - HALFTIME_END
+    const m = Math.floor(45 + since)
+    return { phase: '2T', label: m > 90 ? `90+${m - 90}'` : `${m}'`, live: true }
+  }
+  return { phase: 'FT', label: 'Finalizando', live: false }
+}
+
+function googleSearchUrl(team1, team2) {
+  const q = `Copa mundo fifa ${team1} ${team2}`
+  return `https://www.google.com/search?q=${encodeURIComponent(q)}`
+}
+
 export default function Home() {
   const { user, profile } = useAuth()
   const data = useLeagueData()
@@ -229,6 +260,17 @@ export default function Home() {
     return myPreds.some(p => p.match_id === nextMatch.id)
   }, [nextMatch, myPreds])
 
+  // Partidos EN CURSO: ya pasó el pitazo, sin resultado oficial, dentro del tiempo estimado
+  const liveMatches = useMemo(() => {
+    const resultIds = new Set(data.results.map(r => r.match_id))
+    return TOURNAMENT.matches
+      .filter(m => m.kickoff_utc && !m.team1?.match(/^[0-9WL]/) && !m.team2?.match(/^[0-9WL]/))
+      .filter(m => !resultIds.has(m.id)) // sin resultado oficial cargado
+      .map(m => ({ match: m, status: liveStatus(m.kickoff_utc, now) }))
+      .filter(x => x.status && x.status.live) // en juego (no terminados)
+      .sort((a, b) => new Date(a.match.kickoff_utc) - new Date(b.match.kickoff_utc))
+  }, [data.results, now])
+
   if (data.loading) return <div className="text-center text-ink-300 py-8">Cargando…</div>
 
   const firstName = profile?.display_name ? profile.display_name.split(' ')[0] : ''
@@ -260,6 +302,48 @@ export default function Home() {
       <NewResultsBanner newResults={newResults} totalNewPoints={totalNewPoints} dismiss={dismissResults} />
       <PendingMatchesBanner userPredictions={myPreds} />
       <NewAchievementsBanner />
+
+      {/* PARTIDOS EN CURSO */}
+      {liveMatches.length > 0 && (
+        <div className="space-y-2">
+          {liveMatches.map(({ match, status }) => (
+            <a
+              key={match.id}
+              href={googleSearchUrl(match.team1, match.team2)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block rounded-2xl p-4 bg-gradient-to-br from-red-900/40 via-ink-900 to-ink-900 border border-red-700/50 hover:border-red-500 transition"
+            >
+              <div className="flex items-center justify-between mb-2">
+                <span className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider font-semibold text-red-300">
+                  <span className="inline-block w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+                  En vivo
+                </span>
+                <span className="text-xs font-mono font-bold text-red-300">
+                  {status.phase === 'HT' ? '⏸ Descanso' : `⏱ ~${status.label}`}
+                </span>
+              </div>
+              <div className="flex items-center justify-center gap-3">
+                <div className="flex-1 text-center">
+                  <div className="text-3xl mb-1">{flagFor(match.team1) || '⚽'}</div>
+                  <div className="font-bold text-sm leading-tight">{match.team1}</div>
+                </div>
+                <div className="text-ink-500 font-bold text-sm px-2">VS</div>
+                <div className="flex-1 text-center">
+                  <div className="text-3xl mb-1">{flagFor(match.team2) || '⚽'}</div>
+                  <div className="font-bold text-sm leading-tight">{match.team2}</div>
+                </div>
+              </div>
+              <div className="mt-3 text-center text-sm font-medium rounded-lg py-2 bg-ink-800 text-brand-300">
+                🔍 Ver marcador en Google →
+              </div>
+              <div className="text-[9px] text-ink-500 text-center mt-1.5">
+                Minuto estimado desde el pitazo (puede variar por descuentos)
+              </div>
+            </a>
+          ))}
+        </div>
+      )}
 
       {/* HERO: próximo partido */}
       {nextMatch && (() => {
