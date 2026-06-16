@@ -33,9 +33,37 @@ function golfLabel(rank, tied, filter) {
   return `${tied ? 'T' : ''}${rank}`
 }
 
+// Traduce cualquier filtro (total, group-Fx, day-YYYY-MM-DD, match-ID) a texto legible
+function filterLabel(filter) {
+  if (filter === 'total') return 'Acumulado'
+  if (filter.startsWith('day-')) {
+    const d = new Date(filter.slice(4) + 'T12:00:00')
+    return 'Día ' + d.toLocaleDateString('es-CO', { day: 'numeric', month: 'short' }).replace('.', '')
+  }
+  if (filter.startsWith('match-')) {
+    const m = matchById(filter.slice(6))
+    return m ? `${m.team1} vs ${m.team2}` : 'Partido'
+  }
+  return FECHA_LABELS[filter] || filter
+}
+
+function ModeBtn({ active, onClick, children }) {
+  return (
+    <button
+      onClick={onClick}
+      className={`flex-1 py-2 rounded-lg text-xs font-medium transition ${
+        active ? 'bg-brand-600 text-white' : 'bg-ink-800 text-ink-300'
+      }`}
+    >
+      {children}
+    </button>
+  )
+}
+
 export default function Standings() {
   const data = useLeagueData()
   const [filter, setFilter] = useState('total')
+  const [filterMode, setFilterMode] = useState('fase') // 'fase' | 'dia' | 'partido'
   const [sharing, setSharing] = useState(false)
   const [shareMsg, setShareMsg] = useState('')
 
@@ -65,6 +93,15 @@ export default function Standings() {
 
     const inScope = (matchId) => {
       if (filter === 'total') return true
+      if (filter.startsWith('match-')) {
+        return matchId === filter.slice(6)
+      }
+      if (filter.startsWith('day-')) {
+        const dayKey = filter.slice(4)
+        const m = matchById(matchId)
+        if (!m?.kickoff_utc) return false
+        return new Date(m.kickoff_utc).toLocaleDateString('en-CA') === dayKey
+      }
       const ids = fechaMatchIds(filter)
       return ids.includes(matchId)
     }
@@ -113,7 +150,34 @@ export default function Standings() {
 
   const { user } = useAuth()
 
-  // Historial de posición EN VIVO: compara el ranking actual contra el ranking
+  // Días y partidos que YA tienen resultado (los únicos con puntos para mostrar)
+  const playedDays = useMemo(() => {
+    const map = new Map() // dayKey -> {dateKey, date, count}
+    for (const r of data.results) {
+      const m = matchById(r.match_id)
+      if (!m?.kickoff_utc) continue
+      const dateKey = new Date(m.kickoff_utc).toLocaleDateString('en-CA')
+      if (!map.has(dateKey)) map.set(dateKey, { dateKey, date: new Date(m.kickoff_utc), count: 0 })
+      map.get(dateKey).count++
+    }
+    return [...map.values()].sort((a, b) => b.date - a.date) // más reciente primero
+  }, [data.results])
+
+  const playedMatchesList = useMemo(() => {
+    return data.results
+      .map(r => matchById(r.match_id))
+      .filter(Boolean)
+      .sort((a, b) => new Date(b.kickoff_utc) - new Date(a.kickoff_utc))
+  }, [data.results])
+
+  const dayShort = (date) => {
+    const today = new Date(); today.setHours(0, 0, 0, 0)
+    const d = new Date(date); d.setHours(0, 0, 0, 0)
+    const diff = Math.round((d - today) / 86400000)
+    if (diff === 0) return 'Hoy'
+    if (diff === -1) return 'Ayer'
+    return d.toLocaleDateString('es-CO', { day: 'numeric', month: 'short' }).replace('.', '')
+  }
   // justo ANTES del último partido con resultado. Cada partido nuevo mueve las flechas.
   // Devuelve un mapa userId -> cambio de puestos (positivo = subió).
   const positionDelta = useMemo(() => {
@@ -200,7 +264,7 @@ export default function Standings() {
         await navigator.share({
           files: [file],
           title: 'Tabla Dari-polla',
-          text: `Así va la Dari-polla 🐔 · ${filter === 'total' ? 'Acumulado' : (FECHA_LABELS[filter] || filter)}`,
+          text: `Así va la Dari-polla 🐔 · ${filterLabel(filter)}`,
         })
         setShareMsg('✅ Compartido')
       } else {
@@ -224,7 +288,8 @@ export default function Standings() {
   // y si hay empates en esos puestos, pagan todos los empatados.
   const finedIds = useMemo(() => {
     const set = new Set()
-    if (filter === 'total' || rows.length <= 2) return set
+    // Las multas solo aplican a fechas/fases completas, no a día ni partido sueltos
+    if (filter === 'total' || filterMode !== 'fase' || rows.length <= 2) return set
     // Puntajes únicos, de menor a mayor (los dos primeros son los dos peores puestos)
     const uniqueScores = [...new Set(rows.map(r => r.total))].sort((a, b) => a - b)
     const worstTwo = new Set(uniqueScores.slice(0, 2))
@@ -232,7 +297,7 @@ export default function Standings() {
       if (worstTwo.has(r.total)) set.add(r.id)
     }
     return set
-  }, [rows, filter])
+  }, [rows, filter, filterMode])
 
   if (data.loading) return <div className="text-center text-ink-300 py-8">Cargando…</div>
 
@@ -243,7 +308,9 @@ export default function Standings() {
         <p className="text-xs text-ink-300">
           {filter === 'total'
             ? 'Acumulado total con todas las predicciones.'
-            : `Solo los puntos de ${FECHA_LABELS[filter] || filter}. Los dos últimos puestos pagan 5.000 COP (si hay empate, pagan todos).`}
+            : filterMode === 'fase'
+              ? `Solo los puntos de ${filterLabel(filter)}. Los dos últimos puestos pagan 5.000 COP (si hay empate, pagan todos).`
+              : `Solo los puntos de: ${filterLabel(filter)}.`}
         </p>
       </div>
 
@@ -286,19 +353,63 @@ export default function Standings() {
       </div>
       {shareMsg && <div className="text-xs text-center text-ink-300">{shareMsg}</div>}
 
-      <div className="flex gap-1 overflow-x-auto -mx-1 px-1 pb-1 sticky top-14 bg-ink-900 z-20 py-1">
-        {FECHA_FILTERS.map(f => (
-          <button
-            key={f.id}
-            onClick={() => setFilter(f.id)}
-            className={`px-3 py-1.5 rounded-lg text-sm whitespace-nowrap ${
-              filter === f.id ? 'bg-brand-600 text-white' : 'bg-ink-800 text-ink-300'
-            }`}
-          >
-            {f.label}
-          </button>
-        ))}
+      {/* Selector de modo de filtro */}
+      <div className="flex gap-1.5 -mx-1 px-1">
+        <ModeBtn active={filter === 'total'} onClick={() => { setFilter('total') }}>Total</ModeBtn>
+        <ModeBtn active={filterMode === 'fase' && filter !== 'total'} onClick={() => { setFilterMode('fase'); setFilter('group-F1') }}>Por fase</ModeBtn>
+        <ModeBtn active={filterMode === 'dia' && filter !== 'total'} onClick={() => { setFilterMode('dia'); if (playedDays[0]) setFilter(`day-${playedDays[0].dateKey}`) }}>Por día</ModeBtn>
+        <ModeBtn active={filterMode === 'partido' && filter !== 'total'} onClick={() => { setFilterMode('partido'); if (playedMatchesList[0]) setFilter(`match-${playedMatchesList[0].id}`) }}>Por partido</ModeBtn>
       </div>
+
+      {/* Selector específico según el modo (oculto en Total) */}
+      {filter !== 'total' && (
+        <div className="flex gap-1 overflow-x-auto -mx-1 px-1 pb-1 sticky top-14 bg-ink-900 z-20 py-1">
+          {filterMode === 'fase' && FECHA_FILTERS.filter(f => f.id !== 'total').map(f => (
+            <button
+              key={f.id}
+              onClick={() => setFilter(f.id)}
+              className={`px-3 py-1.5 rounded-lg text-sm whitespace-nowrap ${
+                filter === f.id ? 'bg-brand-600 text-white' : 'bg-ink-800 text-ink-300'
+              }`}
+            >
+              {f.label}
+            </button>
+          ))}
+
+          {filterMode === 'dia' && (
+            playedDays.length === 0
+              ? <span className="text-xs text-ink-500 px-2 py-1.5">Aún no hay días jugados</span>
+              : playedDays.map(d => (
+                <button
+                  key={d.dateKey}
+                  onClick={() => setFilter(`day-${d.dateKey}`)}
+                  className={`px-3 py-1.5 rounded-lg text-xs whitespace-nowrap flex flex-col items-center min-w-[56px] ${
+                    filter === `day-${d.dateKey}` ? 'bg-brand-600 text-white' : 'bg-ink-800 text-ink-300'
+                  }`}
+                >
+                  <span className="font-semibold capitalize">{dayShort(d.date)}</span>
+                  <span className="text-[9px] opacity-70">{d.count} part.</span>
+                </button>
+              ))
+          )}
+
+          {filterMode === 'partido' && (
+            playedMatchesList.length === 0
+              ? <span className="text-xs text-ink-500 px-2 py-1.5">Aún no hay partidos jugados</span>
+              : playedMatchesList.map(m => (
+                <button
+                  key={m.id}
+                  onClick={() => setFilter(`match-${m.id}`)}
+                  className={`px-3 py-1.5 rounded-lg text-xs whitespace-nowrap ${
+                    filter === `match-${m.id}` ? 'bg-brand-600 text-white' : 'bg-ink-800 text-ink-300'
+                  }`}
+                >
+                  {m.team1?.slice(0, 3).toUpperCase()}-{m.team2?.slice(0, 3).toUpperCase()}
+                </button>
+              ))
+          )}
+        </div>
+      )}
 
       <div className="card overflow-hidden p-0">
         <table className="w-full text-sm">
@@ -419,7 +530,7 @@ async function renderTableImage(rows, filter) {
   ctx.fillText('DARI-POLLA', W / 2, 215)
   ctx.fillStyle = '#cbd5e1'
   ctx.font = '26px -apple-system, system-ui, sans-serif'
-  const sub = filter === 'total' ? 'Tabla acumulada' : `Tabla · ${FECHA_LABELS[filter] || filter}`
+  const sub = filter === 'total' ? 'Tabla acumulada' : `Tabla · ${filterLabel(filter)}`
   ctx.fillText(sub, W / 2, 255)
   ctx.fillStyle = '#94a3b8'
   ctx.font = '20px -apple-system, system-ui, sans-serif'

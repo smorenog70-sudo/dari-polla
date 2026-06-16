@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom'
 import { useMemo } from 'react'
 import { useAuth } from '../lib/auth'
 import { useLeagueData } from '../lib/useLeagueData'
-import { TOURNAMENT, formatKickoff, isMatchLocked, fechaMatchIds, FECHA_LABELS } from '../lib/matches'
+import { TOURNAMENT, formatKickoff, isMatchLocked, fechaMatchIds, FECHA_LABELS, matchById } from '../lib/matches'
 import { teamWithFlag, flagFor } from '../lib/flags'
 import { useNowTick } from '../lib/useNowTick'
 import {
@@ -125,6 +125,66 @@ export default function Home() {
       }
     }
 
+    // Rey del ÚLTIMO PARTIDO (el más reciente con resultado, por hora de pitazo)
+    let matchKingName = null, matchKingLabel = null, matchKingPts = 0, matchKingId = null
+    let lastMatchId = null, lastKo = -Infinity
+    for (const r of data.results) {
+      const m = matchById(r.match_id)
+      const ko = m?.kickoff_utc ? new Date(m.kickoff_utc).getTime() : 0
+      if (ko >= lastKo) { lastKo = ko; lastMatchId = r.match_id }
+    }
+    if (lastMatchId) {
+      const lm = matchById(lastMatchId)
+      const lr = resultsById.get(lastMatchId)
+      const scores = data.profiles.map(prof => {
+        const p = (predsByUser.get(prof.id) || []).find(x => x.match_id === lastMatchId)
+        const pts = (p && lr) ? scoreMatch(p, lr).total : 0
+        return { id: prof.id, pts }
+      }).sort((a, b) => b.pts - a.pts)
+      if (scores[0] && scores[0].pts > 0) {
+        matchKingName = nameOf(scores[0].id)
+        matchKingId = scores[0].id
+        matchKingPts = scores[0].pts
+        matchKingLabel = lm ? `${lm.team1?.slice(0,3).toUpperCase()}-${lm.team2?.slice(0,3).toUpperCase()}` : ''
+      }
+    }
+
+    // Rey del DÍA (más puntos sumando todos los partidos del último día con resultado)
+    let dayKingName = null, dayKingPts = 0, dayKingLabel = null, dayKingId = null
+    if (lastMatchId) {
+      const lm = matchById(lastMatchId)
+      const lastDayKey = lm?.kickoff_utc ? new Date(lm.kickoff_utc).toLocaleDateString('en-CA') : null
+      if (lastDayKey) {
+        // partidos de ese día con resultado
+        const dayMatchIds = new Set()
+        for (const r of data.results) {
+          const m = matchById(r.match_id)
+          if (m?.kickoff_utc && new Date(m.kickoff_utc).toLocaleDateString('en-CA') === lastDayKey) {
+            dayMatchIds.add(r.match_id)
+          }
+        }
+        const dayScores = data.profiles.map(prof => {
+          let p2 = 0
+          for (const p of (predsByUser.get(prof.id) || [])) {
+            if (!dayMatchIds.has(p.match_id)) continue
+            const r = resultsById.get(p.match_id)
+            if (r) p2 += scoreMatch(p, r).total
+          }
+          return { id: prof.id, pts: p2 }
+        }).sort((a, b) => b.pts - a.pts)
+        if (dayScores[0] && dayScores[0].pts > 0) {
+          dayKingName = nameOf(dayScores[0].id)
+          dayKingId = dayScores[0].id
+          dayKingPts = dayScores[0].pts
+          const d = new Date(lastDayKey + 'T12:00:00')
+          const today = new Date(); today.setHours(0,0,0,0)
+          const diff = Math.round((new Date(lastDayKey + 'T12:00:00').setHours(0,0,0,0) - today) / 86400000)
+          dayKingLabel = diff === 0 ? 'Hoy' : diff === -1 ? 'Ayer'
+            : d.toLocaleDateString('es-CO', { day: 'numeric', month: 'short' }).replace('.', '')
+        }
+      }
+    }
+
     // Racha actual
     const myRows = playedMatches(myPreds, resultsById)
     const { current: streak } = streaks(myRows)
@@ -146,6 +206,10 @@ export default function Home() {
       goatIsMe: goatId === user.id,
       kingName,
       kingFecha,
+      matchKingName, matchKingLabel, matchKingPts,
+      matchKingIsMe: matchKingId === user.id,
+      dayKingName, dayKingPts, dayKingLabel,
+      dayKingIsMe: dayKingId === user.id,
     }
   }, [data, user.id, myPreds])
 
@@ -247,6 +311,36 @@ export default function Home() {
               <div className="text-2xl">👑</div>
               <div className="text-[10px] text-ink-400 uppercase tracking-wider mt-0.5">Rey · {stats.kingFecha}</div>
               <div className="text-sm font-bold mt-0.5 truncate text-ink-100">{stats.kingName}</div>
+            </Link>
+          )}
+        </div>
+      )}
+
+      {/* Reyes recientes: último partido y día */}
+      {(stats.matchKingName || stats.dayKingName) && (
+        <div className="grid grid-cols-2 gap-3">
+          {stats.matchKingName && (
+            <Link to="/tabla" className="card text-center hover:bg-ink-700 transition">
+              <div className="text-2xl">⚽👑</div>
+              <div className="text-[10px] text-ink-400 uppercase tracking-wider mt-0.5">
+                Rey del partido{stats.matchKingLabel ? ` · ${stats.matchKingLabel}` : ''}
+              </div>
+              <div className={`text-sm font-bold mt-0.5 truncate ${stats.matchKingIsMe ? 'text-brand-400' : 'text-ink-100'}`}>
+                {stats.matchKingIsMe ? '¡Tú! 🎉' : stats.matchKingName}
+              </div>
+              <div className="text-[10px] text-ink-500">{stats.matchKingPts} pts</div>
+            </Link>
+          )}
+          {stats.dayKingName && (
+            <Link to="/tabla" className="card text-center hover:bg-ink-700 transition">
+              <div className="text-2xl">📅👑</div>
+              <div className="text-[10px] text-ink-400 uppercase tracking-wider mt-0.5">
+                Rey del día{stats.dayKingLabel ? ` · ${stats.dayKingLabel}` : ''}
+              </div>
+              <div className={`text-sm font-bold mt-0.5 truncate ${stats.dayKingIsMe ? 'text-brand-400' : 'text-ink-100'}`}>
+                {stats.dayKingIsMe ? '¡Tú! 🎉' : stats.dayKingName}
+              </div>
+              <div className="text-[10px] text-ink-500">{stats.dayKingPts} pts</div>
             </Link>
           )}
         </div>
