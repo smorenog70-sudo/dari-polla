@@ -2,6 +2,8 @@ import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useLeagueData } from '../lib/useLeagueData'
 import { fechaMatchIds, FECHA_LABELS, matchById } from '../lib/matches'
+import { teamWithFlag } from '../lib/flags'
+import { playedMatches, streaks } from '../lib/playerStats'
 import {
   scoreMatch,
   scoreGroupPositions,
@@ -66,6 +68,8 @@ export default function Standings() {
   const [filterMode, setFilterMode] = useState('fase') // 'fase' | 'dia' | 'partido'
   const [sharing, setSharing] = useState(false)
   const [shareMsg, setShareMsg] = useState('')
+  const [openPred, setOpenPred] = useState(null) // id de fila con predicción abierta
+  const [onlyExact, setOnlyExact] = useState(false) // resaltar solo aciertos exactos
 
   const rows = useMemo(() => {
     if (data.loading) return []
@@ -90,6 +94,14 @@ export default function Standings() {
     }
     const resultsById = new Map(data.results.map(r => [r.match_id, r]))
     const actualThirds = data.thirdResults.map(r => r.team)
+
+    // Identificar el último partido con resultado (por hora de pitazo)
+    let lastMatchId = null, lastKo = -Infinity
+    for (const r of data.results) {
+      const m = matchById(r.match_id)
+      const ko = m?.kickoff_utc ? new Date(m.kickoff_utc).getTime() : 0
+      if (ko >= lastKo) { lastKo = ko; lastMatchId = r.match_id }
+    }
 
     const inScope = (matchId) => {
       if (filter === 'total') return true
@@ -120,6 +132,25 @@ export default function Standings() {
         bonusPts += scoreGroupPositions(gpByUser.get(prof.id) || [], data.groupResults).total
         bonusPts += scoreThirds(tpByUser.get(prof.id) || [], actualThirds).total
       }
+      // Puntos y aciertos del ÚLTIMO partido jugado (para mostrar en la tabla)
+      let lastPts = null, lastExact = false, lastOutcome = false, lastPredStr = null
+      if (lastMatchId) {
+        const lp = myPreds.find(p => p.match_id === lastMatchId)
+        const lr = resultsById.get(lastMatchId)
+        if (lp && lr) {
+          const sc = scoreMatch(lp, lr)
+          lastPts = sc.total
+          lastExact = sc.breakdown.exact > 0
+          lastOutcome = sc.breakdown.outcome > 0
+          lastPredStr = `${lp.score1}-${lp.score2}`
+        }
+      }
+      // Racha actual de aciertos de ganador (solo relevante en total)
+      let streak = 0
+      if (filter === 'total') {
+        const myRows = playedMatches(myPreds, resultsById)
+        streak = streaks(myRows).current
+      }
       return {
         id: prof.id,
         name: (prof.nickname || '').trim() || prof.display_name,
@@ -130,6 +161,7 @@ export default function Standings() {
         bonus_points: bonusPts,
         total: matchPts + bonusPts,
         fines: finesByUser.get(prof.id) || 0,
+        lastPts, lastExact, lastOutcome, lastPredStr, streak,
       }
     }).sort((a, b) => b.total - a.total)
 
@@ -149,6 +181,21 @@ export default function Standings() {
   }, [data, filter])
 
   const { user } = useAuth()
+
+  // Info del último partido jugado (para el encabezado): equipos y resultado
+  const lastMatchInfo = useMemo(() => {
+    let lastId = null, lastKo = -Infinity
+    for (const r of data.results) {
+      const m = matchById(r.match_id)
+      const ko = m?.kickoff_utc ? new Date(m.kickoff_utc).getTime() : 0
+      if (ko >= lastKo) { lastKo = ko; lastId = r.match_id }
+    }
+    if (!lastId) return null
+    const m = matchById(lastId)
+    const r = data.results.find(x => x.match_id === lastId)
+    if (!m || !r) return null
+    return { team1: m.team1, team2: m.team2, score1: r.score1, score2: r.score2 }
+  }, [data.results])
 
   // Días y partidos que YA tienen resultado (los únicos con puntos para mostrar)
   const playedDays = useMemo(() => {
@@ -411,13 +458,32 @@ export default function Standings() {
         </div>
       )}
 
+      {filter === 'total' && lastMatchInfo && (
+        <div className="flex items-center justify-between gap-2 flex-wrap">
+          <div className="text-xs text-ink-300">
+            <span className="text-ink-500">Último partido:</span>{' '}
+            <span className="font-medium">
+              {teamWithFlag(lastMatchInfo.team1)} <span className="font-mono font-bold text-brand-400">{lastMatchInfo.score1}-{lastMatchInfo.score2}</span> {teamWithFlag(lastMatchInfo.team2)}
+            </span>
+          </div>
+          <button
+            onClick={() => setOnlyExact(v => !v)}
+            className={`text-xs px-2.5 py-1 rounded-lg transition ${
+              onlyExact ? 'bg-brand-600 text-white' : 'bg-ink-700 text-ink-300'
+            }`}
+          >
+            🎯 {onlyExact ? 'Mostrando exactos' : 'Resaltar exactos'}
+          </button>
+        </div>
+      )}
+
       <div className="card overflow-hidden p-0">
         <table className="w-full text-sm">
           <thead className="bg-ink-700 text-ink-300 text-xs uppercase">
             <tr>
               <th className="py-2 px-3 text-left">#</th>
               <th className="py-2 px-2 text-left">Jugador</th>
-              <th className="py-2 px-2 text-right">Pts</th>
+              <th className="py-2 px-2 text-right">Pts<br/><span className="text-[9px] font-normal normal-case text-ink-400">últ. partido</span></th>
               {filter === 'total' && (
                 <th className="py-2 px-2 text-right">Multas</th>
               )}
@@ -427,10 +493,11 @@ export default function Standings() {
             {rows.map((r, idx) => {
               const isBottom2 = finedIds.has(r.id)
               const isMe = r.id === user.id
+              const dimmed = onlyExact && filter === 'total' && !r.lastExact
               return (
                 <tr
                   key={r.id}
-                  className={`border-t border-ink-700 ${
+                  className={`border-t border-ink-700 transition ${dimmed ? 'opacity-30' : ''} ${
                     isMe ? 'bg-brand-900/30 outline outline-1 outline-brand-500/50' :
                     idx === 0 && filter === 'total' ? 'bg-yellow-900/20' :
                     idx === 1 && filter === 'total' ? 'bg-ink-700/40' :
@@ -451,6 +518,9 @@ export default function Standings() {
                     <Link to={isMe ? '/progreso' : `/progreso/${r.id}`} className="font-medium hover:text-brand-400 transition">
                       {r.avatar} {r.name}
                       {isMe && <span className="ml-1 text-[10px] text-brand-400 font-bold">(tú)</span>}
+                      {filter === 'total' && r.streak >= 3 && (
+                        <span className="ml-1 text-[10px] text-orange-400" title={`Racha de ${r.streak} aciertos`}>🔥{r.streak}</span>
+                      )}
                       <span className="ml-1 text-[10px] text-ink-500">›</span>
                     </Link>
                     <div className="text-xs text-ink-500">
@@ -462,6 +532,25 @@ export default function Standings() {
                     <div className="font-bold">{r.total}</div>
                     {filter === 'total' && r.bonus_points > 0 && (
                       <div className="text-xs text-ink-500">+{r.bonus_points} bonus</div>
+                    )}
+                    {filter === 'total' && r.lastPts != null && (
+                      <button
+                        onClick={() => setOpenPred(openPred === r.id ? null : r.id)}
+                        className="text-[10px] mt-0.5 whitespace-nowrap hover:underline"
+                        title="Ver qué predijo"
+                      >
+                        <span className={r.lastPts > 0 ? 'text-green-400' : 'text-ink-500'}>
+                          {r.lastPts > 0 ? `+${r.lastPts}` : '+0'}
+                        </span>
+                        {r.lastExact && <span> 🎯</span>}
+                        {!r.lastExact && r.lastOutcome && <span> ✅</span>}
+                      </button>
+                    )}
+                    {openPred === r.id && r.lastPredStr && lastMatchInfo && (
+                      <div className="text-[10px] text-ink-400 mt-1 bg-ink-900/70 rounded px-1.5 py-1 leading-tight">
+                        Predijo <span className="font-mono font-bold text-brand-400">{r.lastPredStr}</span><br/>
+                        Fue <span className="font-mono font-bold text-ink-200">{lastMatchInfo.score1}-{lastMatchInfo.score2}</span>
+                      </div>
                     )}
                   </td>
                   {filter === 'total' && (
@@ -475,6 +564,19 @@ export default function Standings() {
           </tbody>
         </table>
       </div>
+
+      {filter === 'total' && (
+        <div className="card bg-ink-800/50">
+          <div className="text-[11px] text-ink-300 space-y-1">
+            <div className="font-semibold text-ink-200 mb-1">📖 Leyenda</div>
+            <div><span className="text-green-400 font-mono">+N</span> = puntos del último partido (tócalo para ver qué predijo)</div>
+            <div>🎯 = le pegó al <strong>marcador exacto</strong> (¡máximo puntaje!)</div>
+            <div>✅ = le pegó al <strong>ganador</strong> (o empate), pero no al marcador exacto</div>
+            <div>🔥N = racha de N aciertos seguidos de ganador</div>
+            <div>▲▼ = subió o bajó de puesto con el último partido</div>
+          </div>
+        </div>
+      )}
 
       {filter !== 'total' && rows.length > 2 && (
         <p className="text-xs text-ink-500 text-center">
