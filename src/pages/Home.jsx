@@ -269,13 +269,35 @@ export default function Home() {
 
   // Partidos EN CURSO: ya pasó el pitazo, sin resultado oficial, dentro del tiempo estimado
   const liveMatches = useMemo(() => {
-    const resultIds = new Set(data.results.map(r => r.match_id))
-    return TOURNAMENT.matches
-      .filter(m => m.kickoff_utc && !m.team1?.match(/^[0-9WL]/) && !m.team2?.match(/^[0-9WL]/))
-      .filter(m => !resultIds.has(m.id)) // sin resultado oficial cargado
-      .map(m => ({ match: m, status: liveStatus(m.kickoff_utc, now) }))
-      .filter(x => x.status && x.status.live) // en juego (no terminados)
-      .sort((a, b) => new Date(a.match.kickoff_utc) - new Date(b.match.kickoff_utc))
+    const resultById = new Map(data.results.map(r => [r.match_id, r]))
+    const RECENT_WINDOW = 3 * 60 * 60 * 1000 // 3h: cuánto mostrar un partido ya terminado
+
+    const out = []
+    for (const m of TOURNAMENT.matches) {
+      if (!m.kickoff_utc || m.team1?.match(/^[0-9WL]/) || m.team2?.match(/^[0-9WL]/)) continue
+      const ko = new Date(m.kickoff_utc).getTime()
+      const status = liveStatus(m.kickoff_utc, now)
+      if (!status) continue // aún no empieza
+
+      const result = resultById.get(m.id)
+
+      if (status.live) {
+        // En juego (1T, descanso, 2T) y sin resultado oficial → tarjeta en vivo
+        if (!result) out.push({ match: m, status, mode: 'live' })
+      } else {
+        // Terminó el tiempo estimado. Lo mostramos un rato (ventana reciente).
+        const endedMsAgo = now - (ko + 119 * 60000)
+        if (endedMsAgo >= 0 && endedMsAgo <= RECENT_WINDOW) {
+          out.push({
+            match: m,
+            status,
+            mode: 'ended',
+            result: result || null, // marcador real si el admin ya lo cargó
+          })
+        }
+      }
+    }
+    return out.sort((a, b) => new Date(b.match.kickoff_utc) - new Date(a.match.kickoff_utc))
   }, [data.results, now])
 
   if (data.loading) return <div className="text-center text-ink-300 py-8">Cargando…</div>
@@ -310,47 +332,76 @@ export default function Home() {
       <PendingMatchesBanner userPredictions={myPreds} />
       <NewAchievementsBanner />
 
-      {/* PARTIDOS EN CURSO */}
+      {/* PARTIDOS EN CURSO / RECIÉN TERMINADOS */}
       {liveMatches.length > 0 && (
         <div className="space-y-2">
-          {liveMatches.map(({ match, status }) => (
-            <a
-              key={match.id}
-              href={googleSearchUrl(match.team1, match.team2)}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block rounded-2xl p-4 bg-gradient-to-br from-red-900/40 via-ink-900 to-ink-900 border border-red-700/50 hover:border-red-500 transition"
-            >
-              <div className="flex items-center justify-between mb-2">
-                <span className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider font-semibold text-red-300">
-                  <span className="inline-block w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-                  En vivo
-                </span>
-                <span className="text-xs font-mono font-bold text-red-300">
-                  {status.phase === 'HT' ? '⏸ Descanso'
-                    : status.phase === 'PRE' ? '🟢 Por comenzar'
-                    : `⏱ ~${status.label}`}
-                </span>
-              </div>
-              <div className="flex items-center justify-center gap-3">
-                <div className="flex-1 text-center">
-                  <div className="text-3xl mb-1">{flagFor(match.team1) || '⚽'}</div>
-                  <div className="font-bold text-sm leading-tight">{match.team1}</div>
+          {liveMatches.map(({ match, status, mode, result }) => {
+            const ended = mode === 'ended'
+            return (
+              <a
+                key={match.id}
+                href={googleSearchUrl(match.team1, match.team2)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`block rounded-2xl p-4 bg-gradient-to-br transition ${
+                  ended
+                    ? 'from-ink-800 via-ink-900 to-ink-900 border border-ink-600 hover:border-ink-500'
+                    : 'from-red-900/40 via-ink-900 to-ink-900 border border-red-700/50 hover:border-red-500'
+                }`}
+              >
+                <div className="flex items-center justify-between mb-2">
+                  {ended ? (
+                    <span className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider font-semibold text-ink-300">
+                      ⏹ Finalizado
+                    </span>
+                  ) : (
+                    <span className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider font-semibold text-red-300">
+                      <span className="inline-block w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+                      En vivo
+                    </span>
+                  )}
+                  {!ended && (
+                    <span className="text-xs font-mono font-bold text-red-300">
+                      {status.phase === 'HT' ? '⏸ Descanso'
+                        : status.phase === 'PRE' ? '🟢 Por comenzar'
+                        : `⏱ ~${status.label}`}
+                    </span>
+                  )}
                 </div>
-                <div className="text-ink-500 font-bold text-sm px-2">VS</div>
-                <div className="flex-1 text-center">
-                  <div className="text-3xl mb-1">{flagFor(match.team2) || '⚽'}</div>
-                  <div className="font-bold text-sm leading-tight">{match.team2}</div>
+                <div className="flex items-center justify-center gap-3">
+                  <div className="flex-1 text-center">
+                    <div className="text-3xl mb-1">{flagFor(match.team1) || '⚽'}</div>
+                    <div className="font-bold text-sm leading-tight">{match.team1}</div>
+                  </div>
+                  {ended && result ? (
+                    <div className="text-2xl font-mono font-bold px-2 text-brand-400">
+                      {result.score1}-{result.score2}
+                    </div>
+                  ) : (
+                    <div className="text-ink-500 font-bold text-sm px-2">VS</div>
+                  )}
+                  <div className="flex-1 text-center">
+                    <div className="text-3xl mb-1">{flagFor(match.team2) || '⚽'}</div>
+                    <div className="font-bold text-sm leading-tight">{match.team2}</div>
+                  </div>
                 </div>
-              </div>
-              <div className="mt-3 text-center text-sm font-medium rounded-lg py-2 bg-ink-800 text-brand-300">
-                🔍 Ver marcador en Google →
-              </div>
-              <div className="text-[9px] text-ink-500 text-center mt-1.5">
-                Minuto estimado desde el pitazo (puede variar por descuentos)
-              </div>
-            </a>
-          ))}
+                <div className={`mt-3 text-center text-sm font-medium rounded-lg py-2 ${
+                  ended ? 'bg-ink-700 text-ink-200' : 'bg-ink-800 text-brand-300'
+                }`}>
+                  {ended && result ? '🔍 Ver detalles en Google →'
+                    : ended ? '🔍 Ver resultado en Google →'
+                    : '🔍 Ver marcador en Google →'}
+                </div>
+                <div className="text-[9px] text-ink-500 text-center mt-1.5">
+                  {ended && !result
+                    ? 'Resultado oficial pendiente de cargar'
+                    : ended
+                      ? 'Marcador final · ya cuenta para los puntos'
+                      : 'Minuto estimado desde el pitazo (puede variar por descuentos)'}
+                </div>
+              </a>
+            )
+          })}
         </div>
       )}
 
