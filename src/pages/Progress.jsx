@@ -2,7 +2,7 @@ import { useMemo } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { useAuth } from '../lib/auth'
 import { useLeagueData } from '../lib/useLeagueData'
-import { matchById } from '../lib/matches'
+import { matchById, TOURNAMENT } from '../lib/matches'
 import {
   playedMatches,
   streaks,
@@ -16,7 +16,20 @@ import {
   bestAndWorst,
   personalGoalBias,
 } from '../lib/analytics'
+import {
+  positionOverTime,
+  bestWorstDay,
+  hitRates,
+  favoriteScore,
+  favoriteVsUnderdog,
+  drawBias,
+  nemesisAndCharm,
+  gapToClimb,
+  groupPercentile,
+  projection,
+} from '../lib/progressStats'
 import { BiasGauge, DonutChart } from '../components/DataViz'
+import AdvancedStats from '../components/AdvancedStats'
 
 export default function Progress() {
   const { user } = useAuth()
@@ -141,10 +154,28 @@ export default function Progress() {
       }
     }
 
+    // === Las 10 estadísticas nuevas ===
+    const totalMatches = TOURNAMENT.matches.filter(
+      m => !m.team1?.match(/^[0-9WL]/) && !m.team2?.match(/^[0-9WL]/)
+    ).length || 104
+    const newStats = {
+      positionSeries: positionOverTime(viewedUserId, allRowsByUser, playedMatchIds), // #1
+      bestWorstDay: bestWorstDay(rows),               // #2 (por día)
+      hitRates: hitRates(rows),                        // #3
+      favoriteScore: favoriteScore(myPreds),           // #4
+      favVsUnder: favoriteVsUnderdog(myPreds, resultsById, data.predictions), // #5
+      drawBias: drawBias(myPreds, resultsById),        // #6
+      nemesisCharm: nemesisAndCharm(rows),             // #7
+      gapToClimb: gapToClimb(viewedUserId, totalsByUser), // #8
+      percentile: groupPercentile(viewedUserId, totalsByUser), // #9
+      projection: projection(rows, totalMatches),      // #10
+    }
+
     return {
       rows, evolution, st, ach, totalPoints, exactCount, played: rows.length,
       profile, breakdown, efficiency, extremes, goalBias,
       compareSeries, compareLabels, holdersByBadge,
+      newStats,
     }
   }, [data, viewedUserId, user.id])
 
@@ -241,6 +272,11 @@ export default function Progress() {
       {/* === ANÁLISIS PERSONAL (data scientist) === */}
       {stats.played > 0 && (
         <PersonalAnalysis stats={stats} />
+      )}
+
+      {/* === ESTADÍSTICAS AVANZADAS (las 10 nuevas, en pestañas) === */}
+      {stats.played > 0 && (
+        <AdvancedStats s={stats.newStats} />
       )}
 
       {/* Logros */}
