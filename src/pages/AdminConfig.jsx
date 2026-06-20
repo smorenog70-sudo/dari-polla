@@ -26,6 +26,7 @@ export default function AdminConfig() {
       { key: 'entry_fee', value: Number(config.entry_fee) || 50000 },
       { key: 'fine_amount', value: Number(config.fine_amount) || 5000 },
       { key: 'knockouts_enabled', value: !!config.knockouts_enabled },
+      { key: 'predictions_locked', value: !!config.predictions_locked },
     ]
     const { error } = await supabase.from('config').upsert(rows, { onConflict: 'key' })
     setSaving(false)
@@ -43,6 +44,40 @@ export default function AdminConfig() {
     <div className="space-y-3 pb-24">
       <div className="card">
         <h1 className="text-xl font-bold mb-1">🔧 Configuración</h1>
+      </div>
+
+      {/* BLOQUEO DE EMERGENCIA — destacado */}
+      <div className={`card border-2 ${config.predictions_locked ? 'border-red-500 bg-red-900/20' : 'border-ink-600'}`}>
+        <label className="flex items-start gap-3 cursor-pointer">
+          <input
+            type="checkbox"
+            checked={!!config.predictions_locked}
+            onChange={async e => {
+              const val = e.target.checked
+              set('predictions_locked', val)
+              // Guardado inmediato para que el bloqueo sea instantáneo
+              setSaving(true)
+              await supabase.from('config').upsert(
+                [{ key: 'predictions_locked', value: val }],
+                { onConflict: 'key' }
+              )
+              setSaving(false)
+              setMsg(val ? '🔒 Predicciones BLOQUEADAS para todos' : '🔓 Predicciones reabiertas')
+              setTimeout(() => setMsg(''), 3000)
+            }}
+            className="w-6 h-6 rounded accent-red-600 mt-0.5"
+          />
+          <div>
+            <div className="font-bold text-base">
+              {config.predictions_locked ? '🔒 Predicciones BLOQUEADAS' : '🔓 Bloquear todas las predicciones'}
+            </div>
+            <div className="text-xs text-ink-400 mt-1">
+              Bloqueo de emergencia: al activarlo, <strong>nadie</strong> puede crear ni modificar
+              predicciones (ni grupos, ni terceros, ni partidos), sin importar los horarios.
+              Úsalo si hay un problema con las fechas. Se guarda al instante.
+            </div>
+          </div>
+        </label>
       </div>
 
       <div className="card space-y-3">

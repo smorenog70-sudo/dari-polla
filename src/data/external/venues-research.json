@@ -1,0 +1,162 @@
+{
+  "venues": {
+    "400017978": {
+      "realName": "SoFi Stadium",
+      "wcCapacity": 70000,
+      "lat": 33.9534,
+      "lon": -118.339,
+      "tz": "America/Los_Angeles",
+      "city": "Inglewood, California",
+      "note": "FIFA tournament name: Los Angeles Stadium. Fixed translucent roof, open-air sides, no climate control. Permanent artificial turf replaced with temporary natural grass for WC2026. Hosts the USMNT's tournament opener on 2026-06-12 and a quarterfinal. Capacity 70,000 per FIFA."
+    },
+    "400098290": {
+      "realName": "Mercedes-Benz Stadium",
+      "wcCapacity": 75000,
+      "lat": 33.7556,
+      "lon": -84.4,
+      "tz": "America/New_York",
+      "city": "Atlanta, Georgia",
+      "note": "FIFA tournament name: Atlanta Stadium. Retractable roof, climate-controlled indoor venue. Permanent artificial turf replaced with temporary natural grass for WC2026. Hosts a semifinal on 2026-07-15. Capacity 75,000 per FIFA."
+    },
+    "400216606": {
+      "realName": "Lumen Field",
+      "wcCapacity": 69000,
+      "lat": 47.5952,
+      "lon": -122.3316,
+      "tz": "America/Los_Angeles",
+      "city": "Seattle, Washington",
+      "note": "FIFA tournament name: Seattle Stadium. Open-air. Permanent FieldTurf overlaid for WC2026 with natural grass: ~6 in of sand base then Kentucky bluegrass/perennial ryegrass sod grown in Moses Lake, WA. Capacity 69,000 per FIFA. Home of Seattle Seahawks (NFL) and Seattle Sounders (MLS)."
+    },
+    "400222084": {
+      "realName": "Estadio Azteca (commercially renamed Estadio Banorte in 2025)",
+      "wcCapacity": 93000,
+      "lat": 19.3029,
+      "lon": -99.1505,
+      "tz": "America/Mexico_City",
+      "city": "Mexico City",
+      "note": "FIFA tournament name: Estadio Ciudad de Mexico / Mexico City Stadium. Renamed Estadio Banorte under a 2025 sponsorship deal funding its WC renovation (ESPN); FIFA's clean name applies during the tournament. Hosts the opening match on 2026-06-11 (Mexico vs South Africa) - first stadium to host matches at three World Cups (1970, 1986, 2026) and three opening matches. Natural (hybrid-reinforced) grass. Capacity 93,000 per FIFA."
+    },
+    "400238450": {
+      "realName": "Estadio BBVA",
+      "wcCapacity": 53500,
+      "lat": 25.6691,
+      "lon": -100.2444,
+      "tz": "America/Monterrey",
+      "city": "Guadalupe, Nuevo Leon (Monterrey)",
+      "note": "FIFA tournament name: Estadio Monterrey. Open-air, natural grass. Home of CF Monterrey. Capacity 53,500 per FIFA."
+    },
+    "400242032": {
+      "realName": "BMO Field",
+      "wcCapacity": 45000,
+      "lat": 43.6332,
+      "lon": -79.4186,
+      "tz": "America/Toronto",
+      "city": "Toronto, Ontario",
+      "note": "FIFA tournament name: Toronto Stadium. Smallest WC2026 venue; expanded from 30,000 to ~45,000-45,500 with temporary stands for the tournament. Hybrid natural-grass pitch. Hosts Canada's tournament opener on 2026-06-12. Capacity 45,000 per FIFA."
+    },
+    "400248370": {
+      "realName": "BC Place",
+      "wcCapacity": 54000,
+      "lat": 49.2767,
+      "lon": -123.112,
+      "tz": "America/Vancouver",
+      "city": "Vancouver, British Columbia",
+      "note": "FIFA tournament name: BC Place Vancouver. Retractable roof, climate-controlled. Permanent artificial turf replaced for WC2026 with natural grass sod (grown on plastic) installed over ~20 cm of sand with drainage/irrigation system. Capacity 54,000 per FIFA."
+    },
+    "400248622": {
+      "realName": "Lincoln Financial Field",
+      "wcCapacity": 69000,
+      "lat": 39.9008,
+      "lon": -75.1675,
+      "tz": "America/New_York",
+      "city": "Philadelphia, Pennsylvania",
+      "note": "FIFA tournament name: Philadelphia Stadium. Open-air; already a natural (hybrid-reinforced) grass surface, upgraded to FIFA spec for WC2026. Home of Philadelphia Eagles (NFL). Capacity 69,000 per FIFA."
+    },
+    "400248623": {
+      "realName": "Gillette Stadium",
+      "wcCapacity": 65000,
+      "lat": 42.0909,
+      "lon": -71.2644,
+      "tz": "America/New_York",
+      "city": "Foxborough, Massachusetts (Boston)",
+      "note": "FIFA tournament name: Boston Stadium. Open-air. Permanent artificial turf replaced with temporary natural grass for WC2026. Hosts a quarterfinal. Home of New England Patriots (NFL). Capacity 65,000 per FIFA."
+    },
+    "400249385": {
+      "realName": "NRG Stadium",
+      "wcCapacity": 72000,
+      "lat": 29.6849,
+      "lon": -95.4108,
+      "tz": "America/Chicago",
+      "city": "Houston, Texas",
+      "note": "FIFA tournament name: Houston Stadium. Retractable roof, climate-controlled. Permanent artificial turf replaced with temporary natural grass for WC2026. Home of Houston Texans (NFL). Capacity 72,000 per FIFA."
+    },
+    "400252150": {
+      "realName": "Estadio Akron",
+      "wcCapacity": 52000,
+      "lat": 20.6818,
+      "lon": -103.4624,
+      "tz": "America/Mexico_City",
+      "city": "Zapopan, Jalisco (Guadalajara)",
+      "note": "FIFA tournament name: Estadio Guadalajara. Open-air, natural grass. Home of C.D. Guadalajara (Chivas). Capacity 52,000 per FIFA (note: FIFA ticketing material has also listed lower figures around 44,000-48,000)."
+    },
+    "400254717": {
+      "realName": "Arrowhead Stadium (GEHA Field at Arrowhead Stadium)",
+      "wcCapacity": 73000,
+      "lat": 39.0489,
+      "lon": -94.4839,
+      "tz": "America/Chicago",
+      "city": "Kansas City, Missouri",
+      "note": "FIFA tournament name: Kansas City Stadium. Commercial name GEHA Field at Arrowhead Stadium; FIFA clean name used during tournament. Open-air, natural grass (resodded to FIFA spec). Hosts a quarterfinal on 2026-07-11. Home of Kansas City Chiefs (NFL). Capacity 73,000 per FIFA."
+    },
+    "400257521": {
+      "realName": "Levi's Stadium",
+      "wcCapacity": 71000,
+      "lat": 37.4032,
+      "lon": -121.9698,
+      "tz": "America/Los_Angeles",
+      "city": "Santa Clara, California (SF Bay Area)",
+      "note": "FIFA tournament name: San Francisco Bay Area Stadium. Open-air, natural grass (regular surface, upgraded to FIFA hybrid-reinforced spec). Home of San Francisco 49ers (NFL). Capacity 71,000 per FIFA."
+    },
+    "400257525": {
+      "realName": "Hard Rock Stadium",
+      "wcCapacity": 65000,
+      "lat": 25.958,
+      "lon": -80.2389,
+      "tz": "America/New_York",
+      "city": "Miami Gardens, Florida",
+      "note": "FIFA tournament name: Miami Stadium. Open-air with canopy roof over stands; natural Bermuda-grass surface. Hosts a quarterfinal on 2026-07-11 and the third-place match on 2026-07-18. Home of Miami Dolphins (NFL). Capacity 65,000 per FIFA."
+    },
+    "400257526": {
+      "realName": "AT&T Stadium",
+      "wcCapacity": 94000,
+      "lat": 32.7478,
+      "lon": -97.0928,
+      "tz": "America/Chicago",
+      "city": "Arlington, Texas (Dallas)",
+      "note": "FIFA tournament name: Dallas Stadium. Largest WC2026 venue (94,000 per FIFA). Retractable roof, climate-controlled. Permanent artificial turf replaced with temporary natural grass for WC2026. Hosts nine matches, the most of any venue, including a semifinal on 2026-07-14. Home of Dallas Cowboys (NFL)."
+    },
+    "400257536": {
+      "realName": "MetLife Stadium",
+      "wcCapacity": 82500,
+      "lat": 40.8135,
+      "lon": -74.0744,
+      "tz": "America/New_York",
+      "city": "East Rutherford, New Jersey (New York/New Jersey)",
+      "note": "FIFA tournament name: New York New Jersey Stadium. Open-air. Permanent artificial turf replaced for WC2026 with a temporary natural grass pitch laid over aluminum flooring, gravel and sand; ~1,700 seats removed to widen the field to FIFA dimensions. Hosts the FINAL on 2026-07-19 (announced by FIFA 2024-02-04). Capacity 82,500 per FIFA."
+    }
+  },
+  "sources": [
+    "https://en.wikipedia.org/wiki/2026_FIFA_World_Cup",
+    "https://www.fifa.com/en/tournaments/mens/worldcup/canadamexicousa2026/articles/world-cup-2026-stadiums-fifa-soccer-football-mexico-usa-canada",
+    "https://www.fifa.com/en/tournaments/mens/worldcup/canadamexicousa2026/articles/dallas-stadium-host-nine-world-cup-matches",
+    "https://www.espn.com/soccer/story/_/id/44253209/estadio-azteca-banorte-new-name-world-cup-2026-remodel",
+    "https://www.espn.com/soccer/story/_/id/39437198/2026-world-cup-final-metlife-stadium-usa-kicks-la",
+    "https://www.skysports.com/football/news/12010/13272067/2026-world-cup-dates-venues-host-cities-and-format-for-usa-canada-and-mexico-tournament",
+    "https://www.washingtonpost.com/sports/interactive/2026/06/04/quest-get-perfect-grass-into-16-world-cup-stadiums/",
+    "https://theconversation.com/we-designed-the-turf-for-soccers-biggest-world-cup-ever-heres-how-we-created-the-same-playing-experience-across-3-countries-279536",
+    "https://www.utk.edu/turfgrass/",
+    "https://mexiconewsdaily.com/news/fifa-azteca-stadium-mexico-city-stadium/",
+    "https://www.mlssoccer.com/news/toronto-fc-to-expand-bmo-field-to-host-2026-world-cup-matches",
+    "https://en.wikipedia.org/w/api.php?action=query&prop=coordinates (per-stadium Wikipedia coordinates)"
+  ]
+}

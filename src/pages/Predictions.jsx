@@ -332,6 +332,12 @@ export default function Predictions() {
   }, [preds, original])
 
   const save = async () => {
+    // Bloqueo de emergencia del admin
+    if (config.predictions_locked === true) {
+      setSavedMsg('🔒 Las predicciones están bloqueadas por el administrador.')
+      setTimeout(() => setSavedMsg(''), 4000)
+      return
+    }
     setSaving(true)
     setSavedMsg('')
     const rows = []
@@ -390,6 +396,15 @@ export default function Predictions() {
           🌍 Ver cómo van los grupos antes de apostar →
         </Link>
       </div>
+
+      {config.predictions_locked === true && (
+        <div className="card bg-red-900/30 border border-red-600 text-red-100">
+          <div className="font-bold">🔒 Predicciones bloqueadas</div>
+          <div className="text-xs mt-1">
+            El administrador bloqueó temporalmente las predicciones. No podrás guardar cambios por ahora.
+          </div>
+        </div>
+      )}
 
       {/* Toggle de modo de vista */}
       <div className="flex gap-2 -mx-1 px-1">

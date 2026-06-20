@@ -1,0 +1,387 @@
+{
+ "teams": {
+  "ALG": {
+   "colors": [
+    "#00792c",
+    "#FFFFFF"
+   ],
+   "nickname": "الأفناك",
+   "web": "faf.dz"
+  },
+  "ARG": {
+   "colors": [
+    "#43A1D5",
+    "#D5B048"
+   ],
+   "nickname": "La Albiceleste",
+   "web": "www.afa.com.ar"
+  },
+  "AUS": {
+   "colors": [
+    "#FFCD00",
+    "#00843D"
+   ],
+   "nickname": "Socceroos",
+   "web": "www.footballaustralia.com.au/socceroos"
+  },
+  "AUT": {
+   "colors": [
+    "#EF3340",
+    "#FFFFFF"
+   ],
+   "nickname": "Das Team",
+   "web": "www.oefb.at"
+  },
+  "BEL": {
+   "colors": [
+    "#E30613",
+    "#FFD500"
+   ],
+   "nickname": "De Rode Duivels",
+   "web": "www.rbfa.be"
+  },
+  "BIH": {
+   "colors": [
+    "#002F6C",
+    "#FFCD00"
+   ],
+   "nickname": "Zmajevi",
+   "web": "www.nfsbih.ba"
+  },
+  "BRA": {
+   "colors": [
+    "#FFDC02",
+    "#193375"
+   ],
+   "nickname": "Seleção",
+   "web": "www.cbf.com.br"
+  },
+  "CAN": {
+   "colors": [
+    "#C5281C",
+    "#FFFFFF"
+   ],
+   "nickname": "The Canucks",
+   "web": "canadasoccer.com"
+  },
+  "CIV": {
+   "colors": [
+    "#F5821F",
+    "#26AD90"
+   ],
+   "nickname": "Les Éléphants",
+   "web": "www.fif-ci.com/CI"
+  },
+  "COD": {
+   "colors": [
+    "#0085CA",
+    "#EF3340"
+   ],
+   "nickname": "Les Léopards",
+   "web": null
+  },
+  "COL": {
+   "colors": [
+    "#FCD116",
+    "#003893"
+   ],
+   "nickname": "Los Cafeteros",
+   "web": "fcf.com.co"
+  },
+  "CPV": {
+   "colors": [
+    "#003DA5",
+    "#FFD100"
+   ],
+   "nickname": "Tubarões Azuis",
+   "web": "fcf.cv"
+  },
+  "CRO": {
+   "colors": [
+    "#ED1C24",
+    "#FFFFFF"
+   ],
+   "nickname": "Vatreni",
+   "web": "hns-cff.hr"
+  },
+  "CUW": {
+   "colors": [
+    "#002B7F",
+    "#F9E814"
+   ],
+   "nickname": null,
+   "web": "ffk.cw"
+  },
+  "CZE": {
+   "colors": [
+    "#D7141A",
+    "#11457E"
+   ],
+   "nickname": null,
+   "web": "facr.fotbal.cz"
+  },
+  "ECU": {
+   "colors": [
+    "#FFCE00",
+    "#002255"
+   ],
+   "nickname": "La Tri",
+   "web": "www.fef.ec"
+  },
+  "EGY": {
+   "colors": [
+    "#C8102E",
+    "#000000"
+   ],
+   "nickname": "The Pharaohs",
+   "web": "www.efa.com.eg"
+  },
+  "ENG": {
+   "colors": [
+    "#ffffff",
+    "#5aadd6"
+   ],
+   "nickname": "The Three Lions",
+   "web": "www.thefa.com"
+  },
+  "ESP": {
+   "colors": [
+    "#8B0D11",
+    "#FCB507"
+   ],
+   "nickname": "La Furia Roja",
+   "web": "www.sefutbol.com"
+  },
+  "FRA": {
+   "colors": [
+    "#21304D",
+    "#ED2939"
+   ],
+   "nickname": "Les Bleus",
+   "web": "www.fff.fr"
+  },
+  "GER": {
+   "colors": [
+    "#FFFFFF",
+    "#000000"
+   ],
+   "nickname": "Nationalelf",
+   "web": "www.dfb.de/en/national-teams/the-mannschaft"
+  },
+  "GHA": {
+   "colors": [
+    "#ffffff",
+    "#D40023"
+   ],
+   "nickname": "Black Stars",
+   "web": "ghanafa.org"
+  },
+  "HAI": {
+   "colors": [
+    "#00209F",
+    "#D21034"
+   ],
+   "nickname": "Les Grenadiers",
+   "web": "www.fhfhaiti.com"
+  },
+  "IRN": {
+   "colors": [
+    "#239F40",
+    "#FFFFFF"
+   ],
+   "nickname": "Team Melli",
+   "web": "ffiri.ir"
+  },
+  "IRQ": {
+   "colors": [
+    "#007A3D",
+    "#FFFFFF"
+   ],
+   "nickname": "Usood Al-Rafidain",
+   "web": "ifa.iq"
+  },
+  "JOR": {
+   "colors": [
+    "#CE1126",
+    "#FFFFFF"
+   ],
+   "nickname": "Al-Nashama",
+   "web": "jfa.jo"
+  },
+  "JPN": {
+   "colors": [
+    "#000080",
+    "#ffffff"
+   ],
+   "nickname": "サムライ・ブルー",
+   "web": "www.jfa.or.jp/eng"
+  },
+  "KOR": {
+   "colors": [
+    "#EC0F32",
+    "#FFFFFF"
+   ],
+   "nickname": "태극전사",
+   "web": "www.kfa.or.kr"
+  },
+  "KSA": {
+   "colors": [
+    "#125B34",
+    "#7EC8AE"
+   ],
+   "nickname": "الأخضر (al-‘Akhḍar",
+   "web": "www.saff.com.sa/index.php"
+  },
+  "MAR": {
+   "colors": [
+    "#C1272D",
+    "#17A376"
+   ],
+   "nickname": "Les Lions de l'Atlas",
+   "web": "www.frmf.ma"
+  },
+  "MEX": {
+   "colors": [
+    "#00933B",
+    "#F5313E"
+   ],
+   "nickname": "El Tri",
+   "web": "fmf.mx"
+  },
+  "NED": {
+   "colors": [
+    "#F36C21",
+    "#FFFFFF"
+   ],
+   "nickname": "Oranje",
+   "web": "onsoranje.nl"
+  },
+  "NOR": {
+   "colors": [
+    "#BA0C2F",
+    "#00205B"
+   ],
+   "nickname": "Løvene",
+   "web": "www.fotball.no"
+  },
+  "NZL": {
+   "colors": [
+    "#FFFFFF",
+    "#000000"
+   ],
+   "nickname": "All Whites",
+   "web": "www.nzfootball.co.nz"
+  },
+  "PAN": {
+   "colors": [
+    "#D21034",
+    "#005293"
+   ],
+   "nickname": "Los Canaleros",
+   "web": "fepafut.com"
+  },
+  "PAR": {
+   "colors": [
+    "#FF000F"
+   ],
+   "nickname": "La Albirroja",
+   "web": "www.apf.org.py"
+  },
+  "POR": {
+   "colors": [
+    "#ff0000",
+    "#006200"
+   ],
+   "nickname": "A Seleção",
+   "web": "www.fpf.pt"
+  },
+  "QAT": {
+   "colors": [
+    "#8A1538",
+    "#FFFFFF"
+   ],
+   "nickname": "العنابي",
+   "web": "www.qfa.com.qa"
+  },
+  "RSA": {
+   "colors": [
+    "#FFB81C",
+    "#007749"
+   ],
+   "nickname": "Bafana Bafana",
+   "web": "www.safa.net"
+  },
+  "SCO": {
+   "colors": [
+    "#0065BF",
+    "#FFFFFF"
+   ],
+   "nickname": null,
+   "web": "www.scottishfa.co.uk"
+  },
+  "SEN": {
+   "colors": [
+    "#11A335",
+    "#FFDC00"
+   ],
+   "nickname": "Les Lions de la Téranga",
+   "web": "fsfoot.sn"
+  },
+  "SUI": {
+   "colors": [
+    "#FF0000",
+    "#FFFFFF"
+   ],
+   "nickname": "La Nati",
+   "web": "www.football.ch/SFV/Nationalteams/A-Team.aspx"
+  },
+  "SWE": {
+   "colors": [
+    "#FFCD00",
+    "#004B87"
+   ],
+   "nickname": "Blågult",
+   "web": "www.svenskfotboll.se"
+  },
+  "TUN": {
+   "colors": [
+    "#E70013",
+    "#FFFFFF"
+   ],
+   "nickname": "Les Aigles de Carthage",
+   "web": "ftf.org.tn"
+  },
+  "TUR": {
+   "colors": [
+    "#E30A17",
+    "#FFFFFF"
+   ],
+   "nickname": "Ay-Yıldızlılar",
+   "web": "tff.org"
+  },
+  "URU": {
+   "colors": [
+    "#55B5E5",
+    "#FFFFFF"
+   ],
+   "nickname": "La Celeste",
+   "web": "auf.org.uy/mayores"
+  },
+  "USA": {
+   "colors": [
+    "#1F2742",
+    "#FFFFFF"
+   ],
+   "nickname": "USMNT",
+   "web": "ussoccer.com"
+  },
+  "UZB": {
+   "colors": [
+    "#0099B5",
+    "#FFFFFF"
+   ],
+   "nickname": "White Wolves",
+   "web": "www.ufa.uz/oz"
+  }
+ }
+}

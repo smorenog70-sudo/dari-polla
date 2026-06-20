@@ -13,6 +13,7 @@ export default function ThirdsPredictions() {
   const [original, setOriginal] = useState(new Set())
   const [actuals, setActuals] = useState(new Set())
   const [locked, setLocked] = useState(false)
+  const [predictionsLocked, setPredictionsLocked] = useState(false)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [msg, setMsg] = useState('')
@@ -22,13 +23,17 @@ export default function ThirdsPredictions() {
     const [tp, tr, cfg] = await Promise.all([
       supabase.from('third_predictions').select('team').eq('user_id', user.id),
       supabase.from('third_results').select('team'),
-      supabase.from('config').select('*').eq('key', 'knockouts_enabled').maybeSingle(),
+      supabase.from('config').select('*'),
     ])
     const p = new Set((tp.data || []).map(r => r.team))
     setPicks(p)
     setOriginal(new Set(p))
     setActuals(new Set((tr.data || []).map(r => r.team)))
-    setLocked(cfg.data?.value === true)
+    const cfgMap = {}
+    for (const r of cfg.data || []) cfgMap[r.key] = r.value
+    const lockedByAdmin = cfgMap.predictions_locked === true
+    setPredictionsLocked(lockedByAdmin)
+    setLocked(cfgMap.knockouts_enabled === true || lockedByAdmin)
     setLoading(false)
   }
 
@@ -101,7 +106,9 @@ export default function ThirdsPredictions() {
         </div>
         {locked && (
           <div className="mt-2 text-xs text-yellow-300">
-            🔒 Bloqueado: la fase de grupos ya terminó.
+            {predictionsLocked
+              ? '🔒 Bloqueado temporalmente por el administrador.'
+              : '🔒 Bloqueado: la fase de grupos ya terminó.'}
           </div>
         )}
       </div>

@@ -15,6 +15,7 @@ import PendingMatchesBanner from '../components/PendingMatchesBanner'
 import NewResultsBanner from '../components/NewResultsBanner'
 import NewAchievementsBanner from '../components/NewAchievementsBanner'
 import { useNewResults } from '../lib/useNewResults'
+import MatchCuriosities from '../components/MatchCuriosities'
 
 function formatCOP(n) {
   return new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(n)
@@ -405,6 +406,15 @@ export default function Home() {
         </div>
       )}
 
+      {/* Datos curiosos del partido en vivo (el primero en curso) */}
+      {liveMatches.length > 0 && liveMatches[0].mode === 'live' && (
+        <MatchCuriosities
+          team1={liveMatches[0].match.team1}
+          team2={liveMatches[0].match.team2}
+          label="En vivo"
+        />
+      )}
+
       {/* HERO: próximo partido */}
       {nextMatch && (() => {
         const ko = new Date(nextMatch.kickoff_utc).getTime()
@@ -471,6 +481,15 @@ export default function Home() {
         </Link>
         )
       })()}
+
+      {/* Datos curiosos del próximo partido */}
+      {nextMatch && (
+        <MatchCuriosities
+          team1={nextMatch.team1}
+          team2={nextMatch.team2}
+          label="Próximo partido"
+        />
+      )}
 
       {/* Líderes actuales */}
       {(stats.goatName || stats.kingName) && (
@@ -592,6 +611,7 @@ export default function Home() {
           <QuickLink to="/simulador" icon="🔮" label="Simulador" />
           <QuickLink to="/bracket" icon="🗺️" label="Camino" />
           <QuickLink to="/comunidad" icon="📊" label="Stats" />
+          <QuickLink to="/laboratorio" icon="🔬" label="Lab datos" />
           <QuickLink to="/revive" icon="🎬" label="Revive" />
           <QuickLink to="/muro" icon="💬" label="Muro" />
           <QuickLink to="/reglas" icon="📜" label="Reglas" />

@@ -65,6 +65,9 @@ export default function Layout() {
             <NavLink to="/grupos-mundial" onClick={() => setMenuOpen(false)} className="block px-3 py-2 rounded hover:bg-ink-700">
               🌍 Grupos del Mundial
             </NavLink>
+            <NavLink to="/laboratorio" onClick={() => setMenuOpen(false)} className="block px-3 py-2 rounded hover:bg-ink-700">
+              🔬 Laboratorio de datos
+            </NavLink>
             <NavLink to="/resumen" onClick={() => setMenuOpen(false)} className="block px-3 py-2 rounded hover:bg-ink-700">
               📋 Resumen de fecha
             </NavLink>
