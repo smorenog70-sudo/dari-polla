@@ -151,6 +151,12 @@ function MatchRow({ match, pred, actual, onChange, locked, knockoutsEnabled, use
         <ScoreBreakdown match={match} pred={pred} actual={actual} breakdown={scored.breakdown} total={scored.total} />
       )}
 
+      {match.stage !== 'group' && (
+        <div className="text-[10px] text-ink-500 text-center mb-1">
+          Marcador a los 90 minutos (sin contar tiempo extra)
+        </div>
+      )}
+
       <div className="flex items-center gap-2">
         <div className="flex-1 text-right font-medium text-sm">{teamWithFlag(match.team1)}</div>
         <input
@@ -227,11 +233,11 @@ function MatchRow({ match, pred, actual, onChange, locked, knockoutsEnabled, use
               </div>
             ) : forcedAdvances ? (
               <div className="text-[10px] text-ink-500 text-center mt-1.5">
-                Lo define el marcador. Si crees que hay empate y penales, pon empate.
+                Lo define el marcador. Si crees que termina empatado a los 90 (y se define en tiempo extra o penales), pon empate.
               </div>
             ) : (
               <div className="text-[10px] text-brand-300 text-center mt-1.5">
-                ⚖️ Empate: elige quién pasa por penales.
+                ⚖️ Empate a los 90: elige quién pasa (en tiempo extra o penales).
               </div>
             )}
             {actual?.advances && (
@@ -425,7 +431,7 @@ export default function Predictions() {
       if (m.stage !== 'group' && !knockoutsEnabled) continue
       // only push if changed vs original (marcador O quién pasa)
       // Calcular el "quién pasa" efectivo: en playoffs, lo fuerza el marcador
-      // salvo empate (ahí vale lo que eligió el usuario para penales).
+      // salvo empate a 90 (ahí el usuario elige quién pasa: tiempo extra o penales).
       let effectiveAdvances = null
       if (m.stage !== 'group') {
         const a = Number(p.score1), b = Number(p.score2)
