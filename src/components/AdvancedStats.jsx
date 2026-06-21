@@ -114,6 +114,34 @@ export default function AdvancedStats({ s }) {
             </div>
           )}
 
+          {/* #11 Puntos posibles vs ganados */}
+          {s.pointsEfficiency && (
+            <div>
+              <div className="text-xs font-medium text-ink-200 mb-1">💰 Puntos: ganados vs posibles</div>
+              <div className="bg-ink-900/40 rounded-lg p-3">
+                <div className="flex items-end justify-between mb-1">
+                  <span className="text-lg font-bold text-brand-400">{s.pointsEfficiency.earned}</span>
+                  <span className="text-xs text-ink-500">de {s.pointsEfficiency.possible} posibles</span>
+                </div>
+                <div className="bg-ink-800 rounded-full h-3 overflow-hidden">
+                  <div className="bg-brand-500 h-full rounded-full" style={{ width: `${s.pointsEfficiency.pct}%` }} />
+                </div>
+                <div className="flex justify-between text-[10px] text-ink-400 mt-1">
+                  <span>{s.pointsEfficiency.pct}% del máximo</span>
+                  <span>{s.pointsEfficiency.leftOnTable} pts dejados en la mesa</span>
+                </div>
+                {s.pointsEfficiency.perfectMatches > 0 && (
+                  <div className="text-[10px] text-green-400 mt-1">
+                    💎 {s.pointsEfficiency.perfectMatches} {s.pointsEfficiency.perfectMatches === 1 ? 'partido perfecto' : 'partidos perfectos'} (15/15)
+                  </div>
+                )}
+              </div>
+              <p className="text-[9px] text-ink-500 mt-1">
+                El máximo por partido es 15 pts (acertar marcador exacto + todo). Esto mide cuánto aprovechaste.
+              </p>
+            </div>
+          )}
+
           {/* #10 Proyección */}
           {s.projection && (
             <div>
@@ -237,8 +265,60 @@ export default function AdvancedStats({ s }) {
               </div>
             </div>
           )}
+
+          {/* #12 Cómo apuestan los top 3 (agregado, sin nombres) */}
+          {s.winnersStyle && (
+            <div>
+              <div className="text-xs font-medium text-ink-200 mb-1">🏆 Cómo apuestan los líderes</div>
+              <p className="text-[10px] text-ink-400 mb-2">Estilo de los 3 primeros vs el resto del grupo (sin nombres).</p>
+              <div className="space-y-2">
+                <StyleRow label="🎯 Marcadores exactos"
+                  top={s.winnersStyle.top.exactPct} rest={s.winnersStyle.rest.exactPct} unit="%" />
+                <StyleRow label="🤝 Empates que predicen"
+                  top={s.winnersStyle.top.drawPct} rest={s.winnersStyle.rest.drawPct} unit="%" />
+                <StyleRow label="⚽ Goles por marcador"
+                  top={s.winnersStyle.top.avgGoals} rest={s.winnersStyle.rest.avgGoals} unit="" />
+                <StyleRow label="💥 Marcadores con 4+ goles"
+                  top={s.winnersStyle.top.bigScorePct} rest={s.winnersStyle.rest.bigScorePct} unit="%" />
+              </div>
+              <p className="text-[9px] text-ink-500 mt-2">
+                💡 {interpretWinners(s.winnersStyle)}
+              </p>
+            </div>
+          )}
         </div>
       )}
     </div>
   )
+}
+
+function StyleRow({ label, top, rest, unit }) {
+  const topWins = top > rest
+  return (
+    <div className="bg-ink-900/40 rounded-lg p-2">
+      <div className="text-[11px] text-ink-200 mb-1">{label}</div>
+      <div className="grid grid-cols-2 gap-2 text-center">
+        <div className={`rounded p-1 ${topWins ? 'bg-brand-900/30' : 'bg-ink-800'}`}>
+          <div className="text-sm font-bold text-brand-400">{top}{unit}</div>
+          <div className="text-[9px] text-ink-400">Top 3</div>
+        </div>
+        <div className="rounded p-1 bg-ink-800">
+          <div className="text-sm font-bold text-ink-200">{rest}{unit}</div>
+          <div className="text-[9px] text-ink-400">El resto</div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function interpretWinners(ws) {
+  const { top, rest } = ws
+  const notes = []
+  if (top.exactPct > rest.exactPct + 3) notes.push('los líderes aciertan más marcadores exactos')
+  if (top.drawPct < rest.drawPct - 3) notes.push('predicen menos empates')
+  else if (top.drawPct > rest.drawPct + 3) notes.push('predicen más empates')
+  if (top.bigScorePct > rest.bigScorePct + 3) notes.push('arriesgan más con goleadas')
+  else if (top.bigScorePct < rest.bigScorePct - 3) notes.push('son más conservadores con los goles')
+  if (notes.length === 0) return 'Los líderes apuestan parecido al resto: ganan por precisión, no por estilo.'
+  return 'En promedio, ' + notes.join(', ') + '.'
 }

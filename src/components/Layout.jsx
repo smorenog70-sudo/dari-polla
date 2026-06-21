@@ -11,6 +11,7 @@ const navItems = [
 ]
 
 const adminItems = [
+  { to: '/admin/dashboard', label: '🛡️ Panel de control' },
   { to: '/admin/marcadores', label: 'Marcadores' },
   { to: '/admin/grupos', label: 'Resultados Grupos' },
   { to: '/admin/terceros', label: 'Mejores Terceros' },

@@ -29,6 +29,7 @@ import AdminThirds from './pages/AdminThirds'
 import AdminUsers from './pages/AdminUsers'
 import AdminFines from './pages/AdminFines'
 import AdminConfig from './pages/AdminConfig'
+import AdminDashboard from './pages/AdminDashboard'
 
 function Protected({ children, adminOnly = false }) {
   const { user, profile, loading } = useAuth()
@@ -65,6 +66,7 @@ export default function App() {
           <Route path="duelo" element={<Duel />} />
           <Route path="perfil" element={<Profile />} />
           <Route path="reglas" element={<Rules />} />
+          <Route path="admin/dashboard" element={<Protected adminOnly><AdminDashboard /></Protected>} />
           <Route path="admin/marcadores" element={<Protected adminOnly><AdminResults /></Protected>} />
           <Route path="admin/grupos" element={<Protected adminOnly><AdminGroupResults /></Protected>} />
           <Route path="admin/terceros" element={<Protected adminOnly><AdminThirds /></Protected>} />

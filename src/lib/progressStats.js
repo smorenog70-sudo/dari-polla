@@ -203,3 +203,59 @@ export function projection(rows, totalMatchesInTournament) {
     totalMatches: totalMatchesInTournament,
   }
 }
+
+// #11 — Puntos posibles vs ganados.
+// El máximo por partido acertado perfecto es 15 (5 resultado + 5 exacto + 2 local + 2 visitante + 1 dif).
+// "Posibles" = partidos que jugaste × 15. "Ganados" = lo que sacaste.
+// Mide cuánto aprovechaste del techo teórico.
+export function pointsEfficiency(rows) {
+  const MAX_PER_MATCH = 15
+  const played = rows.length
+  if (played === 0) return null
+  const possible = played * MAX_PER_MATCH
+  const earned = rows.reduce((s, r) => s + r.points, 0)
+  return {
+    earned,
+    possible,
+    pct: Math.round((earned / possible) * 100),
+    played,
+    perfectMatches: rows.filter(r => r.points === MAX_PER_MATCH).length,
+    leftOnTable: possible - earned,
+  }
+}
+
+// #12 — Cómo apuestan los TOP 3 (agregado, sin nombres).
+// Compara el estilo de los 3 primeros vs el resto del grupo.
+// Recibe rowsByUser (Map uid -> rows) y el orden de la tabla (array de uids).
+export function winnersStyle(rowsByUser, rankedUids) {
+  if (rankedUids.length < 4) return null
+  const top3 = new Set(rankedUids.slice(0, 3))
+
+  const profileFor = (uids) => {
+    let totalPreds = 0, exacts = 0, draws = 0, goalsSum = 0, bigScores = 0
+    for (const uid of uids) {
+      const rows = rowsByUser.get(uid) || []
+      for (const r of rows) {
+        totalPreds++
+        if (r.exact) exacts++
+        if (r.pred.score1 === r.pred.score2) draws++
+        const g = r.pred.score1 + r.pred.score2
+        goalsSum += g
+        if (g >= 4) bigScores++
+      }
+    }
+    if (totalPreds === 0) return null
+    return {
+      exactPct: Math.round((exacts / totalPreds) * 100),
+      drawPct: Math.round((draws / totalPreds) * 100),
+      avgGoals: Math.round((goalsSum / totalPreds) * 10) / 10,
+      bigScorePct: Math.round((bigScores / totalPreds) * 100),
+    }
+  }
+
+  const topProfile = profileFor([...top3])
+  const restProfile = profileFor(rankedUids.slice(3))
+  if (!topProfile || !restProfile) return null
+
+  return { top: topProfile, rest: restProfile }
+}

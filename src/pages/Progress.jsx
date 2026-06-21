@@ -27,6 +27,8 @@ import {
   gapToClimb,
   groupPercentile,
   projection,
+  pointsEfficiency,
+  winnersStyle,
 } from '../lib/progressStats'
 import { BiasGauge, DonutChart } from '../components/DataViz'
 import AdvancedStats from '../components/AdvancedStats'
@@ -169,6 +171,8 @@ export default function Progress() {
       gapToClimb: gapToClimb(viewedUserId, totalsByUser), // #8
       percentile: groupPercentile(viewedUserId, totalsByUser), // #9
       projection: projection(rows, totalMatches),      // #10
+      pointsEfficiency: pointsEfficiency(rows),         // #11 posibles vs ganados
+      winnersStyle: winnersStyle(allRowsByUser, totalsByUser.map(t => t.uid)), // #12 top 3
     }
 
     return {
