@@ -61,6 +61,17 @@ function ScoreBreakdown({ match, pred, actual, breakdown, total }) {
     },
   ]
 
+  // Solo en playoffs: fila de "quién pasa"
+  if (match.stage !== 'group' && (actual?.advances || pred?.advances)) {
+    const whoTeam = (w) => w === 'team1' ? match.team1 : w === 'team2' ? match.team2 : '—'
+    rows.push({
+      label: '¿Quién pasa?',
+      detail: `Elegiste ${whoTeam(pred?.advances)}, pasó ${whoTeam(actual?.advances)}`,
+      pts: breakdown.advances || 0,
+      max: 10,
+    })
+  }
+
   return (
     <div className="mb-3 bg-ink-900/60 rounded-lg p-3 text-sm">
       <div className="text-xs text-ink-300 uppercase tracking-wider mb-2">Cómo se calcularon tus puntos</div>
@@ -167,6 +178,71 @@ function MatchRow({ match, pred, actual, onChange, locked, knockoutsEnabled, use
         />
         <div className="flex-1 text-left font-medium text-sm">{teamWithFlag(match.team2)}</div>
       </div>
+
+      {/* PLAYOFFS: quién pasa (+10 pts). Bloqueado por el marcador; libre solo si hay empate. */}
+      {match.stage !== 'group' && (() => {
+        const s1 = pred?.score1, s2 = pred?.score2
+        const bothFilled = s1 !== '' && s2 !== '' && s1 != null && s2 != null
+        const isDraw = bothFilled && Number(s1) === Number(s2)
+        // Si hay ganador claro, "quién pasa" lo determina el marcador (bloqueado).
+        const forcedAdvances = bothFilled && !isDraw
+          ? (Number(s1) > Number(s2) ? 'team1' : 'team2')
+          : null
+        // El valor mostrado: forzado por marcador, o el elegido por el usuario (solo en empate)
+        const effectiveAdvances = forcedAdvances || (isDraw ? pred?.advances : null)
+        // Solo se puede tocar manualmente si es empate y no está bloqueado
+        const togglesEnabled = isDraw && !disabled
+
+        const pickTeam = (who) => {
+          if (!togglesEnabled) return
+          onChange({ ...pred, advances: pred?.advances === who ? null : who })
+        }
+
+        const btnClass = (who) => {
+          const active = effectiveAdvances === who
+          return `flex-1 text-xs py-1.5 rounded-lg border transition ${
+            active
+              ? 'bg-brand-600 border-brand-500 text-white font-semibold'
+              : 'bg-ink-800 border-ink-600 text-ink-300'
+          } ${!togglesEnabled ? 'cursor-default opacity-90' : ''}`
+        }
+
+        return (
+          <div className="mt-2 bg-ink-900/40 rounded-lg p-2">
+            <div className="text-[10px] text-ink-400 text-center mb-1.5">
+              ¿Quién pasa? <span className="text-brand-400">(+10 pts extra)</span>
+            </div>
+            <div className="flex gap-1.5">
+              <button type="button" onClick={() => pickTeam('team1')} disabled={!togglesEnabled} className={btnClass('team1')}>
+                {teamWithFlag(match.team1)}
+              </button>
+              <button type="button" onClick={() => pickTeam('team2')} disabled={!togglesEnabled} className={btnClass('team2')}>
+                {teamWithFlag(match.team2)}
+              </button>
+            </div>
+            {/* Mensaje contextual */}
+            {!bothFilled ? (
+              <div className="text-[10px] text-ink-500 text-center mt-1.5">
+                Pon el marcador de 90 min primero.
+              </div>
+            ) : forcedAdvances ? (
+              <div className="text-[10px] text-ink-500 text-center mt-1.5">
+                Lo define el marcador. Si crees que hay empate y penales, pon empate.
+              </div>
+            ) : (
+              <div className="text-[10px] text-brand-300 text-center mt-1.5">
+                ⚖️ Empate: elige quién pasa por penales.
+              </div>
+            )}
+            {actual?.advances && (
+              <div className="text-[10px] text-center mt-1.5 text-green-400">
+                Pasó: {actual.advances === 'team1' ? teamWithFlag(match.team1) : teamWithFlag(match.team2)}
+                {effectiveAdvances && (effectiveAdvances === actual.advances ? ' ✅ +10' : ' ❌')}
+              </div>
+            )}
+          </div>
+        )
+      })()}
       {match.stage !== 'group' && (
         <div className="text-[10px] text-ink-500 mt-1 text-center">
           {match.team1_raw !== match.team1 && `(${match.team1_raw} vs ${match.team2_raw})`}
@@ -347,14 +423,24 @@ export default function Predictions() {
       // skip if locked or knockouts disabled (don't write)
       if (isMatchLocked(m)) continue
       if (m.stage !== 'group' && !knockoutsEnabled) continue
-      // only push if changed vs original
+      // only push if changed vs original (marcador O quién pasa)
+      // Calcular el "quién pasa" efectivo: en playoffs, lo fuerza el marcador
+      // salvo empate (ahí vale lo que eligió el usuario para penales).
+      let effectiveAdvances = null
+      if (m.stage !== 'group') {
+        const a = Number(p.score1), b = Number(p.score2)
+        if (a > b) effectiveAdvances = 'team1'
+        else if (b > a) effectiveAdvances = 'team2'
+        else effectiveAdvances = p.advances ?? null // empate: elección del usuario
+      }
       const o = original[m.id]
-      if (o && o.score1 === p.score1 && o.score2 === p.score2) continue
+      if (o && o.score1 === p.score1 && o.score2 === p.score2 && (o.advances ?? null) === effectiveAdvances) continue
       rows.push({
         user_id: user.id,
         match_id: m.id,
         score1: Number(p.score1),
         score2: Number(p.score2),
+        advances: effectiveAdvances,
         updated_at: new Date().toISOString(),
       })
     }

@@ -43,9 +43,9 @@ function countdownTo(targetMs, now) {
 // Tiempos: 1T 45'+7' rep · descanso 15' · 2T 45'+7' rep.
 function liveStatus(kickoffUtc, now) {
   const ko = new Date(kickoffUtc).getTime()
-  // Los partidos suelen arrancar ~6 min tarde (publicidad antes del pitazo).
+  // Los partidos suelen arrancar ~2 min tarde (publicidad antes del pitazo).
   // Descontamos ese retraso para que el minuto estimado no vaya adelantado.
-  const KICKOFF_DELAY = 6
+  const KICKOFF_DELAY = 2
   const elapsedMin = (now - ko) / 60000 - KICKOFF_DELAY
   if (elapsedMin < 0) {
     // Entre la hora oficial y el pitazo real: marcamos "Por comenzar"

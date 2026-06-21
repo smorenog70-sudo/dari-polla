@@ -22,6 +22,7 @@ export function scoreMatch(pred, actual) {
     home: 0,
     away: 0,
     diff: 0,
+    advances: 0,
   }
 
   // Ganador / empate
@@ -43,12 +44,19 @@ export function scoreMatch(pred, actual) {
     breakdown.diff = 1
   }
 
+  // PLAYOFFS: +10 si acierta quién pasa (cubre el caso de penales).
+  // Solo aplica si el resultado real trae 'advances' definido.
+  if (actual.advances && pred.advances && pred.advances === actual.advances) {
+    breakdown.advances = 10
+  }
+
   const total =
     breakdown.outcome +
     breakdown.exact +
     breakdown.home +
     breakdown.away +
-    breakdown.diff
+    breakdown.diff +
+    breakdown.advances
 
   return { total, breakdown }
 }

@@ -32,7 +32,7 @@ export default function AdminResults() {
     setLoading(true)
     const { data } = await supabase.from('results').select('*')
     const map = {}
-    for (const r of data || []) map[r.match_id] = { score1: r.score1, score2: r.score2 }
+    for (const r of data || []) map[r.match_id] = { score1: r.score1, score2: r.score2, advances: r.advances ?? null }
     setResults(map)
     setOriginal(JSON.parse(JSON.stringify(map)))
     setLoading(false)
@@ -58,6 +58,13 @@ export default function AdminResults() {
     setResults(prev => ({ ...prev, [id]: { ...prev[id], [field]: v } }))
   }
 
+  const setAdvances = (id, who) => {
+    setResults(prev => ({
+      ...prev,
+      [id]: { ...prev[id], advances: prev[id]?.advances === who ? null : who },
+    }))
+  }
+
   const clear = (id) => {
     setResults(prev => {
       const next = { ...prev }
@@ -78,11 +85,21 @@ export default function AdminResults() {
       const r = results[id]
       const o = original[id]
       if (r && r.score1 !== '' && r.score2 !== '' && r.score1 != null && r.score2 != null) {
-        if (!o || o.score1 !== r.score1 || o.score2 !== r.score2) {
+        const m = TOURNAMENT.matches.find(x => x.id === id)
+        // Quién pasó efectivo: lo fuerza el marcador salvo empate (penales)
+        let effectiveAdvances = null
+        if (m && m.stage !== 'group') {
+          const a = Number(r.score1), b = Number(r.score2)
+          if (a > b) effectiveAdvances = 'team1'
+          else if (b > a) effectiveAdvances = 'team2'
+          else effectiveAdvances = r.advances ?? null
+        }
+        if (!o || o.score1 !== r.score1 || o.score2 !== r.score2 || (o.advances ?? null) !== effectiveAdvances) {
           rows.push({
             match_id: id,
             score1: Number(r.score1),
             score2: Number(r.score2),
+            advances: effectiveAdvances,
             updated_at: new Date().toISOString(),
             updated_by: user.id,
           })
@@ -168,6 +185,46 @@ export default function AdminResults() {
             />
             <div className="flex-1 text-left text-sm font-medium">{m.team2}</div>
           </div>
+
+          {/* PLAYOFFS: quién pasó (cubre penales). Solo en eliminación. */}
+          {m.stage !== 'group' && (() => {
+            const r = results[m.id]
+            const s1 = r?.score1, s2 = r?.score2
+            const bothFilled = s1 !== '' && s2 !== '' && s1 != null && s2 != null
+            const isDraw = bothFilled && Number(s1) === Number(s2)
+            const forced = bothFilled && !isDraw
+              ? (Number(s1) > Number(s2) ? 'team1' : 'team2')
+              : null
+            const effective = forced || (isDraw ? r?.advances : null)
+            const enabled = isDraw
+            const btnClass = (who) => `flex-1 text-xs py-1.5 rounded-lg border transition ${
+              effective === who
+                ? 'bg-green-700 border-green-500 text-white font-semibold'
+                : 'bg-ink-800 border-ink-600 text-ink-300'
+            } ${!enabled ? 'cursor-default opacity-90' : ''}`
+            return (
+              <div className="mt-2 bg-ink-900/40 rounded-lg p-2">
+                <div className="text-[10px] text-ink-400 text-center mb-1.5">
+                  ¿Quién pasó? <span className="text-ink-500">(+10 pts; elige solo si hubo penales)</span>
+                </div>
+                <div className="flex gap-1.5">
+                  <button type="button" disabled={!enabled} onClick={() => enabled && setAdvances(m.id, 'team1')} className={btnClass('team1')}>
+                    {m.team1}
+                  </button>
+                  <button type="button" disabled={!enabled} onClick={() => enabled && setAdvances(m.id, 'team2')} className={btnClass('team2')}>
+                    {m.team2}
+                  </button>
+                </div>
+                {!bothFilled ? (
+                  <div className="text-[10px] text-ink-500 text-center mt-1.5">Pon el marcador de 90 min primero.</div>
+                ) : forced ? (
+                  <div className="text-[10px] text-ink-500 text-center mt-1.5">Lo define el marcador.</div>
+                ) : (
+                  <div className="text-[10px] text-yellow-300 text-center mt-1.5">⚖️ Empate a 90: marca quién pasó por penales.</div>
+                )}
+              </div>
+            )
+          })()}
         </div>
       ))}
 
