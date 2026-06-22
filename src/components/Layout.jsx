@@ -1,6 +1,7 @@
 import { Outlet, NavLink, Link, useNavigate } from 'react-router-dom'
 import { useState } from 'react'
 import { useAuth } from '../lib/auth'
+import LiveSimulatorButton from './LiveSimulatorButton'
 
 const navItems = [
   { to: '/', label: 'Inicio', icon: '🏠' },
@@ -120,6 +121,8 @@ export default function Layout() {
       <main className="flex-1 max-w-2xl mx-auto w-full px-4 py-4">
         <Outlet />
       </main>
+
+      <LiveSimulatorButton />
 
       <nav className="fixed bottom-0 inset-x-0 z-30 bg-ink-800 border-t border-ink-700">
         <div className="max-w-2xl mx-auto grid grid-cols-5">

@@ -4,6 +4,7 @@ import { useAuth } from '../lib/auth'
 import { useLeagueData } from '../lib/useLeagueData'
 import { TOURNAMENT, formatKickoff, isMatchLocked, fechaMatchIds, FECHA_LABELS, matchById } from '../lib/matches'
 import { teamWithFlag, flagFor } from '../lib/flags'
+import { liveStatus as liveStatusShared } from '../lib/liveStatus'
 import { useNowTick } from '../lib/useNowTick'
 import {
   scoreMatch,
@@ -42,34 +43,7 @@ function countdownTo(targetMs, now) {
 // Estado estimado de un partido en curso desde su pitazo.
 // Tiempos: 1T 45'+7' rep · descanso 15' · 2T 45'+7' rep.
 function liveStatus(kickoffUtc, now) {
-  const ko = new Date(kickoffUtc).getTime()
-  // Los partidos suelen arrancar ~2 min tarde (publicidad antes del pitazo).
-  // Descontamos ese retraso para que el minuto estimado no vaya adelantado.
-  const KICKOFF_DELAY = 2
-  const elapsedMin = (now - ko) / 60000 - KICKOFF_DELAY
-  if (elapsedMin < 0) {
-    // Entre la hora oficial y el pitazo real: marcamos "Por comenzar"
-    if ((now - ko) / 60000 >= 0) return { phase: 'PRE', label: 'Por comenzar', live: true }
-    return null
-  }
-
-  const FIRST_END = 45 + 7          // 52'
-  const HALFTIME_END = FIRST_END + 15  // 67'
-  const SECOND_END = HALFTIME_END + 45 + 7 // 119'
-
-  if (elapsedMin <= FIRST_END) {
-    const m = Math.floor(elapsedMin)
-    return { phase: '1T', label: m > 45 ? `45+${m - 45}'` : `${m}'`, live: true }
-  }
-  if (elapsedMin <= HALFTIME_END) {
-    return { phase: 'HT', label: 'Descanso', live: true }
-  }
-  if (elapsedMin <= SECOND_END) {
-    const since = elapsedMin - HALFTIME_END
-    const m = Math.floor(45 + since)
-    return { phase: '2T', label: m > 90 ? `90+${m - 90}'` : `${m}'`, live: true }
-  }
-  return { phase: 'FT', label: 'Finalizando', live: false }
+  return liveStatusShared(kickoffUtc, now)
 }
 
 function googleSearchUrl(team1, team2) {
@@ -158,9 +132,10 @@ export default function Home() {
       return p ? ((p.nickname || '').trim() || p.display_name) : '—'
     }
     const goatId = totals[0] && totals[0].pts > 0 ? totals[0].id : null
+    const goatPts = goatId ? totals[0].pts : 0
 
     // Rey de la última fecha completada
-    let kingName = null, kingFecha = null
+    let kingName = null, kingFecha = null, kingPts = 0
     const lastFecha = lastCompletedFecha(resultsById)
     if (lastFecha) {
       const ids = new Set(fechaMatchIds(lastFecha))
@@ -176,6 +151,7 @@ export default function Home() {
       if (fechaScores[0] && fechaScores[0].pts > 0) {
         kingName = nameOf(fechaScores[0].id)
         kingFecha = FECHA_LABELS[lastFecha] || lastFecha
+        kingPts = fechaScores[0].pts
       }
     }
 
@@ -257,9 +233,11 @@ export default function Home() {
       playersPaid: paidProfiles.length,
       totalPlayers: totals.length,
       goatName: goatId ? nameOf(goatId) : null,
+      goatPts,
       goatIsMe: goatId === user.id,
       kingName,
       kingFecha,
+      kingPts,
       matchKingName, matchKingLabel, matchKingPts,
       matchKingIsMe: matchKingId === user.id,
       dayKingName, dayKingPts, dayKingLabel,
@@ -597,6 +575,7 @@ export default function Home() {
               <div className={`text-sm font-bold mt-0.5 truncate ${stats.goatIsMe ? 'text-brand-400' : 'text-ink-100'}`}>
                 {stats.goatIsMe ? '¡Tú! 🎉' : stats.goatName}
               </div>
+              <div className="text-[10px] text-ink-500">{stats.goatPts} pts</div>
             </Link>
           )}
           {stats.kingName && (
@@ -604,6 +583,7 @@ export default function Home() {
               <div className="text-2xl">👑</div>
               <div className="text-[10px] text-ink-400 uppercase tracking-wider mt-0.5">Rey · {stats.kingFecha}</div>
               <div className="text-sm font-bold mt-0.5 truncate text-ink-100">{stats.kingName}</div>
+              <div className="text-[10px] text-ink-500">{stats.kingPts} pts</div>
             </Link>
           )}
         </div>
