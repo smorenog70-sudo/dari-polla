@@ -88,6 +88,18 @@ export default function Home() {
     [data.predictions, user.id]
   )
 
+  // Mapa rápido match_id -> mi predicción, para mostrarla en las tarjetas
+  const myPredByMatch = useMemo(() => {
+    const m = new Map()
+    for (const p of myPreds) m.set(p.match_id, p)
+    return m
+  }, [myPreds])
+
+  // Día local (YYYY-MM-DD) de un partido, para enlazar a ese día en apuestas
+  const dayOf = (kickoffUtc) => {
+    try { return new Date(kickoffUtc).toLocaleDateString('en-CA') } catch { return null }
+  }
+
   const stats = useMemo(() => {
     const myGroupPreds = data.groupPreds.filter(p => p.user_id === user.id)
     const myThirdPreds = data.thirdPreds.filter(p => p.user_id === user.id)
@@ -255,12 +267,17 @@ export default function Home() {
     }
   }, [data, user.id, myPreds])
 
-  const nextMatch = useMemo(() => {
-    return TOURNAMENT.matches
+  const nextMatches = useMemo(() => {
+    const upcoming = TOURNAMENT.matches
       .filter(m => m.kickoff_utc && new Date(m.kickoff_utc).getTime() > now)
       .filter(m => !m.team1?.match(/^[0-9WL]/) && !m.team2?.match(/^[0-9WL]/))
-      .sort((a, b) => new Date(a.kickoff_utc) - new Date(b.kickoff_utc))[0]
+      .sort((a, b) => new Date(a.kickoff_utc) - new Date(b.kickoff_utc))
+    if (upcoming.length === 0) return []
+    // Todos los que arrancan a la misma hora que el primero (la tanda completa)
+    const firstKo = upcoming[0].kickoff_utc
+    return upcoming.filter(m => m.kickoff_utc === firstKo)
   }, [now])
+  const nextMatch = nextMatches[0] || null
 
   // ¿Ya pronostiqué el próximo partido?
   const nextPredicted = useMemo(() => {
@@ -400,6 +417,37 @@ export default function Home() {
                       ? 'Marcador final · ya cuenta para los puntos'
                       : 'Minuto estimado desde el pitazo (puede variar por descuentos)'}
                 </div>
+
+                {/* Mi predicción para este partido */}
+                {(() => {
+                  const myp = myPredByMatch.get(match.id)
+                  const day = dayOf(match.kickoff_utc)
+                  if (myp) {
+                    const scored = result ? scoreMatch(myp, result) : null
+                    return (
+                      <div className="mt-2 flex items-center justify-between bg-ink-950/60 rounded-lg px-2.5 py-1.5">
+                        <span className="text-[11px] text-ink-300">
+                          Tu predicción: <span className="font-mono font-bold text-ink-100">{myp.score1}-{myp.score2}</span>
+                        </span>
+                        {scored
+                          ? <span className={`text-[11px] font-bold ${scored.total > 0 ? 'text-green-400' : 'text-ink-500'}`}>
+                              {scored.total > 0 ? `+${scored.total}` : '0'} pts
+                            </span>
+                          : <span className="text-[10px] text-ink-500">en juego…</span>}
+                      </div>
+                    )
+                  }
+                  // No predijo: ofrecer ir a apostar ese día (si aún se puede)
+                  return (
+                    <Link
+                      to={`/predicciones${day ? `?dia=${day}` : ''}`}
+                      onClick={e => e.stopPropagation()}
+                      className="mt-2 block text-center text-[11px] bg-brand-700/40 hover:bg-brand-600/50 text-brand-200 rounded-lg py-1.5"
+                    >
+                      No pusiste tu predicción →
+                    </Link>
+                  )
+                })()}
               </a>
             )
           })}
@@ -422,30 +470,53 @@ export default function Home() {
         const predCountdown = countdownTo(closeMs, now)   // tiempo para predecir
         const startCountdown = countdownTo(ko, now)        // tiempo para el pitazo
         const predClosed = predCountdown === null
+        const isTanda = nextMatches.length > 1
         return (
         <Link
-          to="/predicciones"
+          to={`/predicciones?dia=${dayOf(nextMatch.kickoff_utc)}`}
           className="block rounded-2xl p-4 bg-gradient-to-br from-brand-700/50 via-brand-900/30 to-ink-900 border border-brand-600/40 hover:border-brand-500 transition"
         >
           <div className="flex items-center justify-between mb-3">
-            <span className="text-[10px] uppercase tracking-wider text-brand-300 font-semibold">⚡ Próximo partido</span>
+            <span className="text-[10px] uppercase tracking-wider text-brand-300 font-semibold">
+              ⚡ {isTanda ? `Próximos partidos · ${nextMatches.length} a la misma hora` : 'Próximo partido'}
+            </span>
           </div>
-          <div className="flex items-center justify-center gap-3">
-            <div className="flex-1 text-center">
-              <div className="text-4xl mb-1">{flagFor(nextMatch.team1) || '⚽'}</div>
-              <div className="font-bold text-sm leading-tight">{nextMatch.team1}</div>
-            </div>
-            <div className="text-ink-500 font-bold text-lg px-2">VS</div>
-            <div className="flex-1 text-center">
-              <div className="text-4xl mb-1">{flagFor(nextMatch.team2) || '⚽'}</div>
-              <div className="font-bold text-sm leading-tight">{nextMatch.team2}</div>
-            </div>
+
+          {/* Enfrentamiento(s) de la tanda */}
+          <div className={isTanda ? 'space-y-2' : ''}>
+            {nextMatches.map((nm, idx) => {
+              const myp = myPredByMatch.get(nm.id)
+              return (
+                <div key={nm.id} className={isTanda ? 'bg-ink-900/40 rounded-xl p-2.5' : ''}>
+                  <div className="flex items-center justify-center gap-3">
+                    <div className="flex-1 text-center">
+                      <div className={`${isTanda ? 'text-2xl' : 'text-4xl'} mb-1`}>{flagFor(nm.team1) || '⚽'}</div>
+                      <div className="font-bold text-sm leading-tight">{nm.team1}</div>
+                    </div>
+                    <div className="text-ink-500 font-bold text-sm px-2">VS</div>
+                    <div className="flex-1 text-center">
+                      <div className={`${isTanda ? 'text-2xl' : 'text-4xl'} mb-1`}>{flagFor(nm.team2) || '⚽'}</div>
+                      <div className="font-bold text-sm leading-tight">{nm.team2}</div>
+                    </div>
+                  </div>
+                  {/* En tandas, la predicción va dentro de cada partido */}
+                  {isTanda && (
+                    <div className={`mt-1.5 text-center text-[11px] rounded py-1 ${
+                      myp ? 'bg-green-900/30 text-green-300' : 'bg-ink-800 text-ink-400'
+                    }`}>
+                      {myp ? `Tu predicción: ${myp.score1}-${myp.score2}` : 'Sin predicción aún'}
+                    </div>
+                  )}
+                </div>
+              )
+            })}
           </div>
+
           <div className="text-center text-xs text-ink-300 mt-3">
             {formatKickoff(nextMatch.kickoff_utc)}
           </div>
 
-          {/* Dos contadores */}
+          {/* Dos contadores (compartidos por toda la tanda, misma hora) */}
           <div className="grid grid-cols-2 gap-2 mt-3">
             <div className={`rounded-lg py-2 px-2 text-center ${predClosed ? 'bg-ink-800/60' : 'bg-ink-900/60'}`}>
               <div className="text-[9px] uppercase tracking-wider text-ink-400 leading-tight">
@@ -469,27 +540,52 @@ export default function Home() {
             </div>
           </div>
 
-          <div className={`mt-3 text-center text-sm font-medium rounded-lg py-2 ${
-            nextPredicted
-              ? 'bg-green-900/30 text-green-300'
-              : predClosed
-                ? 'bg-ink-700 text-ink-400'
-                : 'bg-brand-600 text-white'
-          }`}>
-            {nextPredicted ? '✓ Ya pronosticaste' : predClosed ? '🔒 Predicciones cerradas' : '✏️ Pronosticar ahora →'}
-          </div>
+          {/* CTA: en tanda, resumen de cuántas faltan; si no, la predicción única */}
+          {isTanda ? (() => {
+            const conPred = nextMatches.filter(m => myPredByMatch.has(m.id)).length
+            const faltan = nextMatches.length - conPred
+            return (
+              <div className={`mt-3 text-center text-sm font-medium rounded-lg py-2 ${
+                faltan === 0 ? 'bg-green-900/30 text-green-300' : predClosed ? 'bg-ink-700 text-ink-400' : 'bg-brand-600 text-white'
+              }`}>
+                {faltan === 0
+                  ? '✓ Ya pronosticaste los dos'
+                  : predClosed
+                    ? '🔒 Predicciones cerradas'
+                    : `✏️ Te faltan ${faltan} de ${nextMatches.length} →`}
+              </div>
+            )
+          })() : (
+            <div className={`mt-3 text-center text-sm font-medium rounded-lg py-2 ${
+              nextPredicted
+                ? 'bg-green-900/30 text-green-300'
+                : predClosed
+                  ? 'bg-ink-700 text-ink-400'
+                  : 'bg-brand-600 text-white'
+            }`}>
+              {nextPredicted
+                ? (() => {
+                    const myp = myPredByMatch.get(nextMatch.id)
+                    return myp
+                      ? `✓ Tu predicción: ${myp.score1}-${myp.score2} (toca para cambiar)`
+                      : '✓ Ya pronosticaste'
+                  })()
+                : predClosed ? '🔒 Predicciones cerradas' : '✏️ Pronosticar ahora →'}
+            </div>
+          )}
         </Link>
         )
       })()}
 
-      {/* Datos curiosos del próximo partido */}
-      {nextMatch && (
+      {/* Datos curiosos del próximo partido (o de toda la tanda) */}
+      {nextMatches.map(nm => (
         <MatchCuriosities
-          team1={nextMatch.team1}
-          team2={nextMatch.team2}
+          key={nm.id}
+          team1={nm.team1}
+          team2={nm.team2}
           label="Próximo partido"
         />
-      )}
+      ))}
 
       {/* Líderes actuales */}
       {(stats.goatName || stats.kingName) && (

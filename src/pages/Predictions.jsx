@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../lib/auth'
 import {
@@ -270,9 +270,11 @@ function MatchRow({ match, pred, actual, onChange, locked, knockoutsEnabled, use
 
 export default function Predictions() {
   const { user, profile } = useAuth()
-  const [viewMode, setViewMode] = useState('fase') // 'fase' | 'calendario'
+  const [searchParams] = useSearchParams()
+  const urlDay = searchParams.get('dia') // YYYY-MM-DD opcional
+  const [viewMode, setViewMode] = useState(urlDay ? 'calendario' : 'fase') // 'fase' | 'calendario'
   const [tab, setTab] = useState('closing')
-  const [selectedDay, setSelectedDay] = useState(null) // YYYY-MM-DD
+  const [selectedDay, setSelectedDay] = useState(urlDay || null) // YYYY-MM-DD
   const [preds, setPreds] = useState({})       // match_id -> {score1, score2}
   const [original, setOriginal] = useState({}) // last saved state
   const [results, setResults] = useState({})   // match_id -> {score1, score2}
