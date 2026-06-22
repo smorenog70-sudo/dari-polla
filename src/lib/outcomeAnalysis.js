@@ -1,42 +1,55 @@
 import { computeTable } from './computeTable'
+import { matchById } from './matches'
 
 /**
  * Analiza qué RESULTADO de un partido en curso le conviene más al usuario.
- * Prueba una grilla de marcadores posibles (0-0 hasta 4-4) y, para cada uno,
- * calcula en qué posición quedaría el usuario en la tabla.
+ * Prueba una grilla de marcadores posibles y, para cada uno, calcula en qué
+ * posición quedaría el usuario en la tabla.
+ *
+ * En PLAYOFFS también considera quién pasa: si el marcador da empate, prueba
+ * ambos equipos pasando (tiempo extra o penales); si hay ganador, ese pasa.
  *
  * Devuelve el mejor caso, el peor caso, y el rival directo (por quién hinchar).
- *
- * @param data - objeto de useLeagueData
- * @param matchId - el partido en curso a analizar
- * @param userId - el usuario
- * @param baseSims - otros marcadores ya simulados (Map), para no perderlos
  */
 export function analyzeBestOutcome(data, matchId, userId, baseSims = new Map()) {
-  // Posición actual (sin simular este partido)
   const baseTable = computeTable(data, baseSims)
   const baseRow = baseTable.find(r => r.id === userId)
   if (!baseRow) return null
   const baseRank = baseRow.rank
 
-  // Probar una grilla de marcadores 0..5 por lado
-  const scenarios = []
+  const match = matchById(matchId)
+  const isKnockout = match && match.stage !== 'group'
+
+  // Construir la lista de escenarios a probar
+  const combos = []
   for (let s1 = 0; s1 <= 5; s1++) {
     for (let s2 = 0; s2 <= 5; s2++) {
-      const sims = new Map(baseSims)
-      sims.set(matchId, { score1: s1, score2: s2 })
-      const table = computeTable(data, sims)
-      const myRow = table.find(r => r.id === userId)
-      if (!myRow) continue
-      // guardamos también los puntos del rival de arriba en este escenario
-      scenarios.push({
-        score: `${s1}-${s2}`, s1, s2,
-        rank: myRow.rank,
-        points: myRow.total,
-        rankDelta: baseRank - myRow.rank,
-        table, // reutilizable para el rival
-      })
+      if (isKnockout && s1 === s2) {
+        // Empate en playoff: probar quién pasa (ambos lados)
+        combos.push({ s1, s2, advances: 'team1', adv: ` (pasa ${match.team1})` })
+        combos.push({ s1, s2, advances: 'team2', adv: ` (pasa ${match.team2})` })
+      } else {
+        // Marcador con ganador: el que gana pasa (forzado). En grupo, sin advances.
+        const advances = isKnockout ? (s1 > s2 ? 'team1' : 'team2') : null
+        combos.push({ s1, s2, advances, adv: '' })
+      }
     }
+  }
+
+  const scenarios = []
+  for (const c of combos) {
+    const sims = new Map(baseSims)
+    sims.set(matchId, { score1: c.s1, score2: c.s2, advances: c.advances })
+    const table = computeTable(data, sims)
+    const myRow = table.find(r => r.id === userId)
+    if (!myRow) continue
+    scenarios.push({
+      score: `${c.s1}-${c.s2}${c.adv}`, s1: c.s1, s2: c.s2,
+      rank: myRow.rank,
+      points: myRow.total,
+      rankDelta: baseRank - myRow.rank,
+      table,
+    })
   }
   if (scenarios.length === 0) return null
 

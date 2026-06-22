@@ -2,7 +2,9 @@ import { useMemo } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { useAuth } from '../lib/auth'
 import { useLeagueData } from '../lib/useLeagueData'
-import { matchById, TOURNAMENT } from '../lib/matches'
+import { matchById, TOURNAMENT, hasMatchStarted, formatKickoff } from '../lib/matches'
+import { scoreMatch } from '../lib/scoring'
+import { teamWithFlag } from '../lib/flags'
 import {
   playedMatches,
   streaks,
@@ -52,6 +54,28 @@ export default function Progress() {
     const resultsById = new Map(data.results.map(r => [r.match_id, r]))
     const myPreds = data.predictions.filter(p => p.user_id === viewedUserId)
     const rows = playedMatches(myPreds, resultsById)
+
+    // Últimas 5 predicciones de partidos que YA EMPEZARON (en perfil ajeno
+    // nunca mostramos futuros, para no filtrar secretos). En el propio, igual:
+    // las predicciones de partidos no empezados no aportan aquí.
+    const recentPreds = myPreds
+      .map(p => {
+        const m = matchById(p.match_id)
+        if (!m || !m.kickoff_utc) return null
+        if (!hasMatchStarted(m)) return null // proteger secretos
+        const result = resultsById.get(p.match_id)
+        const scored = result ? scoreMatch(p, result) : null
+        return {
+          match: m,
+          pred: p,
+          result: result || null,
+          points: scored ? scored.total : null,
+          kickoff: m.kickoff_utc,
+        }
+      })
+      .filter(Boolean)
+      .sort((a, b) => new Date(b.kickoff) - new Date(a.kickoff))
+      .slice(0, 5)
     const evolution = evolutionByMatch(myPreds, resultsById)
     const st = streaks(rows)
 
@@ -179,7 +203,7 @@ export default function Progress() {
       rows, evolution, st, ach, totalPoints, exactCount, played: rows.length,
       profile, breakdown, efficiency, extremes, goalBias,
       compareSeries, compareLabels, holdersByBadge,
-      newStats,
+      newStats, recentPreds,
     }
   }, [data, viewedUserId, user.id])
 
@@ -261,6 +285,52 @@ export default function Progress() {
           <EvolutionChart data={stats.evolution} />
         )}
       </div>
+
+      {/* Últimas 5 predicciones (de partidos que ya empezaron) */}
+      {stats.recentPreds && stats.recentPreds.length > 0 && (
+        <div className="card">
+          <h2 className="font-semibold mb-1">🕔 Últimas predicciones</h2>
+          <p className="text-xs text-ink-300 mb-3">
+            {isOwn ? 'Tus' : 'Sus'} pronósticos más recientes de partidos que ya arrancaron.
+          </p>
+          <div className="space-y-2">
+            {stats.recentPreds.map(rp => {
+              const isLive = rp.match && hasMatchStarted(rp.match) && !rp.result
+              return (
+                <div key={rp.match.id} className="bg-ink-900/40 rounded-lg p-2">
+                  <div className="flex items-center justify-between text-[10px] text-ink-400 mb-1">
+                    <span>{rp.match.group ? `Grupo ${rp.match.group}` : (rp.match.round || 'Eliminación')}</span>
+                    {isLive
+                      ? <span className="text-brand-400">🔴 en juego</span>
+                      : <span>{formatKickoff(rp.kickoff)}</span>}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {/* Predicción */}
+                    <div className="flex-1 flex items-center justify-center gap-1.5 text-sm">
+                      <span className="truncate text-right flex-1">{teamWithFlag(rp.match.team1)}</span>
+                      <span className="font-mono font-bold bg-ink-800 rounded px-1.5">{rp.pred.score1}-{rp.pred.score2}</span>
+                      <span className="truncate text-left flex-1">{teamWithFlag(rp.match.team2)}</span>
+                    </div>
+                  </div>
+                  {/* Resultado real y puntos (si ya hay resultado) */}
+                  {rp.result ? (
+                    <div className="flex items-center justify-between mt-1.5 text-[11px]">
+                      <span className="text-ink-400">
+                        Real: <span className="font-mono text-ink-200">{rp.result.score1}-{rp.result.score2}</span>
+                      </span>
+                      <span className={`font-bold ${rp.points > 0 ? 'text-green-400' : 'text-ink-500'}`}>
+                        {rp.points > 0 ? `+${rp.points}` : '0'} pts
+                      </span>
+                    </div>
+                  ) : (
+                    <div className="text-[10px] text-ink-500 text-center mt-1.5">Esperando resultado…</div>
+                  )}
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      )}
 
       {/* Comparativa con el top 3 */}
       {stats.compareSeries && stats.compareSeries.length > 1 && stats.compareLabels.length > 0 && (

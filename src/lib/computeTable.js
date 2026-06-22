@@ -34,7 +34,7 @@ export function computeTable(data, simulatedResults = new Map()) {
   // Resultados efectivos = reales + simulados (los simulados ganan si chocan)
   const effectiveById = new Map(realById)
   for (const [matchId, sim] of simulatedResults) {
-    effectiveById.set(matchId, { match_id: matchId, score1: sim.score1, score2: sim.score2 })
+    effectiveById.set(matchId, { match_id: matchId, score1: sim.score1, score2: sim.score2, advances: sim.advances ?? null })
   }
 
   const scoreWith = (byId) => {

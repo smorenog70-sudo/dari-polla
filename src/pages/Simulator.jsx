@@ -35,14 +35,28 @@ export default function Simulator() {
       const next = new Map(prev)
       const cur = next.get(matchId) || { score1: '', score2: '' }
       const updated = { ...cur, [side]: v }
-      // Solo cuenta como simulación si ambos lados tienen número
-      if (updated.score1 === '' || updated.score2 === '') {
-        next.set(matchId, updated) // guardamos parcial para el input, pero no afecta tabla
-      } else {
-        next.set(matchId, { score1: Number(updated.score1), score2: Number(updated.score2) })
-      }
+      next.set(matchId, updated)
       return next
     })
+  }
+
+  const setSimAdvances = (matchId, who) => {
+    setSims(prev => {
+      const next = new Map(prev)
+      const cur = next.get(matchId) || { score1: '', score2: '' }
+      next.set(matchId, { ...cur, advances: cur.advances === who ? null : who })
+      return next
+    })
+  }
+
+  // Calcula el "quién pasa" efectivo de una simulación según su marcador.
+  // Lo fuerza el marcador salvo empate (ahí vale lo elegido).
+  const effectiveAdvancesOf = (match, s) => {
+    if (!match || match.stage === 'group') return null
+    const a = Number(s.score1), b = Number(s.score2)
+    if (a > b) return 'team1'
+    if (b > a) return 'team2'
+    return s.advances ?? null
   }
 
   // Para la tabla solo pasamos las simulaciones completas
@@ -50,11 +64,16 @@ export default function Simulator() {
     const m = new Map()
     for (const [id, s] of sims) {
       if (s.score1 !== '' && s.score2 !== '' && s.score1 != null && s.score2 != null) {
-        m.set(id, { score1: Number(s.score1), score2: Number(s.score2) })
+        const match = simulableMatches.find(x => x.id === id) || matchById(id)
+        m.set(id, {
+          score1: Number(s.score1),
+          score2: Number(s.score2),
+          advances: effectiveAdvancesOf(match, s),
+        })
       }
     }
     return m
-  }, [sims])
+  }, [sims, simulableMatches])
 
   const liveTable = useMemo(() => computeTable(data, completeSims), [data, completeSims])
 
@@ -129,6 +148,34 @@ export default function Simulator() {
                     />
                     <span className="flex-1 text-left text-sm truncate">{teamWithFlag(m.team2)}</span>
                   </div>
+
+                  {/* PLAYOFFS: quién pasa (+10). Bloqueado por marcador, libre solo en empate. */}
+                  {m.stage !== 'group' && (() => {
+                    const bothFilled = sim.score1 !== '' && sim.score2 !== '' && sim.score1 != null && sim.score2 != null
+                    const isDraw = bothFilled && Number(sim.score1) === Number(sim.score2)
+                    const forced = bothFilled && !isDraw ? (Number(sim.score1) > Number(sim.score2) ? 'team1' : 'team2') : null
+                    const effective = forced || (isDraw ? sim.advances : null)
+                    const enabled = isDraw
+                    const btn = (who) => `flex-1 text-[11px] py-1 rounded border transition ${
+                      effective === who ? 'bg-brand-600 border-brand-500 text-white font-semibold' : 'bg-ink-800 border-ink-600 text-ink-300'
+                    } ${!enabled ? 'cursor-default opacity-90' : ''}`
+                    return (
+                      <div className="mt-2 bg-ink-900/60 rounded-lg p-1.5">
+                        <div className="text-[9px] text-ink-400 text-center mb-1">¿Quién pasa? (+10)</div>
+                        <div className="flex gap-1">
+                          <button type="button" disabled={!enabled} onClick={() => enabled && setSimAdvances(m.id, 'team1')} className={btn('team1')}>
+                            {teamWithFlag(m.team1)}
+                          </button>
+                          <button type="button" disabled={!enabled} onClick={() => enabled && setSimAdvances(m.id, 'team2')} className={btn('team2')}>
+                            {teamWithFlag(m.team2)}
+                          </button>
+                        </div>
+                        {isDraw && (
+                          <div className="text-[9px] text-brand-300 text-center mt-1">⚖️ Empate: elige quién pasa</div>
+                        )}
+                      </div>
+                    )
+                  })()}
 
                   {/* Análisis de qué resultado conviene (solo si hay 1 partido simulable, para no saturar) */}
                   {analysis && analysis.matchId === m.id && (
