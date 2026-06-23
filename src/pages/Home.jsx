@@ -17,6 +17,7 @@ import NewResultsBanner from '../components/NewResultsBanner'
 import NewAchievementsBanner from '../components/NewAchievementsBanner'
 import { useNewResults } from '../lib/useNewResults'
 import MatchCuriosities from '../components/MatchCuriosities'
+import TeamFormCard from '../components/TeamFormCard'
 
 function formatCOP(n) {
   return new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(n)
@@ -563,6 +564,11 @@ export default function Home() {
           team2={nm.team2}
           label="Próximo partido"
         />
+      ))}
+
+      {/* Histórico de selecciones (forma, stats, head-to-head) */}
+      {nextMatches.map(nm => (
+        <TeamFormCard key={`form-${nm.id}`} team1={nm.team1} team2={nm.team2} />
       ))}
 
       {/* Líderes actuales */}
