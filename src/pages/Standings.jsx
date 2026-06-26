@@ -65,6 +65,7 @@ function ModeBtn({ active, onClick, children }) {
 export default function Standings() {
   const data = useLeagueData()
   const [filter, setFilter] = useState('total')
+  const [viewMode, setViewMode] = useState('lista') // 'lista' | 'barras' | 'carrera'
   const [filterMode, setFilterMode] = useState('fase') // 'fase' | 'dia' | 'partido'
   const [sharing, setSharing] = useState(false)
   const [shareMsg, setShareMsg] = useState('')
@@ -197,7 +198,69 @@ export default function Standings() {
     return { team1: m.team1, team2: m.team2, score1: r.score1, score2: r.score2 }
   }, [data.results])
 
-  // Días y partidos que YA tienen resultado (los únicos con puntos para mostrar)
+  // Datos para la "carrera": evolución acumulada de cada jugador a lo largo
+  // de los partidos con resultado (incluye bonos desde el cierre de grupos).
+  const raceData = useMemo(() => {
+    if (data.loading) return null
+    const resultsById = new Map(data.results.map(r => [r.match_id, r]))
+    // Eje X: partidos con resultado en orden cronológico
+    const playedIds = [...resultsById.keys()]
+      .map(id => matchById(id))
+      .filter(m => m?.kickoff_utc)
+      .sort((a, b) => new Date(a.kickoff_utc) - new Date(b.kickoff_utc))
+      .map(m => m.id)
+    if (playedIds.length === 0) return null
+
+    // último índice de partido de grupos (para inyectar bonos ahí)
+    let lastGroupIdx = -1
+    playedIds.forEach((id, i) => {
+      const m = matchById(id)
+      if (m && m.stage === 'group') lastGroupIdx = i
+    })
+
+    const predsByUser = new Map()
+    for (const p of data.predictions) {
+      if (!predsByUser.has(p.user_id)) predsByUser.set(p.user_id, [])
+      predsByUser.get(p.user_id).push(p)
+    }
+    const gpByUser = new Map()
+    for (const p of data.groupPreds) {
+      if (!gpByUser.has(p.user_id)) gpByUser.set(p.user_id, [])
+      gpByUser.get(p.user_id).push(p)
+    }
+    const tpByUser = new Map()
+    for (const p of data.thirdPreds) {
+      if (!tpByUser.has(p.user_id)) tpByUser.set(p.user_id, [])
+      tpByUser.get(p.user_id).push(p)
+    }
+    const actualThirds = data.thirdResults.map(t => t.team)
+
+    const series = data.profiles.map(prof => {
+      const myPreds = predsByUser.get(prof.id) || []
+      const ptsByMatch = new Map()
+      for (const p of myPreds) {
+        const r = resultsById.get(p.match_id)
+        if (r) ptsByMatch.set(p.match_id, scoreMatch(p, r).total)
+      }
+      const bonus = scoreGroupPositions(gpByUser.get(prof.id) || [], data.groupResults).total
+        + scoreThirds((tpByUser.get(prof.id) || []).map(t => t.team), actualThirds).total
+      let cum = 0
+      const points = playedIds.map((id, i) => {
+        cum += ptsByMatch.get(id) || 0
+        return cum + (i >= lastGroupIdx && lastGroupIdx >= 0 ? bonus : 0)
+      })
+      return {
+        id: prof.id,
+        name: (prof.nickname || '').trim() || prof.display_name || 'Jugador',
+        points,
+        final: points[points.length - 1] || 0,
+      }
+    }).sort((a, b) => b.final - a.final)
+
+    return { series, n: playedIds.length }
+  }, [data])
+
+
   const playedDays = useMemo(() => {
     const map = new Map() // dayKey -> {dateKey, date, count}
     for (const r of data.results) {
@@ -551,6 +614,39 @@ export default function Standings() {
         </div>
       )}
 
+      {/* Switch de vista: lista / barras / carrera */}
+      {filter === 'total' && (
+        <div className="flex gap-1 bg-ink-800 rounded-lg p-1">
+          {[
+            { id: 'lista', label: '📋 Lista' },
+            { id: 'barras', label: '📊 Barras' },
+            { id: 'carrera', label: '📈 Carrera' },
+          ].map(v => (
+            <button
+              key={v.id}
+              onClick={() => setViewMode(v.id)}
+              className={`flex-1 text-xs py-1.5 rounded-md transition ${
+                viewMode === v.id ? 'bg-brand-600 text-white font-semibold' : 'text-ink-300'
+              }`}
+            >
+              {v.label}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {/* VISTA BARRAS */}
+      {filter === 'total' && viewMode === 'barras' && (
+        <BarsView rows={rows} userId={user.id} />
+      )}
+
+      {/* VISTA CARRERA */}
+      {filter === 'total' && viewMode === 'carrera' && (
+        <RaceView raceData={raceData} userId={user.id} />
+      )}
+
+      {/* VISTA LISTA (la tabla de siempre) */}
+      {(filter !== 'total' || viewMode === 'lista') && (
       <div className="card overflow-hidden p-0">
         <table className="w-full text-sm">
           <thead className="bg-ink-700 text-ink-300 text-xs uppercase">
@@ -643,6 +739,7 @@ export default function Standings() {
           </tbody>
         </table>
       </div>
+      )}
 
       {filter === 'total' && (
         <div className="card bg-ink-800/50">
@@ -756,4 +853,98 @@ function loadImg(src) {
     img.onerror = reject
     img.src = src
   })
+}
+
+// ===== VISTA BARRAS: barras horizontales con partidos + bonos =====
+function BarsView({ rows, userId }) {
+  const max = Math.max(...rows.map(r => r.total), 1)
+  return (
+    <div className="card">
+      <div className="flex items-center gap-3 mb-3 text-[10px]">
+        <span className="flex items-center gap-1"><span className="inline-block w-3 h-2 rounded-sm" style={{ background: '#f97316' }} /> Partidos</span>
+        <span className="flex items-center gap-1"><span className="inline-block w-3 h-2 rounded-sm" style={{ background: '#fbbf24' }} /> Bonos</span>
+      </div>
+      <div className="space-y-1.5">
+        {rows.map((r, i) => {
+          const isMe = r.id === userId
+          const matchW = (r.match_points / max) * 100
+          const bonusW = (r.bonus_points / max) * 100
+          return (
+            <div key={r.id} className={`flex items-center gap-2 ${isMe ? 'bg-brand-900/30 -mx-1 px-1 rounded' : ''}`}>
+              <div className="w-5 text-[10px] text-ink-400 text-right shrink-0">{i + 1}</div>
+              <div className="w-20 text-xs truncate shrink-0" title={r.name}>
+                {isMe ? <span className="text-brand-400 font-semibold">{r.name}</span> : r.name}
+              </div>
+              <div className="flex-1 h-5 bg-ink-900/40 rounded overflow-hidden flex">
+                <div className="h-full" style={{ width: `${matchW}%`, background: '#f97316' }} />
+                {r.bonus_points > 0 && <div className="h-full" style={{ width: `${bonusW}%`, background: '#fbbf24' }} />}
+              </div>
+              <div className="w-9 text-xs font-bold text-right shrink-0">{r.total}</div>
+            </div>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
+// ===== VISTA CARRERA: líneas de evolución de todos =====
+function RaceView({ raceData, userId }) {
+  if (!raceData || raceData.n === 0) {
+    return <div className="card text-sm text-ink-500 italic text-center py-6">Aún no hay partidos jugados para la carrera.</div>
+  }
+  const { series, n } = raceData
+  const H = 260
+  const PAD = { top: 14, right: 50, bottom: 24, left: 30 }
+  const innerW = Math.max(280, n * 22)
+  const W = innerW + PAD.left + PAD.right
+  const innerH = H - PAD.top - PAD.bottom
+  const maxPts = Math.max(...series.map(s => s.final), 1)
+
+  const x = (i) => PAD.left + (n === 1 ? innerW / 2 : (i / (n - 1)) * innerW)
+  const y = (v) => PAD.top + innerH - (v / maxPts) * innerH
+
+  // Colores: destacar al usuario; el resto en gris tenue, top 3 en colores
+  const palette = ['#f97316', '#fbbf24', '#38bdf8', '#a78bfa', '#34d399']
+  const lineFor = (s, idx) => {
+    if (s.id === userId) return { stroke: '#22c55e', width: 2.5, op: 1 }
+    if (idx < 3) return { stroke: palette[idx % palette.length], width: 1.5, op: 0.9 }
+    return { stroke: '#475569', width: 1, op: 0.5 }
+  }
+
+  return (
+    <div className="card">
+      <p className="text-xs text-ink-300 mb-2">Cómo fue subiendo cada quien. Tu línea va en verde.</p>
+      <div className="w-full overflow-x-auto">
+        <svg viewBox={`0 0 ${W} ${H}`} style={{ width: W, maxWidth: 'none' }}>
+          {[0, 0.5, 1].map(t => {
+            const yy = PAD.top + innerH - t * innerH
+            return (
+              <g key={t}>
+                <line x1={PAD.left} y1={yy} x2={W - PAD.right} y2={yy} stroke="#334155" strokeWidth="0.5" strokeDasharray="3 3" />
+                <text x={PAD.left - 4} y={yy + 3} textAnchor="end" fontSize="8" fill="#64748b">{Math.round(t * maxPts)}</text>
+              </g>
+            )
+          })}
+          {/* Dibujar primero los del fondo, luego top 3, y el usuario al final (encima) */}
+          {series.map((s, idx) => {
+            if (s.id === userId) return null
+            const ln = lineFor(s, idx)
+            const path = s.points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${x(i).toFixed(1)} ${y(p).toFixed(1)}`).join(' ')
+            return <path key={s.id} d={path} fill="none" stroke={ln.stroke} strokeWidth={ln.width} strokeOpacity={ln.op} strokeLinejoin="round" />
+          })}
+          {series.filter(s => s.id === userId).map(s => {
+            const path = s.points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${x(i).toFixed(1)} ${y(p).toFixed(1)}`).join(' ')
+            return <path key={s.id} d={path} fill="none" stroke="#22c55e" strokeWidth="2.5" strokeLinejoin="round" />
+          })}
+          {/* Etiquetas del top 3 al final de su línea */}
+          {series.slice(0, 3).map((s, idx) => (
+            <text key={s.id} x={x(n - 1) + 3} y={y(s.final) + 3} fontSize="8" fill={lineFor(s, idx).stroke} fontWeight="bold">
+              {s.name.slice(0, 8)}
+            </text>
+          ))}
+        </svg>
+      </div>
+    </div>
+  )
 }
