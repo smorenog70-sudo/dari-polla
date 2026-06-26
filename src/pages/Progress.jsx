@@ -76,7 +76,37 @@ export default function Progress() {
       .filter(Boolean)
       .sort((a, b) => new Date(b.kickoff) - new Date(a.kickoff))
       .slice(0, 5)
+    // Bonos: posiciones de grupos y mejores terceros (se calculan primero
+    // porque ahora alimentan TODAS las gráficas y estadísticas, no solo una tarjeta).
+    const myGroupPreds = data.groupPreds.filter(p => p.user_id === viewedUserId)
+    const myThirdPreds = data.thirdPreds.filter(p => p.user_id === viewedUserId)
+    const actualThirds = data.thirdResults.map(t => t.team)
+    const groupBonus = scoreGroupPositions(myGroupPreds, data.groupResults)
+    const thirdBonus = scoreThirds(myThirdPreds.map(t => t.team), actualThirds)
+    const bonusInfo = {
+      group: groupBonus.total,
+      third: thirdBonus.total,
+      total: groupBonus.total + thirdBonus.total,
+    }
+
+    // La evolución por partido + los bonos como capa acumulada encima.
     const evolution = evolutionByMatch(myPreds, resultsById)
+    // Añadir a cada punto el total de bonos acumulado a esa altura del torneo.
+    // Los bonos de grupos se conocen al cerrar la fase de grupos; para la gráfica
+    // los reflejamos a partir del último partido de grupos en adelante.
+    const lastGroupIdx = (() => {
+      let idx = -1
+      evolution.forEach((e, i) => {
+        const m = matchById(e.matchId)
+        if (m && m.stage === 'group') idx = i
+      })
+      return idx
+    })()
+    const evolutionWithBonus = evolution.map((e, i) => ({
+      ...e,
+      bonus: i >= lastGroupIdx && lastGroupIdx >= 0 ? bonusInfo.total : 0,
+      cumulativeTotal: e.cumulative + (i >= lastGroupIdx && lastGroupIdx >= 0 ? bonusInfo.total : 0),
+    }))
     const st = streaks(rows)
 
     // rows por usuario para el logro "rey de la fecha"
@@ -103,24 +133,13 @@ export default function Progress() {
       totalsByUser[0].uid === viewedUserId
     const goat = ach.find(a => a.id === 'goat')
     if (goat) goat.unlocked = isGoat
-    const totalPoints = rows.reduce((s, r) => s + r.points, 0)
+    const matchPoints = rows.reduce((s, r) => s + r.points, 0)
+    const totalPoints = matchPoints + bonusInfo.total
     const exactCount = rows.filter(r => r.exact).length
 
     // Análisis personal estilo data scientist
     const profile = bettingProfile(myPreds, resultsById)
     const breakdown = pointsBreakdown(myPreds, resultsById)
-
-    // Bonos: posiciones de grupos y mejores terceros
-    const myGroupPreds = data.groupPreds.filter(p => p.user_id === viewedUserId)
-    const myThirdPreds = data.thirdPreds.filter(p => p.user_id === viewedUserId)
-    const actualThirds = data.thirdResults.map(t => t.team)
-    const groupBonus = scoreGroupPositions(myGroupPreds, data.groupResults)
-    const thirdBonus = scoreThirds(myThirdPreds.map(t => t.team), actualThirds)
-    const bonusInfo = {
-      group: groupBonus.total,
-      third: thirdBonus.total,
-      total: groupBonus.total + thirdBonus.total,
-    }
     const efficiency = efficiencyVsGroup(viewedUserId, data.predictions, resultsById)
     const extremes = bestAndWorst(myPreds, resultsById)
     const goalBias = personalGoalBias(myPreds, resultsById)
@@ -133,19 +152,42 @@ export default function Progress() {
       .sort((a, b) => new Date(a.kickoff_utc) - new Date(b.kickoff_utc))
       .map(m => m.id)
 
-    // Para un usuario, puntos acumulados a lo largo de esos partidos
+    // Bonos por usuario (grupos + terceros), para que la comparativa sea justa
+    const bonusByUser = (uid) => {
+      const gp = data.groupPreds.filter(p => p.user_id === uid)
+      const tp = data.thirdPreds.filter(p => p.user_id === uid)
+      const g = scoreGroupPositions(gp, data.groupResults).total
+      const th = scoreThirds(tp.map(t => t.team), actualThirds).total
+      return g + th
+    }
+
+    // Para un usuario, puntos acumulados a lo largo de esos partidos.
+    // Los bonos se suman desde el último partido de grupos en adelante.
+    const lastGroupPos = (() => {
+      let idx = -1
+      playedMatchIds.forEach((mid, i) => {
+        const m = matchById(mid)
+        if (m && m.stage === 'group') idx = i
+      })
+      return idx
+    })()
     const cumulativeFor = (uid) => {
       const urows = allRowsByUser.get(uid) || []
       const ptsByMatch = new Map(urows.map(r => [r.match.id, r.points]))
+      const ub = bonusByUser(uid)
       let cum = 0
-      return playedMatchIds.map(mid => {
+      return playedMatchIds.map((mid, i) => {
         cum += ptsByMatch.get(mid) || 0
-        return cum
+        return cum + (i >= lastGroupPos && lastGroupPos >= 0 ? ub : 0)
       })
     }
 
+    // Top 3 por puntos totales INCLUYENDO bonos (para que el ranking sea el real)
+    const totalsWithBonus = totalsByUser.map(t => ({ ...t, pts: t.pts + bonusByUser(t.uid) }))
+      .sort((a, b) => b.pts - a.pts)
+
     // Top 3 por puntos totales (excluyendo al usuario para no duplicar su línea)
-    const top3 = totalsByUser.slice(0, 3)
+    const top3 = totalsWithBonus.slice(0, 3)
     const profById = {}
     for (const p of data.profiles) profById[p.id] = p
 
@@ -212,7 +254,7 @@ export default function Progress() {
     }
 
     return {
-      rows, evolution, st, ach, totalPoints, exactCount, played: rows.length,
+      rows, evolution: evolutionWithBonus, st, ach, totalPoints, matchPoints, exactCount, played: rows.length,
       profile, breakdown, bonusInfo, efficiency, extremes, goalBias,
       compareSeries, compareLabels, holdersByBadge,
       newStats, recentPreds,
@@ -288,7 +330,13 @@ export default function Progress() {
 
       {/* Gráfica de evolución */}
       <div className="card">
-        <h2 className="font-semibold mb-3">📊 Evolución por partido</h2>
+        <h2 className="font-semibold mb-1">📊 Evolución acumulada</h2>
+        {stats.bonusInfo && stats.bonusInfo.total > 0 && (
+          <div className="flex items-center gap-3 mb-2 text-[10px]">
+            <span className="flex items-center gap-1"><span className="inline-block w-3 h-2 rounded-sm" style={{background:'#f97316'}}></span> Partidos ({stats.matchPoints})</span>
+            <span className="flex items-center gap-1"><span className="inline-block w-3 h-2 rounded-sm" style={{background:'#fbbf24'}}></span> Con bonos ({stats.totalPoints})</span>
+          </div>
+        )}
         {stats.evolution.length === 0 ? (
           <div className="text-sm text-ink-500 italic text-center py-4">
             Aún no hay resultados para graficar. Vuelve cuando se jueguen partidos.
@@ -434,6 +482,8 @@ function PersonalAnalysis({ stats }) {
     { value: b.exact, color: '#fb923c', label: 'Exacto' },
     { value: b.home + b.away, color: '#fdba74', label: 'Goles' },
     { value: b.diff, color: '#7c2d12', label: 'Diferencia' },
+    { value: bonusInfo?.group || 0, color: '#fbbf24', label: 'Bono grupos' },
+    { value: bonusInfo?.third || 0, color: '#eab308', label: 'Bono terceros' },
   ].filter(s => s.value > 0)
 
   return (
@@ -492,7 +542,7 @@ function PersonalAnalysis({ stats }) {
       {segments.length > 0 && (
         <div className="card">
           <h2 className="font-semibold mb-1">🍩 De dónde salen tus puntos</h2>
-          <p className="text-xs text-ink-300 mb-3">El desglose de tus {breakdown.total} puntos.</p>
+          <p className="text-xs text-ink-300 mb-3">El desglose de tus {breakdown.total + (bonusInfo?.total || 0)} puntos{bonusInfo?.total > 0 ? ' (con bonos)' : ''}.</p>
           <DonutChart segments={segments} />
           <p className="text-[11px] text-ink-500 mt-3">
             {b.exact >= b.outcome
@@ -650,11 +700,13 @@ function EvolutionChart({ data }) {
   const W = innerW + PAD.left + PAD.right
   const innerH = H - PAD.top - PAD.bottom
 
-  const maxCum = Math.max(...data.map(d => d.cumulative), 1)
+  const maxCum = Math.max(...data.map(d => d.cumulativeTotal ?? d.cumulative), 1)
+  const hasBonus = data.some(d => (d.bonus ?? 0) > 0)
 
   const x = (i) => PAD.left + (n === 1 ? innerW / 2 : (i / (n - 1)) * innerW)
   const y = (v) => PAD.top + innerH - (v / maxCum) * innerH
 
+  // Línea de puntos de partidos (área de abajo)
   const linePath = data
     .map((d, i) => `${i === 0 ? 'M' : 'L'} ${x(i).toFixed(1)} ${y(d.cumulative).toFixed(1)}`)
     .join(' ')
@@ -662,6 +714,20 @@ function EvolutionChart({ data }) {
   const areaPath =
     `${linePath} L ${x(n - 1).toFixed(1)} ${(PAD.top + innerH).toFixed(1)} ` +
     `L ${x(0).toFixed(1)} ${(PAD.top + innerH).toFixed(1)} Z`
+
+  // Línea del total (partidos + bonos), que es la de arriba
+  const totalLinePath = data
+    .map((d, i) => `${i === 0 ? 'M' : 'L'} ${x(i).toFixed(1)} ${y(d.cumulativeTotal ?? d.cumulative).toFixed(1)}`)
+    .join(' ')
+
+  // Área de bonos: entre la línea de partidos y la línea de total
+  const bonusAreaPath = hasBonus
+    ? `${totalLinePath} ` +
+      data.slice().reverse().map((d, ri) => {
+        const i = n - 1 - ri
+        return `L ${x(i).toFixed(1)} ${y(d.cumulative).toFixed(1)}`
+      }).join(' ') + ' Z'
+    : ''
 
   // Mostrar etiqueta/valor solo cada "step" puntos para no saturar
   const step = n <= 12 ? 1 : n <= 30 ? 3 : Math.ceil(n / 12)
@@ -683,10 +749,14 @@ function EvolutionChart({ data }) {
           )
         })}
 
-        {/* Área */}
+        {/* Área de partidos */}
         <path d={areaPath} fill="#f97316" fillOpacity="0.15" />
-        {/* Línea */}
+        {/* Área de bonos (encima, en otro color) */}
+        {hasBonus && <path d={bonusAreaPath} fill="#fbbf24" fillOpacity="0.25" />}
+        {/* Línea de partidos */}
         <path d={linePath} fill="none" stroke="#f97316" strokeWidth="2" strokeLinejoin="round" />
+        {/* Línea del total (partidos + bonos) */}
+        {hasBonus && <path d={totalLinePath} fill="none" stroke="#fbbf24" strokeWidth="2" strokeLinejoin="round" strokeDasharray="0" />}
 
         {/* Puntos + etiquetas (solo cada "step") */}
         {data.map((d, i) => (
