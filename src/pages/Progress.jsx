@@ -3,7 +3,7 @@ import { useParams, Link } from 'react-router-dom'
 import { useAuth } from '../lib/auth'
 import { useLeagueData } from '../lib/useLeagueData'
 import { matchById, TOURNAMENT, hasMatchStarted, formatKickoff } from '../lib/matches'
-import { scoreMatch } from '../lib/scoring'
+import { scoreMatch, scoreGroupPositions, scoreThirds } from '../lib/scoring'
 import { teamWithFlag } from '../lib/flags'
 import {
   playedMatches,
@@ -109,6 +109,18 @@ export default function Progress() {
     // Análisis personal estilo data scientist
     const profile = bettingProfile(myPreds, resultsById)
     const breakdown = pointsBreakdown(myPreds, resultsById)
+
+    // Bonos: posiciones de grupos y mejores terceros
+    const myGroupPreds = data.groupPreds.filter(p => p.user_id === viewedUserId)
+    const myThirdPreds = data.thirdPreds.filter(p => p.user_id === viewedUserId)
+    const actualThirds = data.thirdResults.map(t => t.team)
+    const groupBonus = scoreGroupPositions(myGroupPreds, data.groupResults)
+    const thirdBonus = scoreThirds(myThirdPreds.map(t => t.team), actualThirds)
+    const bonusInfo = {
+      group: groupBonus.total,
+      third: thirdBonus.total,
+      total: groupBonus.total + thirdBonus.total,
+    }
     const efficiency = efficiencyVsGroup(viewedUserId, data.predictions, resultsById)
     const extremes = bestAndWorst(myPreds, resultsById)
     const goalBias = personalGoalBias(myPreds, resultsById)
@@ -201,7 +213,7 @@ export default function Progress() {
 
     return {
       rows, evolution, st, ach, totalPoints, exactCount, played: rows.length,
-      profile, breakdown, efficiency, extremes, goalBias,
+      profile, breakdown, bonusInfo, efficiency, extremes, goalBias,
       compareSeries, compareLabels, holdersByBadge,
       newStats, recentPreds,
     }
@@ -409,7 +421,7 @@ export default function Progress() {
  * Gráfica de línea del puntaje acumulado, dibujada con SVG puro (sin librerías).
  */
 function PersonalAnalysis({ stats }) {
-  const { profile, breakdown, efficiency, extremes, goalBias } = stats
+  const { profile, breakdown, bonusInfo, efficiency, extremes, goalBias } = stats
   if (!profile) return null
 
   const goalDiff = goalBias.predAvg - goalBias.realAvg
@@ -487,6 +499,31 @@ function PersonalAnalysis({ stats }) {
               ? '🎯 Buena parte viene de marcadores exactos — eres preciso.'
               : 'La mayoría viene de acertar el ganador. Atrévete a marcadores exactos para sumar más.'}
           </p>
+        </div>
+      )}
+
+      {/* Bonos: posiciones de grupos y mejores terceros */}
+      {bonusInfo && bonusInfo.total > 0 && (
+        <div className="card">
+          <h2 className="font-semibold mb-1">🎁 Puntos de bono</h2>
+          <p className="text-xs text-ink-300 mb-3">
+            Puntos extra por acertar las posiciones de los grupos y los mejores terceros.
+          </p>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="bg-ink-900/40 rounded-lg p-3 text-center">
+              <div className="text-2xl">🅰️</div>
+              <div className="text-[10px] text-ink-400 uppercase tracking-wider mt-1">Posiciones de grupos</div>
+              <div className="text-xl font-bold text-brand-400 mt-0.5">+{bonusInfo.group}</div>
+            </div>
+            <div className="bg-ink-900/40 rounded-lg p-3 text-center">
+              <div className="text-2xl">🥉</div>
+              <div className="text-[10px] text-ink-400 uppercase tracking-wider mt-1">Mejores terceros</div>
+              <div className="text-xl font-bold text-brand-400 mt-0.5">+{bonusInfo.third}</div>
+            </div>
+          </div>
+          <div className="text-center mt-3 text-sm text-ink-200">
+            Total en bonos: <span className="font-bold text-brand-300">+{bonusInfo.total} puntos</span>
+          </div>
         </div>
       )}
 

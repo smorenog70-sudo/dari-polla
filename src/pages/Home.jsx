@@ -85,8 +85,10 @@ export default function Home() {
       const r = resultsById.get(p.match_id)
       if (r) pts += scoreMatch(p, r).total
     }
-    pts += scoreGroupPositions(myGroupPreds, data.groupResults).total
-    pts += scoreThirds(myThirdPreds.map(t => t.team), data.thirdResults.map(t => t.team)).total
+    const matchPts = pts
+    const groupBonus = scoreGroupPositions(myGroupPreds, data.groupResults).total
+    const thirdBonus = scoreThirds(myThirdPreds.map(t => t.team), data.thirdResults.map(t => t.team)).total
+    pts += groupBonus + thirdBonus
 
     const entryFee = Number(data.config.entry_fee || 50000)
     const fineAmount = Number(data.config.fine_amount || 5000)
@@ -225,6 +227,10 @@ export default function Home() {
       myGroupPreds: myGroupPreds.length,
       myThirdPreds: myThirdPreds.length,
       myPoints: pts,
+      myMatchPts: matchPts,
+      myGroupBonus: groupBonus,
+      myThirdBonus: thirdBonus,
+      myBonusTotal: groupBonus + thirdBonus,
       myRank,
       streak,
       myFines: myFines.length,
@@ -630,6 +636,11 @@ export default function Home() {
         <div className="card text-center">
           <div className="text-[10px] text-ink-400 uppercase tracking-wider">Puntos</div>
           <div className="text-2xl font-bold text-brand-500 mt-1">{stats.myPoints}</div>
+          {stats.myBonusTotal > 0 && (
+            <div className="text-[9px] text-ink-500 mt-0.5 leading-tight">
+              {stats.myMatchPts} partidos<br/>+{stats.myBonusTotal} bonos
+            </div>
+          )}
         </div>
         <div className="card text-center">
           <div className="text-[10px] text-ink-400 uppercase tracking-wider">Posición</div>

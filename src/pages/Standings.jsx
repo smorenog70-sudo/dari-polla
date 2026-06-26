@@ -225,26 +225,38 @@ export default function Standings() {
     if (diff === -1) return 'Ayer'
     return d.toLocaleDateString('es-CO', { day: 'numeric', month: 'short' }).replace('.', '')
   }
-  // justo ANTES del último partido con resultado. Cada partido nuevo mueve las flechas.
-  // Devuelve un mapa userId -> cambio de puestos (positivo = subió).
-  const positionDelta = useMemo(() => {
-    if (data.loading || filter !== 'total') return {}
+  // Movimiento por DÍA: compara la posición de ahora contra la de justo antes
+  // de que empezara el día más reciente con partidos. En días de cierre de grupo
+  // (6 partidos), esto refleja el salto del día completo, no del último partidito.
+  // Devuelve { delta: {userId->cambio puestos}, todayPts: {userId->pts ganados hoy},
+  //            dayLabel, hasToday }
+  const dayMovement = useMemo(() => {
+    if (data.loading || filter !== 'total') return { delta: {}, todayPts: {}, hasToday: false }
 
     const results = data.results || []
-    if (results.length === 0) return {}
+    if (results.length === 0) return { delta: {}, todayPts: {}, hasToday: false }
 
     const resultsById = new Map(results.map(r => [r.match_id, r]))
 
-    // Identificar el último partido con resultado (por hora de pitazo).
-    // Ese es el que "acaba de pasar"; lo excluimos para el ranking "antes".
-    let lastMatchId = null
-    let lastKo = -Infinity
-    for (const r of results) {
-      const m = matchById(r.match_id)
-      const ko = m?.kickoff_utc ? new Date(m.kickoff_utc).getTime() : 0
-      if (ko >= lastKo) { lastKo = ko; lastMatchId = r.match_id }
+    // Día local (YYYY-MM-DD) de cada partido con resultado
+    const dayOf = (matchId) => {
+      const m = matchById(matchId)
+      if (!m?.kickoff_utc) return null
+      return new Date(m.kickoff_utc).toLocaleDateString('en-CA')
     }
-    if (!lastMatchId) return {}
+
+    // El día más reciente que tiene al menos un resultado
+    let latestDay = null
+    for (const r of results) {
+      const d = dayOf(r.match_id)
+      if (d && (!latestDay || d > latestDay)) latestDay = d
+    }
+    if (!latestDay) return { delta: {}, todayPts: {}, hasToday: false }
+
+    // Partidos de ESE día (con resultado)
+    const todayMatchIds = new Set(
+      results.filter(r => dayOf(r.match_id) === latestDay).map(r => r.match_id)
+    )
 
     const predsByUser = new Map()
     for (const p of data.predictions) {
@@ -252,32 +264,46 @@ export default function Standings() {
       predsByUser.get(p.user_id).push(p)
     }
 
-    const scoreWith = (excludeMatchId) => {
+    // Puntaje de cada jugador excluyendo (o no) los partidos de hoy
+    const scoreSet = (excludeToday) => {
       const arr = data.profiles.map(prof => {
         let pts = 0
         for (const p of (predsByUser.get(prof.id) || [])) {
-          if (excludeMatchId && p.match_id === excludeMatchId) continue
+          if (excludeToday && todayMatchIds.has(p.match_id)) continue
           const r = resultsById.get(p.match_id)
           if (r) pts += scoreMatch(p, r).total
         }
         return { id: prof.id, pts }
       }).sort((a, b) => b.pts - a.pts)
       const rank = {}
-      arr.forEach((s, i) => { rank[s.id] = i + 1 })
-      return rank
+      const ptsById = {}
+      arr.forEach((s, i) => { rank[s.id] = i + 1; ptsById[s.id] = s.pts })
+      return { rank, ptsById }
     }
 
-    const beforeRank = scoreWith(lastMatchId)  // ranking sin el último partido
-    const afterRank = scoreWith(null)          // ranking con todo
+    const before = scoreSet(true)   // antes de los partidos de hoy
+    const after = scoreSet(false)   // con todo
 
     const delta = {}
+    const todayPts = {}
     for (const prof of data.profiles) {
-      const before = beforeRank[prof.id]
-      const after = afterRank[prof.id]
-      delta[prof.id] = (before && after) ? before - after : 0 // positivo = subió
+      const b = before.rank[prof.id]
+      const a = after.rank[prof.id]
+      delta[prof.id] = (b && a) ? b - a : 0 // positivo = subió
+      todayPts[prof.id] = (after.ptsById[prof.id] || 0) - (before.ptsById[prof.id] || 0)
     }
-    return delta
+
+    // Etiqueta del día (ej. "24 jun")
+    const dLabel = (() => {
+      const [y, mo, d] = latestDay.split('-')
+      const dt = new Date(Number(y), Number(mo) - 1, Number(d))
+      return dt.toLocaleDateString('es-CO', { day: 'numeric', month: 'short' }).replace('.', '')
+    })()
+
+    return { delta, todayPts, dayLabel: dLabel, hasToday: todayMatchIds.size > 0, todayCount: todayMatchIds.size }
   }, [data, filter])
+
+  const positionDelta = dayMovement.delta
 
   // "Qué necesito para ganar": para el usuario actual, cuántos puntos lo separan
   // del puesto de arriba y del primer lugar.
@@ -360,6 +386,54 @@ export default function Standings() {
               : `Solo los puntos de: ${filterLabel(filter)}.`}
         </p>
       </div>
+
+      {/* Resumen del día: quién más subió y más puntos hizo hoy */}
+      {filter === 'total' && dayMovement.hasToday && (() => {
+        // Mejor anotador del día y quien más escaló
+        let topScorer = null, topClimber = null
+        for (const r of rows) {
+          const pts = dayMovement.todayPts[r.id] || 0
+          const climb = dayMovement.delta[r.id] || 0
+          if (pts > 0 && (!topScorer || pts > topScorer.pts)) topScorer = { name: r.name, avatar: r.avatar, pts }
+          if (climb > 0 && (!topClimber || climb > topClimber.climb)) topClimber = { name: r.name, avatar: r.avatar, climb }
+        }
+        const myPts = dayMovement.todayPts[user.id] || 0
+        const myClimb = dayMovement.delta[user.id] || 0
+        if (!topScorer && !topClimber) return null
+        return (
+          <div className="card bg-gradient-to-br from-brand-900/30 to-ink-900 border-brand-600/40">
+            <div className="text-xs uppercase tracking-wider text-brand-300 font-semibold mb-2">
+              🔥 Movimiento del {dayMovement.dayLabel} · {dayMovement.todayCount} partido{dayMovement.todayCount !== 1 ? 's' : ''}
+            </div>
+            <div className="space-y-1.5 text-sm">
+              {topScorer && (
+                <div className="flex items-center gap-2">
+                  <span className="text-base">⚡</span>
+                  <span className="text-ink-300">Más puntos hoy:</span>
+                  <span className="font-bold">{topScorer.avatar} {topScorer.name}</span>
+                  <span className="text-green-400 font-bold">+{topScorer.pts}</span>
+                </div>
+              )}
+              {topClimber && (
+                <div className="flex items-center gap-2">
+                  <span className="text-base">🚀</span>
+                  <span className="text-ink-300">El que más escaló:</span>
+                  <span className="font-bold">{topClimber.avatar} {topClimber.name}</span>
+                  <span className="text-green-400 font-bold">▲{topClimber.climb}</span>
+                </div>
+              )}
+              {(myPts > 0 || myClimb !== 0) && (
+                <div className="mt-1 pt-1.5 border-t border-ink-700 text-ink-200">
+                  Tú hoy: <span className="text-green-400 font-bold">+{myPts} pts</span>
+                  {myClimb > 0 && <span className="text-green-400"> · subiste {myClimb} {myClimb === 1 ? 'puesto' : 'puestos'} ▲</span>}
+                  {myClimb < 0 && <span className="text-red-400"> · bajaste {Math.abs(myClimb)} {Math.abs(myClimb) === 1 ? 'puesto' : 'puestos'} ▼</span>}
+                  {myClimb === 0 && myPts > 0 && <span className="text-ink-400"> · mantuviste tu puesto</span>}
+                </div>
+              )}
+            </div>
+          </div>
+        )
+      })()}
 
       {myGap && (
         <div className="card bg-brand-900/20 border-brand-600/40">
@@ -530,6 +604,11 @@ export default function Standings() {
                   </td>
                   <td className="py-2 px-2 text-right">
                     <div className="font-bold">{r.total}</div>
+                    {filter === 'total' && dayMovement.hasToday && dayMovement.todayPts[r.id] > 0 && (
+                      <div className="text-[10px] text-green-400 font-semibold">
+                        +{dayMovement.todayPts[r.id]} hoy
+                      </div>
+                    )}
                     {filter === 'total' && r.bonus_points > 0 && (
                       <div className="text-xs text-ink-500">+{r.bonus_points} bonus</div>
                     )}
