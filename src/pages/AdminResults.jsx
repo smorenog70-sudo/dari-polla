@@ -8,8 +8,11 @@ import {
 } from '../lib/matches'
 import { resolveTeam, autoResolveGroupPositions } from '../lib/bracketTeams'
 import { computeGroupTables } from '../lib/groupTables'
+import { liveStatus } from '../lib/liveStatus'
+import { useNowTick } from '../lib/useNowTick'
 
 const TABS = [
+  { id: 'today', label: '⚡ Hoy' },
   { id: 'F1', label: 'Fecha 1' },
   { id: 'F2', label: 'Fecha 2' },
   { id: 'F3', label: 'Fecha 3' },
@@ -23,7 +26,8 @@ const TABS = [
 
 export default function AdminResults() {
   const { user } = useAuth()
-  const [tab, setTab] = useState('F1')
+  const [tab, setTab] = useState('today')
+  const nowMs = useNowTick(30000) // refresca el estado "en vivo" cada 30s
   const [results, setResults] = useState({}) // match_id -> {score1, score2}
   const [original, setOriginal] = useState({})
   const [config, setConfig] = useState({})
@@ -63,6 +67,13 @@ export default function AdminResults() {
 
   const matches = useMemo(() => {
     const all = groupedMatches()
+    if (tab === 'today') {
+      // Partidos cuyo kickoff es HOY (hora local), ordenados por hora
+      const todayKey = new Date().toLocaleDateString('en-CA')
+      return TOURNAMENT.matches
+        .filter(m => m.kickoff_utc && new Date(m.kickoff_utc).toLocaleDateString('en-CA') === todayKey)
+        .sort((a, b) => new Date(a.kickoff_utc) - new Date(b.kickoff_utc))
+    }
     if (tab === 'F1') return all.group[1]
     if (tab === 'F2') return all.group[2]
     if (tab === 'F3') return all.group[3]
@@ -181,7 +192,24 @@ export default function AdminResults() {
       {matches.map(m => (
         <div key={m.id} className="card mb-2">
           <div className="flex items-center justify-between text-xs text-ink-300 mb-2">
-            <span>{m.group ? `Grupo ${m.group} · ` : ''}{formatKickoff(m.kickoff_utc)}</span>
+            <span className="flex items-center gap-1.5">
+              {m.group ? `Grupo ${m.group} · ` : ''}{formatKickoff(m.kickoff_utc)}
+              {(() => {
+                const st = liveStatus(m.kickoff_utc, nowMs)
+                if (st && st.live && !results[m.id]) {
+                  return (
+                    <span className="inline-flex items-center gap-1 text-red-400 font-semibold">
+                      <span className="relative flex h-1.5 w-1.5">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75" />
+                        <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-red-500" />
+                      </span>
+                      {st.label}
+                    </span>
+                  )
+                }
+                return null
+              })()}
+            </span>
             {results[m.id] && (
               <button onClick={() => clear(m.id)} className="text-red-400 text-xs hover:underline">
                 Limpiar

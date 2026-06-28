@@ -66,3 +66,62 @@ export function autoResolveGroupPositions(groupTables) {
   }
   return out
 }
+
+/**
+ * Ordena los partidos de cada ronda de eliminación en el ORDEN VISUAL correcto
+ * del bracket, de modo que los partidos que alimentan al mismo partido siguiente
+ * queden adyacentes (como en un cuadro de eliminatorias real).
+ *
+ * El orden por ID (R16-89, R16-90, R16-91...) NO coincide con el orden visual,
+ * porque los cruces de FIFA no son secuenciales. Esta función recorre el árbol
+ * desde la final hacia atrás para obtener el orden top→bottom correcto.
+ *
+ * @param matches - todos los partidos (TOURNAMENT.matches)
+ * @param stage - la ronda a ordenar ('r16', 'qf', 'sf')
+ * @returns array de partidos de esa ronda en orden visual
+ */
+export function bracketVisualOrder(matches, stage) {
+  const byId = {}
+  const numToId = {}
+  for (const m of matches) {
+    byId[m.id] = m
+    if (m.stage !== 'group') {
+      const nums = m.id.match(/(\d+)/g)
+      if (nums) numToId[nums[nums.length - 1]] = m.id
+    }
+  }
+
+  // Recorre desde un partido hacia sus "feeders" (W##) hasta llegar al stage pedido
+  const collect = (matchId, targetStage, acc) => {
+    const m = byId[matchId]
+    if (!m) return
+    for (const raw of [m.team1_raw, m.team2_raw]) {
+      if (raw && raw.startsWith('W')) {
+        const childId = numToId[raw.slice(1)]
+        if (!childId) continue
+        if (byId[childId].stage === targetStage) {
+          acc.push(byId[childId])
+        } else {
+          collect(childId, targetStage, acc)
+        }
+      }
+    }
+  }
+
+  // Encontrar el partido final (no alimenta a ningún otro)
+  const finalMatch = matches.find(m => m.stage === 'final') || matches.find(m => m.id === 'FINAL')
+  if (!finalMatch) {
+    // Fallback: orden por ID
+    return matches.filter(m => m.stage === stage)
+  }
+  if (stage === 'final') return [finalMatch]
+
+  const ordered = []
+  collect(finalMatch.id, stage, ordered)
+  // Si algo quedó fuera (por seguridad), agregarlo al final en orden de ID
+  const seen = new Set(ordered.map(m => m.id))
+  for (const m of matches.filter(x => x.stage === stage)) {
+    if (!seen.has(m.id)) ordered.push(m)
+  }
+  return ordered
+}

@@ -1,8 +1,8 @@
 import { useMemo } from 'react'
 import { useAuth } from '../lib/auth'
 import { useLeagueData } from '../lib/useLeagueData'
-import { groupedMatches, isMatchLocked, formatKickoff } from '../lib/matches'
-import { resolveTeamWithFlag } from '../lib/bracketTeams'
+import { groupedMatches, isMatchLocked, formatKickoff, TOURNAMENT } from '../lib/matches'
+import { resolveTeamWithFlag, bracketVisualOrder } from '../lib/bracketTeams'
 
 const ROUNDS = [
   { key: 'r32', label: '16avos' },
@@ -47,7 +47,9 @@ export default function Bracket() {
       <div className="overflow-x-auto -mx-4 px-4">
         <div className="flex gap-3 min-w-max pb-2">
           {ROUNDS.map(round => {
-            const matches = grouped[round.key] || []
+            const matches = round.key === 'final'
+              ? (grouped[round.key] || [])
+              : bracketVisualOrder(TOURNAMENT.matches, round.key)
             if (matches.length === 0) return null
             return (
               <div key={round.key} className="flex flex-col gap-2" style={{ minWidth: 180 }}>
