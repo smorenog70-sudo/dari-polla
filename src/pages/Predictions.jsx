@@ -9,6 +9,8 @@ import {
   isMatchLocked,
 } from '../lib/matches'
 import { scoreMatch } from '../lib/scoring'
+import { resolveTeam, autoResolveGroupPositions } from '../lib/bracketTeams'
+import { computeGroupTables } from '../lib/groupTables'
 import { useNowTick } from '../lib/useNowTick'
 import SharePredictionButton from '../components/SharePredictionButton'
 import MatchSocial from '../components/MatchSocial'
@@ -351,6 +353,29 @@ export default function Predictions() {
 
   const knockoutsEnabled = config.knockouts_enabled === true
 
+  // Mapeo de placeholders de eliminatoria -> equipos reales.
+  // Combina: (1) auto-resuelto de grupos cerrados (1A, 2B...) y
+  //          (2) lo que el admin confirmó manualmente (terceros, ganadores).
+  // El manual del admin tiene prioridad por si hay que corregir algo.
+  const bracketTeams = useMemo(() => {
+    const resultsById = new Map(Object.entries(results).map(([id, r]) => [id, r]))
+    const gt = computeGroupTables(resultsById)
+    const auto = autoResolveGroupPositions(gt)
+    const manual = config.bracket_teams || {}
+    return { ...auto, ...manual }
+  }, [results, config.bracket_teams])
+
+  // Devuelve un partido con sus nombres resueltos (para playoffs)
+  const resolveMatch = (m) => {
+    if (m.stage === 'group') return m
+    return {
+      ...m,
+      team1: resolveTeam(m.team1_raw || m.team1, bracketTeams),
+      team2: resolveTeam(m.team2_raw || m.team2, bracketTeams),
+    }
+  }
+
+
   // === Modo calendario: agrupar partidos por día ===
   const daysWithMatches = useMemo(() => {
     const map = new Map() // 'YYYY-MM-DD' -> { dateKey, label, matches[] }
@@ -598,7 +623,7 @@ export default function Predictions() {
       {displayMatches.map(m => (
         <MatchRow
           key={m.id}
-          match={m}
+          match={resolveMatch(m)}
           pred={preds[m.id]}
           actual={results[m.id]}
           locked={isMatchLocked(m)}

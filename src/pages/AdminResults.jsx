@@ -6,6 +6,8 @@ import {
   groupedMatches,
   formatKickoff,
 } from '../lib/matches'
+import { resolveTeam, autoResolveGroupPositions } from '../lib/bracketTeams'
+import { computeGroupTables } from '../lib/groupTables'
 
 const TABS = [
   { id: 'F1', label: 'Fecha 1' },
@@ -24,6 +26,7 @@ export default function AdminResults() {
   const [tab, setTab] = useState('F1')
   const [results, setResults] = useState({}) // match_id -> {score1, score2}
   const [original, setOriginal] = useState({})
+  const [config, setConfig] = useState({})
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [msg, setMsg] = useState('')
@@ -35,9 +38,28 @@ export default function AdminResults() {
     for (const r of data || []) map[r.match_id] = { score1: r.score1, score2: r.score2, advances: r.advances ?? null }
     setResults(map)
     setOriginal(JSON.parse(JSON.stringify(map)))
+    // Cargar config para resolver nombres de playoffs (bracket_teams)
+    const { data: cfg } = await supabase.from('config').select('*')
+    const cfgMap = {}
+    for (const c of cfg || []) cfgMap[c.key] = c.value
+    setConfig(cfgMap)
     setLoading(false)
   }
   useEffect(() => { load() }, [])
+
+  // Resolver nombres de playoffs: auto de grupos cerrados + manual del admin
+  const bracketTeams = useMemo(() => {
+    const resultsById = new Map(Object.entries(results).map(([id, r]) => [id, r]))
+    const gt = computeGroupTables(resultsById)
+    const auto = autoResolveGroupPositions(gt)
+    return { ...auto, ...(config.bracket_teams || {}) }
+  }, [results, config.bracket_teams])
+
+  const teamName = (m, side) => {
+    if (m.stage === 'group') return m[side]
+    const raw = side === 'team1' ? (m.team1_raw || m.team1) : (m.team2_raw || m.team2)
+    return resolveTeam(raw, bracketTeams)
+  }
 
   const matches = useMemo(() => {
     const all = groupedMatches()
@@ -167,7 +189,7 @@ export default function AdminResults() {
             )}
           </div>
           <div className="flex items-center gap-2">
-            <div className="flex-1 text-right text-sm font-medium">{m.team1}</div>
+            <div className="flex-1 text-right text-sm font-medium">{teamName(m, 'team1')}</div>
             <input
               type="number" min="0" max="30" inputMode="numeric"
               value={results[m.id]?.score1 ?? ''}
@@ -183,7 +205,7 @@ export default function AdminResults() {
               className="input w-14 text-center px-1 py-2"
               placeholder="-"
             />
-            <div className="flex-1 text-left text-sm font-medium">{m.team2}</div>
+            <div className="flex-1 text-left text-sm font-medium">{teamName(m, 'team2')}</div>
           </div>
 
           {/* PLAYOFFS: quién pasó (cubre tiempo extra o penales). Solo en eliminación. */}
@@ -209,10 +231,10 @@ export default function AdminResults() {
                 </div>
                 <div className="flex gap-1.5">
                   <button type="button" disabled={!enabled} onClick={() => enabled && setAdvances(m.id, 'team1')} className={btnClass('team1')}>
-                    {m.team1}
+                    {teamName(m, 'team1')}
                   </button>
                   <button type="button" disabled={!enabled} onClick={() => enabled && setAdvances(m.id, 'team2')} className={btnClass('team2')}>
-                    {m.team2}
+                    {teamName(m, 'team2')}
                   </button>
                 </div>
                 {!bothFilled ? (
