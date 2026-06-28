@@ -18,6 +18,7 @@ import NewAchievementsBanner from '../components/NewAchievementsBanner'
 import { useNewResults } from '../lib/useNewResults'
 import MatchCuriosities from '../components/MatchCuriosities'
 import TeamFormCard from '../components/TeamFormCard'
+import WorldCupProgressCard from '../components/WorldCupProgressCard'
 
 function formatCOP(n) {
   return new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(n)
@@ -576,6 +577,9 @@ export default function Home() {
       {nextMatches.map(nm => (
         <TeamFormCard key={`form-${nm.id}`} team1={nm.team1} team2={nm.team2} />
       ))}
+
+      {/* Panel de avance del Mundial y de los puntos en juego */}
+      <WorldCupProgressCard data={data} />
 
       {/* Líderes actuales */}
       {(stats.goatName || stats.kingName) && (
