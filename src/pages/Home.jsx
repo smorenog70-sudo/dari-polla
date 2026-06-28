@@ -3,6 +3,8 @@ import { useMemo } from 'react'
 import { useAuth } from '../lib/auth'
 import { useLeagueData } from '../lib/useLeagueData'
 import { TOURNAMENT, formatKickoff, isMatchLocked, fechaMatchIds, FECHA_LABELS, matchById } from '../lib/matches'
+import { resolveTeam, autoResolveGroupPositions } from '../lib/bracketTeams'
+import { computeGroupTables } from '../lib/groupTables'
 import { teamWithFlag, flagFor } from '../lib/flags'
 import { liveStatus as liveStatusShared } from '../lib/liveStatus'
 import { useNowTick } from '../lib/useNowTick'
@@ -253,16 +255,43 @@ export default function Home() {
     }
   }, [data, user.id, myPreds])
 
+  // Resolver nombres de playoffs (1A→México) para mostrarlos en el Home.
+  // Combina auto de grupos cerrados + lo confirmado por el admin.
+  const bracketTeams = useMemo(() => {
+    const resultsById = new Map(data.results.map(r => [r.match_id, r]))
+    const gt = computeGroupTables(resultsById)
+    const auto = autoResolveGroupPositions(gt)
+    return { ...auto, ...(data.config.bracket_teams || {}) }
+  }, [data.results, data.config.bracket_teams])
+
+  // Resuelve un partido a nombres reales (si es playoff y ya se puede)
+  const resolveMatchTeams = (m) => {
+    if (m.stage === 'group') return m
+    return {
+      ...m,
+      team1: resolveTeam(m.team1_raw || m.team1, bracketTeams),
+      team2: resolveTeam(m.team2_raw || m.team2, bracketTeams),
+    }
+  }
+
+  const knockoutsEnabled = data.config.knockouts_enabled === true
+
   const nextMatches = useMemo(() => {
     const upcoming = TOURNAMENT.matches
       .filter(m => m.kickoff_utc && new Date(m.kickoff_utc).getTime() > now)
-      .filter(m => !m.team1?.match(/^[0-9WL]/) && !m.team2?.match(/^[0-9WL]/))
+      .map(resolveMatchTeams) // resolver nombres ANTES de filtrar
+      // En grupos: ocultar si tiene placeholder (no debería pasar).
+      // En playoffs: mostrar siempre que estén habilitados, aunque queden
+      // placeholders sin resolver (mejor mostrar "1A vs 2B" que nada).
+      .filter(m => {
+        if (m.stage === 'group') return true
+        return knockoutsEnabled
+      })
       .sort((a, b) => new Date(a.kickoff_utc) - new Date(b.kickoff_utc))
     if (upcoming.length === 0) return []
-    // Todos los que arrancan a la misma hora que el primero (la tanda completa)
     const firstKo = upcoming[0].kickoff_utc
     return upcoming.filter(m => m.kickoff_utc === firstKo)
-  }, [now])
+  }, [now, bracketTeams, knockoutsEnabled])
   const nextMatch = nextMatches[0] || null
 
   // ¿Ya pronostiqué el próximo partido?
@@ -277,7 +306,8 @@ export default function Home() {
     const RECENT_WINDOW = 3 * 60 * 60 * 1000 // 3h: cuánto mostrar un partido ya terminado
 
     const out = []
-    for (const m of TOURNAMENT.matches) {
+    for (const rawM of TOURNAMENT.matches) {
+      const m = resolveMatchTeams(rawM)
       if (!m.kickoff_utc || m.team1?.match(/^[0-9WL]/) || m.team2?.match(/^[0-9WL]/)) continue
       const ko = new Date(m.kickoff_utc).getTime()
       const status = liveStatus(m.kickoff_utc, now)
@@ -302,7 +332,7 @@ export default function Home() {
       }
     }
     return out.sort((a, b) => new Date(b.match.kickoff_utc) - new Date(a.match.kickoff_utc))
-  }, [data.results, now])
+  }, [data.results, now, bracketTeams])
 
   if (data.loading) return <div className="text-center text-ink-300 py-8">Cargando…</div>
 
@@ -563,8 +593,8 @@ export default function Home() {
         )
       })()}
 
-      {/* Datos curiosos del próximo partido (o de toda la tanda) */}
-      {nextMatches.map(nm => (
+      {/* Datos curiosos del próximo partido (o de toda la tanda) — solo nombres resueltos */}
+      {nextMatches.filter(nm => !nm.team1?.match(/^[0-9WL]/) && !nm.team2?.match(/^[0-9WL]/)).map(nm => (
         <MatchCuriosities
           key={nm.id}
           team1={nm.team1}
@@ -573,8 +603,8 @@ export default function Home() {
         />
       ))}
 
-      {/* Histórico de selecciones (forma, stats, head-to-head) */}
-      {nextMatches.map(nm => (
+      {/* Histórico de selecciones (forma, stats, head-to-head) — solo nombres resueltos */}
+      {nextMatches.filter(nm => !nm.team1?.match(/^[0-9WL]/) && !nm.team2?.match(/^[0-9WL]/)).map(nm => (
         <TeamFormCard key={`form-${nm.id}`} team1={nm.team1} team2={nm.team2} />
       ))}
 
