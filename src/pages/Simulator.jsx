@@ -3,6 +3,8 @@ import { useLeagueData } from '../lib/useLeagueData'
 import { computeTable } from '../lib/computeTable'
 import { analyzeBestOutcome } from '../lib/outcomeAnalysis'
 import { TOURNAMENT, matchById, formatKickoff, hasMatchStarted } from '../lib/matches'
+import { resolveTeam, autoResolveGroupPositions } from '../lib/bracketTeams'
+import { computeGroupTables } from '../lib/groupTables'
 import { teamWithFlag } from '../lib/flags'
 import { useAuth } from '../lib/auth'
 
@@ -19,15 +21,33 @@ export default function Simulator() {
     [data.results]
   )
 
+  // Resolver nombres de playoffs (1A→equipo) para que 16avos/octavos/etc.
+  // ya definidos también se puedan simular.
+  const bracketTeams = useMemo(() => {
+    const resultsById = new Map(data.results.map(r => [r.match_id, r]))
+    const gt = computeGroupTables(resultsById)
+    return { ...autoResolveGroupPositions(gt), ...(data.config.bracket_teams || {}) }
+  }, [data.results, data.config.bracket_teams])
+
+  const resolveMatchTeams = (m) => {
+    if (m.stage === 'group') return m
+    return {
+      ...m,
+      team1: resolveTeam(m.team1_raw || m.team1, bracketTeams),
+      team2: resolveTeam(m.team2_raw || m.team2, bracketTeams),
+    }
+  }
+
   const simulableMatches = useMemo(() => {
     return TOURNAMENT.matches
       // Solo partidos que YA EMPEZARON (predicciones ya cerradas y visibles)
       // y que aún NO tienen resultado oficial cargado. Así nadie puede simular
       // partidos futuros para deducir las predicciones secretas de los demás.
       .filter(m => hasMatchStarted(m) && !realResultIds.has(m.id))
-      .filter(m => !m.team1?.match(/^[0-9WL]/) && !m.team2?.match(/^[0-9WL]/)) // sin placeholders
+      .map(resolveMatchTeams) // resolver nombres ANTES de filtrar placeholders
+      .filter(m => !m.team1?.match(/^[0-9WL]/) && !m.team2?.match(/^[0-9WL]/)) // solo los que ya se resolvieron
       .sort((a, b) => new Date(b.kickoff_utc) - new Date(a.kickoff_utc)) // más reciente primero
-  }, [realResultIds])
+  }, [realResultIds, bracketTeams])
 
   const setScore = (matchId, side, value) => {
     const v = value === '' ? '' : Math.max(0, Math.min(20, parseInt(value) || 0))
