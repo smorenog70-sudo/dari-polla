@@ -7,6 +7,7 @@ import {
   groupedMatches,
   formatKickoff,
   isMatchLocked,
+  matchById,
 } from '../lib/matches'
 import { scoreMatch } from '../lib/scoring'
 import { resolveTeam, autoResolveGroupPositions } from '../lib/bracketTeams'
@@ -429,13 +430,27 @@ export default function Predictions() {
   const displayMatches = viewMode === 'calendario' ? calendarMatches : matches
 
   const dirty = useMemo(() => {
+    // Calcula el "quién pasa" efectivo igual que al guardar: en playoffs lo fuerza
+    // el marcador, salvo empate (ahí vale la elección del usuario).
+    const effAdv = (matchId, p) => {
+      const m = matchById(matchId)
+      if (!m || m.stage === 'group') return null
+      const s1 = p?.score1, s2 = p?.score2
+      if (s1 === '' || s2 === '' || s1 == null || s2 == null) return null
+      const a = Number(s1), b = Number(s2)
+      if (a > b) return 'team1'
+      if (b > a) return 'team2'
+      return p?.advances ?? null // empate
+    }
     const keys = new Set([...Object.keys(preds), ...Object.keys(original)])
     for (const k of keys) {
       const a = preds[k]
       const b = original[k]
       if (!a && !b) continue
       if (!a || !b) return true
-      if (a.score1 !== b.score1 || a.score2 !== b.score2) return true
+      if (Number(a.score1) !== Number(b.score1) || Number(a.score2) !== Number(b.score2)) return true
+      // Cambio solo del ganador (marcador igual): también cuenta como cambio.
+      if (effAdv(k, a) !== effAdv(k, b)) return true
     }
     return false
   }, [preds, original])
