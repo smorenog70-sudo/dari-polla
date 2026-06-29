@@ -127,7 +127,11 @@ export default function AdminResults() {
           else if (b > a) effectiveAdvances = 'team2'
           else effectiveAdvances = r.advances ?? null
         }
-        if (!o || o.score1 !== r.score1 || o.score2 !== r.score2 || (o.advances ?? null) !== effectiveAdvances) {
+        const sameScore = o &&
+          Number(o.score1) === Number(r.score1) &&
+          Number(o.score2) === Number(r.score2)
+        const sameAdvances = o && (o.advances ?? null) === effectiveAdvances
+        if (!sameScore || !sameAdvances) {
           rows.push({
             match_id: id,
             score1: Number(r.score1),
@@ -158,7 +162,22 @@ export default function AdminResults() {
         return
       }
     }
-    setOriginal(JSON.parse(JSON.stringify(results)))
+    // Reconstruir 'original' con lo que REALMENTE se guardó (advances efectivo
+    // y scores numéricos), para que se pueda volver a cambiar sin bloqueos.
+    const newOriginal = JSON.parse(JSON.stringify(results))
+    for (const r of rows) {
+      newOriginal[r.match_id] = { score1: r.score1, score2: r.score2, advances: r.advances ?? null }
+    }
+    for (const id of deletions) delete newOriginal[id]
+    // Reflejar el advances efectivo también en la UI
+    setResults(prev => {
+      const next = { ...prev }
+      for (const r of rows) {
+        next[r.match_id] = { ...next[r.match_id], score1: r.score1, score2: r.score2, advances: r.advances ?? null }
+      }
+      return next
+    })
+    setOriginal(newOriginal)
     setSaving(false)
     setMsg(`✅ Guardado (${rows.length} ↑ / ${deletions.length} ↓)`)
     setTimeout(() => setMsg(''), 2500)

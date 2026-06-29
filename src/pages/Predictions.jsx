@@ -298,7 +298,7 @@ export default function Predictions() {
       supabase.from('profiles').select('id, display_name, nickname, avatar'),
     ])
     const map = {}
-    for (const p of pRes.data || []) map[p.match_id] = { score1: p.score1, score2: p.score2 }
+    for (const p of pRes.data || []) map[p.match_id] = { score1: p.score1, score2: p.score2, advances: p.advances ?? null }
     setPreds(map)
     setOriginal(JSON.parse(JSON.stringify(map)))
 
@@ -467,7 +467,12 @@ export default function Predictions() {
         else effectiveAdvances = p.advances ?? null // empate: elección del usuario
       }
       const o = original[m.id]
-      if (o && o.score1 === p.score1 && o.score2 === p.score2 && (o.advances ?? null) === effectiveAdvances) continue
+      // Comparar normalizando a número (los scores pueden venir como string del input)
+      const sameScore = o &&
+        Number(o.score1) === Number(p.score1) &&
+        Number(o.score2) === Number(p.score2)
+      const sameAdvances = o && (o.advances ?? null) === effectiveAdvances
+      if (sameScore && sameAdvances) continue
       rows.push({
         user_id: user.id,
         match_id: m.id,
@@ -491,7 +496,26 @@ export default function Predictions() {
       setSavedMsg('❌ Error: ' + error.message)
     } else {
       setSavedMsg(`✅ Guardado (${rows.length})`)
-      setOriginal(JSON.parse(JSON.stringify(preds)))
+      // Reconstruir 'original' con lo que REALMENTE se guardó (advances efectivo),
+      // no con los preds crudos. Así la próxima comparación de cambios es correcta
+      // y se puede volver a cambiar el ganador sin que diga "sin cambios".
+      const newOriginal = JSON.parse(JSON.stringify(preds))
+      for (const r of rows) {
+        newOriginal[r.match_id] = {
+          score1: r.score1,
+          score2: r.score2,
+          advances: r.advances ?? null,
+        }
+      }
+      // También actualizar preds para que la UI muestre el advances efectivo
+      setPreds(prev => {
+        const next = { ...prev }
+        for (const r of rows) {
+          next[r.match_id] = { ...next[r.match_id], advances: r.advances ?? null }
+        }
+        return next
+      })
+      setOriginal(newOriginal)
       setTimeout(() => setSavedMsg(''), 2500)
     }
   }

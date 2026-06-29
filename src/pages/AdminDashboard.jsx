@@ -4,6 +4,8 @@ import { useLeagueData } from '../lib/useLeagueData'
 import { TOURNAMENT, matchById, fechaMatchIds, FECHA_LABELS, isMatchLocked, hasMatchStarted } from '../lib/matches'
 import { FECHA_ORDER } from '../lib/playerStats'
 import { scoreMatch } from '../lib/scoring'
+import { resolveTeam, autoResolveGroupPositions } from '../lib/bracketTeams'
+import { computeGroupTables } from '../lib/groupTables'
 
 export default function AdminDashboard() {
   const data = useLeagueData()
@@ -19,11 +21,27 @@ export default function AdminDashboard() {
       predsByUser.get(p.user_id).set(p.match_id, p)
     }
 
-    // Próximos partidos abiertos (aún se pueden predecir)
-    const openMatches = TOURNAMENT.matches.filter(
-      m => m.kickoff_utc && !isMatchLocked(m) &&
-        !m.team1?.match(/^[0-9WL]/) && !m.team2?.match(/^[0-9WL]/)
-    ).sort((a, b) => new Date(a.kickoff_utc) - new Date(b.kickoff_utc))
+    // Resolver nombres de playoffs (1A→equipo) para que los 16avos/octavos
+    // ya definidos cuenten como partidos abiertos en los avisos del panel.
+    const gt = computeGroupTables(resultsById)
+    const bracketTeams = { ...autoResolveGroupPositions(gt), ...(data.config.bracket_teams || {}) }
+    const resolveM = (m) => {
+      if (m.stage === 'group') return m
+      return {
+        ...m,
+        team1: resolveTeam(m.team1_raw || m.team1, bracketTeams),
+        team2: resolveTeam(m.team2_raw || m.team2, bracketTeams),
+      }
+    }
+
+    // Próximos partidos abiertos (aún se pueden predecir).
+    // Resolvemos nombres primero; solo excluimos los que SIGAN con placeholder.
+    const openMatches = TOURNAMENT.matches
+      .map(resolveM)
+      .filter(
+        m => m.kickoff_utc && !isMatchLocked(m) &&
+          !m.team1?.match(/^[0-9WL]/) && !m.team2?.match(/^[0-9WL]/)
+      ).sort((a, b) => new Date(a.kickoff_utc) - new Date(b.kickoff_utc))
 
     const nextMatch = openMatches[0] || null
 
@@ -74,13 +92,16 @@ export default function AdminDashboard() {
     // Pagos pendientes
     const unpaid = data.profiles.filter(p => !p.paid)
 
-    // Partidos jugados sin resultado cargado (para que el admin no olvide)
-    const playedNoResult = TOURNAMENT.matches.filter(
-      m => m.kickoff_utc && hasMatchStarted(m) && !resultsById.has(m.id) &&
-        !m.team1?.match(/^[0-9WL]/) && !m.team2?.match(/^[0-9WL]/) &&
-        // que ya haya terminado (estimado): pitazo hace +2.5h
-        (Date.now() - new Date(m.kickoff_utc).getTime()) > 2.5 * 3600 * 1000
-    )
+    // Partidos jugados sin resultado cargado (para que el admin no olvide).
+    // Resolvemos nombres para que los 16avos/octavos ya jugados también aparezcan.
+    const playedNoResult = TOURNAMENT.matches
+      .map(resolveM)
+      .filter(
+        m => m.kickoff_utc && hasMatchStarted(m) && !resultsById.has(m.id) &&
+          !m.team1?.match(/^[0-9WL]/) && !m.team2?.match(/^[0-9WL]/) &&
+          // que ya haya terminado (estimado): pitazo hace +2.5h
+          (Date.now() - new Date(m.kickoff_utc).getTime()) > 2.5 * 3600 * 1000
+      )
 
     // Tasa de participación general
     const totalPossiblePreds = data.profiles.length * playedFechas.reduce((s, fid) => s + fechaMatchIds(fid).filter(id => resultsById.has(id)).length, 0)
