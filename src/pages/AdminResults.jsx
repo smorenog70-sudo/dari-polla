@@ -185,6 +185,22 @@ export default function AdminResults() {
 
   if (loading) return <div className="text-center text-ink-300 py-8">Cargando…</div>
 
+  // Empates de playoff cargados pero SIN marcar quién pasó (nadie recibe +10)
+  const unresolvedDraws = useMemo(() => {
+    const out = []
+    for (const m of TOURNAMENT.matches) {
+      if (m.stage === 'group') continue
+      const r = results[m.id]
+      if (!r) continue
+      const s1 = r.score1, s2 = r.score2
+      const filled = s1 !== '' && s2 !== '' && s1 != null && s2 != null
+      if (filled && Number(s1) === Number(s2) && !r.advances) {
+        out.push(m)
+      }
+    }
+    return out
+  }, [results])
+
   return (
     <div className="space-y-3 pb-24">
       <div className="card">
@@ -193,6 +209,23 @@ export default function AdminResults() {
           Solo admins. Mete los resultados reales. Los puntos de la tabla se recalculan automáticamente.
         </p>
       </div>
+
+      {unresolvedDraws.length > 0 && (
+        <div className="card bg-red-900/20 border border-red-600">
+          <h2 className="font-semibold text-red-200 mb-1 text-sm">⚠️ Empates sin definir quién pasó</h2>
+          <p className="text-xs text-ink-300 mb-2">
+            Estos partidos de eliminación terminaron empatados pero no marcaste quién avanzó.
+            Hasta que lo hagas, <strong>nadie recibe los +10 puntos</strong> de "quién pasa":
+          </p>
+          <div className="flex flex-wrap gap-1">
+            {unresolvedDraws.map(m => (
+              <span key={m.id} className="text-xs bg-red-900/40 text-red-200 rounded px-2 py-0.5">
+                {teamName(m, 'team1')} vs {teamName(m, 'team2')}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
 
       <div className="flex gap-1 overflow-x-auto -mx-1 px-1 pb-1 sticky top-14 bg-ink-900 z-20 py-1">
         {TABS.map(t => (
@@ -288,6 +321,8 @@ export default function AdminResults() {
                   <div className="text-[10px] text-ink-500 text-center mt-1.5">Pon el marcador de 90 min primero.</div>
                 ) : forced ? (
                   <div className="text-[10px] text-ink-500 text-center mt-1.5">Lo define el marcador.</div>
+                ) : !effective ? (
+                  <div className="text-[10px] text-red-300 text-center mt-1.5 font-semibold">⚠️ Empate: FALTA marcar quién pasó, o nadie recibe los +10.</div>
                 ) : (
                   <div className="text-[10px] text-yellow-300 text-center mt-1.5">⚖️ Empate a los 90: marca quién pasó (en tiempo extra o penales).</div>
                 )}

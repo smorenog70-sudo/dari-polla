@@ -75,9 +75,12 @@ function ScoreBreakdown({ match, pred, actual, breakdown, total }) {
     }
     const myAdv = effAdv(pred?.score1, pred?.score2, pred?.advances)
     const whoTeam = (w) => w === 'team1' ? match.team1 : w === 'team2' ? match.team2 : '—'
+    const detail = actual?.advances
+      ? `Elegiste ${whoTeam(myAdv)}, pasó ${whoTeam(actual.advances)}`
+      : `Elegiste ${whoTeam(myAdv)} · aún sin definir quién pasó`
     rows.push({
       label: '¿Quién pasa?',
-      detail: `Elegiste ${whoTeam(myAdv)}, pasó ${whoTeam(actual?.advances)}`,
+      detail,
       pts: breakdown.advances || 0,
       max: 10,
     })
@@ -312,7 +315,7 @@ export default function Predictions() {
     setOriginal(JSON.parse(JSON.stringify(map)))
 
     const rmap = {}
-    for (const r of rRes.data || []) rmap[r.match_id] = { score1: r.score1, score2: r.score2 }
+    for (const r of rRes.data || []) rmap[r.match_id] = { score1: r.score1, score2: r.score2, advances: r.advances ?? null }
     setResults(rmap)
 
     const pbid = {}
