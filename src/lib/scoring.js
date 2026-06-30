@@ -44,10 +44,22 @@ export function scoreMatch(pred, actual) {
     breakdown.diff = 1
   }
 
-  // PLAYOFFS: +10 si acierta quién pasa (cubre el caso de penales).
-  // Solo aplica si el resultado real trae 'advances' definido.
-  if (actual.advances && pred.advances && pred.advances === actual.advances) {
-    breakdown.advances = 10
+  // PLAYOFFS: +10 si acierta quién pasa.
+  // Señal de que es playoff: el resultado real trae 'advances' definido
+  // (en fase de grupos nunca se setea). El "quién pasa" del jugador se deriva
+  // de su MARCADOR si hay ganador, o de su elección manual si predijo empate.
+  // Así, quien predijo "Brasil 1-0" acierta el pase aunque no lo eligiera a mano.
+  if (actual.advances) {
+    const effectiveAdvances = (s1, s2, manual) => {
+      const a = Number(s1), b = Number(s2)
+      if (a > b) return 'team1'
+      if (b > a) return 'team2'
+      return manual ?? null // empate: la elección manual del jugador
+    }
+    const predAdv = effectiveAdvances(pred.score1, pred.score2, pred.advances)
+    if (predAdv && predAdv === actual.advances) {
+      breakdown.advances = 10
+    }
   }
 
   const total =

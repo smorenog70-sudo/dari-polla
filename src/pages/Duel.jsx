@@ -2,12 +2,14 @@ import { useMemo, useState } from 'react'
 import { useAuth } from '../lib/auth'
 import { useLeagueData } from '../lib/useLeagueData'
 import { TOURNAMENT, matchById, isMatchLocked, formatKickoff } from '../lib/matches'
+import { buildResolver } from '../lib/bracketTeams'
 import { scoreMatch, scoreGroupPositions, scoreThirds } from '../lib/scoring'
 import { displayName, displayAvatar } from '../lib/playerDisplay'
 
 export default function Duel() {
   const { user } = useAuth()
   const data = useLeagueData()
+  const { resolveMatch } = buildResolver(data)
   const [rivalId, setRivalId] = useState('')
 
   const me = data.profiles.find(p => p.id === user.id)
@@ -57,7 +59,7 @@ export default function Duel() {
         else if (rvPts > myPts) rivalWins++
         else ties++
       }
-      rows.push({ match: m, myP, rvP, result, myPts, rvPts })
+      rows.push({ match: resolveMatch(m), myP, rvP, result, myPts, rvPts })
     }
     return { rows, myWins, rivalWins, ties }
   }, [rivalId, data, user.id])

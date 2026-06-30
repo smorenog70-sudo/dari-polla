@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import { useLeagueData } from '../lib/useLeagueData'
 import { matchById, formatKickoff } from '../lib/matches'
+import { buildResolver } from '../lib/bracketTeams'
 import { scoreMatch } from '../lib/scoring'
 import { displayName, displayAvatar } from '../lib/playerDisplay'
 
@@ -23,6 +24,7 @@ export default function ActivityWall() {
 
   const events = useMemo(() => {
     if (data.loading) return []
+    const { resolveMatch } = buildResolver(data)
 
     const predsByMatch = new Map()
     for (const p of data.predictions) {
@@ -38,7 +40,7 @@ export default function ActivityWall() {
     )
 
     for (const r of sortedResults) {
-      const m = matchById(r.match_id)
+      const m = resolveMatch(matchById(r.match_id))
       if (!m) continue
       const preds = predsByMatch.get(r.match_id) || []
 

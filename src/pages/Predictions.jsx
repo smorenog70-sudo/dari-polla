@@ -64,12 +64,20 @@ function ScoreBreakdown({ match, pred, actual, breakdown, total }) {
     },
   ]
 
-  // Solo en playoffs: fila de "quién pasa"
-  if (match.stage !== 'group' && (actual?.advances || pred?.advances)) {
+  // Solo en playoffs: fila de "quién pasa". El efectivo se deriva del marcador
+  // (o de la elección manual en empate), igual que en el cálculo de puntos.
+  if (match.stage !== 'group' && actual?.advances) {
+    const effAdv = (s1, s2, manual) => {
+      const a = Number(s1), b = Number(s2)
+      if (a > b) return 'team1'
+      if (b > a) return 'team2'
+      return manual ?? null
+    }
+    const myAdv = effAdv(pred?.score1, pred?.score2, pred?.advances)
     const whoTeam = (w) => w === 'team1' ? match.team1 : w === 'team2' ? match.team2 : '—'
     rows.push({
       label: '¿Quién pasa?',
-      detail: `Elegiste ${whoTeam(pred?.advances)}, pasó ${whoTeam(actual?.advances)}`,
+      detail: `Elegiste ${whoTeam(myAdv)}, pasó ${whoTeam(actual?.advances)}`,
       pts: breakdown.advances || 0,
       max: 10,
     })

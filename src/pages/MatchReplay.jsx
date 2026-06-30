@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { supabase } from '../lib/supabase'
 import { useLeagueData } from '../lib/useLeagueData'
 import { TOURNAMENT, matchById, formatKickoff } from '../lib/matches'
+import { buildResolver } from '../lib/bracketTeams'
 import { scoreMatch } from '../lib/scoring'
 import { displayName, displayAvatar } from '../lib/playerDisplay'
 
@@ -40,12 +41,13 @@ export default function MatchReplay() {
 
   // Partidos con resultado, más reciente primero
   const playedMatches = useMemo(() => {
+    const { resolveMatch } = buildResolver(data)
     const resultsById = new Map(data.results.map(r => [r.match_id, r]))
     return TOURNAMENT.matches
       .filter(m => resultsById.has(m.id))
-      .map(m => ({ match: m, result: resultsById.get(m.id) }))
+      .map(m => ({ match: resolveMatch(m), result: resultsById.get(m.id) }))
       .sort((a, b) => new Date(b.match.kickoff_utc) - new Date(a.match.kickoff_utc))
-  }, [data.results])
+  }, [data.results, data.config])
 
   // Cargar comentarios + reacciones del partido seleccionado
   useEffect(() => {

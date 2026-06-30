@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom'
 import { useAuth } from '../lib/auth'
 import { useLeagueData } from '../lib/useLeagueData'
 import { matchById, TOURNAMENT, hasMatchStarted, formatKickoff } from '../lib/matches'
+import { buildResolver } from '../lib/bracketTeams'
 import { scoreMatch, scoreGroupPositions, scoreThirds } from '../lib/scoring'
 import { teamWithFlag } from '../lib/flags'
 import {
@@ -39,6 +40,7 @@ export default function Progress() {
   const { user } = useAuth()
   const { userId: routeUserId } = useParams()
   const data = useLeagueData()
+  const { resolveMatch, teams: bracketTeamsP } = useMemo(() => buildResolver(data), [data.results, data.config])
 
   // Si la URL trae un userId, vemos el perfil de esa persona; si no, el nuestro.
   const viewedUserId = routeUserId || user.id
@@ -66,7 +68,7 @@ export default function Progress() {
         const result = resultsById.get(p.match_id)
         const scored = result ? scoreMatch(p, result) : null
         return {
-          match: m,
+          match: resolveMatch(m),
           pred: p,
           result: result || null,
           points: scored ? scored.total : null,
@@ -213,7 +215,10 @@ export default function Progress() {
     const compareLabels = playedMatchIds.map((mid, i) => {
       const m = matchById(mid)
       const ini = (s) => (s || '').slice(0, 3).toUpperCase()
-      return m ? `${ini(m.team1)}-${ini(m.team2)}` : `P${i + 1}`
+      if (!m) return `P${i + 1}`
+      const t1 = bracketTeamsP[m.team1_raw || m.team1] || m.team1
+      const t2 = bracketTeamsP[m.team2_raw || m.team2] || m.team2
+      return `${ini(t1)}-${ini(t2)}`
     })
 
     // === Quién más tiene cada medalla ===

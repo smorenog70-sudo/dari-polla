@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-export default function NewResultsBanner({ newResults, totalNewPoints, dismiss }) {
+export default function NewResultsBanner({ newResults, totalNewPoints, dismiss, resolveMatch }) {
   const [expanded, setExpanded] = useState(false)
 
   if (!newResults || newResults.length === 0) return null
@@ -37,7 +37,8 @@ export default function NewResultsBanner({ newResults, totalNewPoints, dismiss }
           {expanded && (
             <div className="mt-3 space-y-2 text-xs">
               {newResults.slice(0, 6).map(r => {
-                const { match: m, result, myPrediction: p, points: pts } = r
+                const { match: rawM, result, myPrediction: p, points: pts } = r
+                const m = resolveMatch ? resolveMatch(rawM) : rawM
                 return (
                   <div key={result.match_id} className="bg-brand-900/40 rounded-lg p-2">
                     <div className="flex items-center justify-between gap-2">

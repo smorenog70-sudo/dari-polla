@@ -12,7 +12,7 @@ function minutesUntil(targetMs, nowMs) {
   return Math.round((targetMs - nowMs) / 60000)
 }
 
-export default function PendingMatchesBanner({ userPredictions = [] }) {
+export default function PendingMatchesBanner({ userPredictions = [], resolveMatch }) {
   // re-render every 30s to recalculate countdowns
   const now = useNowTick(30000)
 
@@ -33,11 +33,12 @@ export default function PendingMatchesBanner({ userPredictions = [] }) {
         return lockTime > now && ko < cutoffMs
       })
       .map(m => {
+        const rm = resolveMatch ? resolveMatch(m) : m
         const ko = new Date(m.kickoff_utc).getTime()
         const lockTime = ko - LOCK_OFFSET_MIN * 60 * 1000
         const minsToLock = minutesUntil(lockTime, now)
         return {
-          ...m,
+          ...rm,
           minsToLock,
           minsToKickoff: minutesUntil(ko, now),
           predicted: predictedSet.has(m.id),

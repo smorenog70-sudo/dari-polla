@@ -125,3 +125,33 @@ export function bracketVisualOrder(matches, stage) {
   }
   return ordered
 }
+
+/**
+ * Helper centralizado: dado el estado de la liga (data), construye el mapa de
+ * resolución (grupos auto + lo confirmado por el admin) y devuelve funciones
+ * listas para resolver partidos. Evita repetir esta lógica en cada página.
+ *
+ * Uso:
+ *   const { resolveMatch, teams } = buildResolver(data)
+ *   const m = resolveMatch(rawMatch)  // m.team1 / m.team2 ya resueltos
+ */
+import { computeGroupTables } from './groupTables'
+
+export function buildResolver(data) {
+  const resultsById = new Map((data?.results || []).map(r => [r.match_id, r]))
+  const gt = computeGroupTables(resultsById)
+  const auto = autoResolveGroupPositions(gt)
+  const manual = data?.config?.bracket_teams || {}
+  const teams = { ...auto, ...manual }
+
+  const resolveMatch = (m) => {
+    if (!m || m.stage === 'group') return m
+    return {
+      ...m,
+      team1: resolveTeam(m.team1_raw || m.team1, teams),
+      team2: resolveTeam(m.team2_raw || m.team2, teams),
+    }
+  }
+
+  return { resolveMatch, teams, resolveOne: (ph) => resolveTeam(ph, teams) }
+}

@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { useLeagueData } from '../lib/useLeagueData'
 import { TOURNAMENT, matchById, formatKickoff, isMatchLocked, hasMatchStarted } from '../lib/matches'
+import { buildResolver } from '../lib/bracketTeams'
 import { useNowTick } from '../lib/useNowTick'
 import { teamWithFlag } from '../lib/flags'
 import { displayName, displayAvatar } from '../lib/playerDisplay'
@@ -26,6 +27,7 @@ export default function CommunityStats() {
   const data = useLeagueData()
   const [view, setView] = useState('analysis')
   useNowTick(30000) // refresca para reflejar pitazos
+  const { resolveMatch } = useMemo(() => buildResolver(data), [data.results, data.config])
 
   // Agrupar predicciones por partido
   const predsByMatch = useMemo(() => {
@@ -96,9 +98,9 @@ export default function CommunityStats() {
 
       {view === 'analysis' && <AnalysisView predictions={data.predictions} results={data.results} />}
       {view === 'overview' && <OverviewView overview={overview} />}
-      {view === 'matches' && <MatchesView predsByMatch={predsByMatch} />}
+      {view === 'matches' && <MatchesView predsByMatch={predsByMatch} resolveMatch={resolveMatch} />}
       {view === 'players' && <PlayersView predsByMatch={predsByMatch} profilesById={profilesById} />}
-      {view === 'teams' && <TeamsView predictions={data.predictions} thirdPreds={data.thirdPreds} groupPreds={data.groupPreds} />}
+      {view === 'teams' && <TeamsView predictions={data.predictions} thirdPreds={data.thirdPreds} groupPreds={data.groupPreds} resolveMatch={resolveMatch} />}
       {view === 'scores' && <ScoresView predictions={data.predictions} />}
     </div>
   )
@@ -147,12 +149,13 @@ function OverviewView({ overview }) {
 // ===================================================================
 // VIEW: Por partido
 // ===================================================================
-function MatchesView({ predsByMatch }) {
+function MatchesView({ predsByMatch, resolveMatch }) {
   const matches = useMemo(() => {
     return TOURNAMENT.matches
       .filter(m => predsByMatch.has(m.id))
+      .map(resolveMatch)
       .sort((a, b) => new Date(a.kickoff_utc) - new Date(b.kickoff_utc))
-  }, [predsByMatch])
+  }, [predsByMatch, resolveMatch])
 
   if (matches.length === 0) {
     return (
@@ -429,11 +432,11 @@ function PlayerScoresCard({ match, predictions, profilesById }) {
 // ===================================================================
 // VIEW: Equipos favoritos
 // ===================================================================
-function TeamsView({ predictions, thirdPreds, groupPreds }) {
+function TeamsView({ predictions, thirdPreds, groupPreds, resolveMatch }) {
   const winnerCounts = useMemo(() => {
     const counter = new Map()
     for (const p of predictions) {
-      const m = matchById(p.match_id)
+      const m = resolveMatch(matchById(p.match_id))
       if (!m) continue
       if (p.score1 > p.score2) bump(counter, m.team1)
       else if (p.score1 < p.score2) bump(counter, m.team2)

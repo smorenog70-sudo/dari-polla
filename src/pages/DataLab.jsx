@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import { useLeagueData } from '../lib/useLeagueData'
+import { buildResolver } from '../lib/bracketTeams'
 import { hasMatchStarted } from '../lib/matches'
 import { teamWithFlag } from '../lib/flags'
 import {
@@ -51,6 +52,13 @@ function Card({ title, confidence, children, note }) {
 
 export default function DataLab() {
   const data = useLeagueData()
+  const { teams: bracketTeams } = useMemo(() => buildResolver(data), [data.results, data.config])
+  // Resuelve los nombres de un row {matchId, team1, team2} si son placeholders
+  const fixNames = (m) => ({
+    ...m,
+    team1: bracketTeams[m.team1] || m.team1,
+    team2: bracketTeams[m.team2] || m.team2,
+  })
   const [tab, setTab] = useState('grupo')
 
   const resultsById = useMemo(
@@ -182,7 +190,7 @@ export default function DataLab() {
               <div className="space-y-2">
                 <div>
                   <div className="text-[10px] text-red-400 mb-1">Los que más fallaron (trampa):</div>
-                  {lab.difficulty.hardest.map(m => (
+                  {lab.difficulty.hardest.map(fixNames).map(m => (
                     <div key={m.matchId} className="text-[11px] flex justify-between">
                       <span>{teamWithFlag(m.team1)} vs {teamWithFlag(m.team2)}</span>
                       <span className="text-red-300">{m.hitPct}% acertó</span>
@@ -191,7 +199,7 @@ export default function DataLab() {
                 </div>
                 <div>
                   <div className="text-[10px] text-green-400 mb-1">Los más cantados (regalados):</div>
-                  {lab.difficulty.easiest.map(m => (
+                  {lab.difficulty.easiest.map(fixNames).map(m => (
                     <div key={m.matchId} className="text-[11px] flex justify-between">
                       <span>{teamWithFlag(m.team1)} vs {teamWithFlag(m.team2)}</span>
                       <span className="text-green-300">{m.hitPct}% acertó</span>
