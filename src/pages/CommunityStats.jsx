@@ -99,7 +99,7 @@ export default function CommunityStats() {
       {view === 'analysis' && <AnalysisView predictions={data.predictions} results={data.results} />}
       {view === 'overview' && <OverviewView overview={overview} />}
       {view === 'matches' && <MatchesView predsByMatch={predsByMatch} resolveMatch={resolveMatch} />}
-      {view === 'players' && <PlayersView predsByMatch={predsByMatch} profilesById={profilesById} />}
+      {view === 'players' && <PlayersView predsByMatch={predsByMatch} profilesById={profilesById} resolveMatch={resolveMatch} />}
       {view === 'teams' && <TeamsView predictions={data.predictions} thirdPreds={data.thirdPreds} groupPreds={data.groupPreds} resolveMatch={resolveMatch} />}
       {view === 'scores' && <ScoresView predictions={data.predictions} />}
     </div>
@@ -270,13 +270,14 @@ function DistroBar({ label, count, pct, color }) {
 // ===================================================================
 // VIEW: Marcadores por persona (revela al pitazo)
 // ===================================================================
-function PlayersView({ predsByMatch, profilesById }) {
+function PlayersView({ predsByMatch, profilesById, resolveMatch }) {
   // Solo partidos que ya arrancaron, más reciente primero
   const matches = useMemo(() => {
     return TOURNAMENT.matches
       .filter(m => predsByMatch.has(m.id) && hasMatchStarted(m))
+      .map(resolveMatch)
       .sort((a, b) => new Date(b.kickoff_utc) - new Date(a.kickoff_utc))
-  }, [predsByMatch])
+  }, [predsByMatch, resolveMatch])
 
   const upcomingCount = useMemo(() => {
     return TOURNAMENT.matches.filter(m => predsByMatch.has(m.id) && !hasMatchStarted(m)).length
