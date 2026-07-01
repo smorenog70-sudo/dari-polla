@@ -611,6 +611,15 @@ export default function Home() {
       {/* Panel de avance del Mundial y de los puntos en juego */}
       <WorldCupProgressCard data={data} />
 
+      {/* Acceso destacado al cuadro de eliminatorias — ahora es lo más relevante del torneo */}
+      <Link to="/bracket" className="card flex items-center justify-between hover:bg-ink-700 transition">
+        <div>
+          <div className="text-sm font-semibold">🏆 Camino a la final</div>
+          <div className="text-xs text-ink-400">Mira el cuadro completo de eliminatorias</div>
+        </div>
+        <span className="text-brand-400 text-sm shrink-0">Ver →</span>
+      </Link>
+
       {/* Líderes actuales */}
       {(stats.goatName || stats.kingName) && (
         <div className="grid grid-cols-2 gap-3">
