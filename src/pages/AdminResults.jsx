@@ -119,14 +119,9 @@ export default function AdminResults() {
       const o = original[id]
       if (r && r.score1 !== '' && r.score2 !== '' && r.score1 != null && r.score2 != null) {
         const m = TOURNAMENT.matches.find(x => x.id === id)
-        // Quién pasó efectivo: lo fuerza el marcador salvo empate a 90 (tiempo extra o penales)
-        let effectiveAdvances = null
-        if (m && m.stage !== 'group') {
-          const a = Number(r.score1), b = Number(r.score2)
-          if (a > b) effectiveAdvances = 'team1'
-          else if (b > a) effectiveAdvances = 'team2'
-          else effectiveAdvances = r.advances ?? null
-        }
+        // Quién pasó: SIEMPRE la elección manual del admin en playoffs
+        // (independiente del marcador que se haya cargado).
+        const effectiveAdvances = (m && m.stage !== 'group') ? (r.advances ?? null) : null
         const sameScore = o &&
           Number(o.score1) === Number(r.score1) &&
           Number(o.score2) === Number(r.score2)
@@ -183,9 +178,7 @@ export default function AdminResults() {
     setTimeout(() => setMsg(''), 2500)
   }
 
-  if (loading) return <div className="text-center text-ink-300 py-8">Cargando…</div>
-
-  // Empates de playoff cargados pero SIN marcar quién pasó (nadie recibe +10)
+  // Playoffs con marcador cargado pero SIN marcar quién pasó (nadie recibe +10)
   const unresolvedDraws = useMemo(() => {
     const out = []
     for (const m of TOURNAMENT.matches) {
@@ -194,12 +187,14 @@ export default function AdminResults() {
       if (!r) continue
       const s1 = r.score1, s2 = r.score2
       const filled = s1 !== '' && s2 !== '' && s1 != null && s2 != null
-      if (filled && Number(s1) === Number(s2) && !r.advances) {
+      if (filled && !r.advances) {
         out.push(m)
       }
     }
     return out
   }, [results])
+
+  if (loading) return <div className="text-center text-ink-300 py-8">Cargando…</div>
 
   return (
     <div className="space-y-3 pb-24">
@@ -212,9 +207,9 @@ export default function AdminResults() {
 
       {unresolvedDraws.length > 0 && (
         <div className="card bg-red-900/20 border border-red-600">
-          <h2 className="font-semibold text-red-200 mb-1 text-sm">⚠️ Empates sin definir quién pasó</h2>
+          <h2 className="font-semibold text-red-200 mb-1 text-sm">⚠️ Falta marcar quién pasó</h2>
           <p className="text-xs text-ink-300 mb-2">
-            Estos partidos de eliminación terminaron empatados pero no marcaste quién avanzó.
+            Estos partidos de eliminación tienen marcador cargado pero no marcaste quién avanzó.
             Hasta que lo hagas, <strong>nadie recibe los +10 puntos</strong> de "quién pasa":
           </p>
           <div className="flex flex-wrap gap-1">
@@ -288,26 +283,23 @@ export default function AdminResults() {
             <div className="flex-1 text-left text-sm font-medium">{teamName(m, 'team2')}</div>
           </div>
 
-          {/* PLAYOFFS: quién pasó (cubre tiempo extra o penales). Solo en eliminación. */}
+          {/* PLAYOFFS: quién pasó. SIEMPRE es una elección manual del admin,
+              sin importar el marcador (el marcador solo puntúa goles/resultado). */}
           {m.stage !== 'group' && (() => {
             const r = results[m.id]
             const s1 = r?.score1, s2 = r?.score2
             const bothFilled = s1 !== '' && s2 !== '' && s1 != null && s2 != null
-            const isDraw = bothFilled && Number(s1) === Number(s2)
-            const forced = bothFilled && !isDraw
-              ? (Number(s1) > Number(s2) ? 'team1' : 'team2')
-              : null
-            const effective = forced || (isDraw ? r?.advances : null)
-            const enabled = isDraw
+            const effective = r?.advances ?? null
+            const enabled = bothFilled
             const btnClass = (who) => `flex-1 text-xs py-1.5 rounded-lg border transition ${
               effective === who
                 ? 'bg-green-700 border-green-500 text-white font-semibold'
                 : 'bg-ink-800 border-ink-600 text-ink-300'
-            } ${!enabled ? 'cursor-default opacity-90' : ''}`
+            } ${!enabled ? 'cursor-default opacity-50' : ''}`
             return (
               <div className="mt-2 bg-ink-900/40 rounded-lg p-2">
                 <div className="text-[10px] text-ink-400 text-center mb-1.5">
-                  ¿Quién pasó? <span className="text-ink-500">(+10 pts; elige solo si empataron a los 90)</span>
+                  ¿Quién pasó? <span className="text-ink-500">(+10 pts)</span>
                 </div>
                 <div className="flex gap-1.5">
                   <button type="button" disabled={!enabled} onClick={() => enabled && setAdvances(m.id, 'team1')} className={btnClass('team1')}>
@@ -319,12 +311,10 @@ export default function AdminResults() {
                 </div>
                 {!bothFilled ? (
                   <div className="text-[10px] text-ink-500 text-center mt-1.5">Pon el marcador de 90 min primero.</div>
-                ) : forced ? (
-                  <div className="text-[10px] text-ink-500 text-center mt-1.5">Lo define el marcador.</div>
                 ) : !effective ? (
-                  <div className="text-[10px] text-red-300 text-center mt-1.5 font-semibold">⚠️ Empate: FALTA marcar quién pasó, o nadie recibe los +10.</div>
+                  <div className="text-[10px] text-red-300 text-center mt-1.5 font-semibold">⚠️ FALTA marcar quién pasó, o nadie recibe los +10.</div>
                 ) : (
-                  <div className="text-[10px] text-yellow-300 text-center mt-1.5">⚖️ Empate a los 90: marca quién pasó (en tiempo extra o penales).</div>
+                  <div className="text-[10px] text-green-300 text-center mt-1.5">✓ Quién pasó: {teamName(m, effective)}</div>
                 )}
               </div>
             )

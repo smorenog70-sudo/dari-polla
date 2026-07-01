@@ -45,21 +45,14 @@ export function scoreMatch(pred, actual) {
   }
 
   // PLAYOFFS: +10 si acierta quién pasa.
+  // El "quién pasa" del jugador es SIEMPRE su elección manual en el selector
+  // (independiente del marcador que haya predicho). Así, alguien puede predecir
+  // "Brasil 2-0" pero elegir a Japón como quien pasa, por si el partido real
+  // termina distinto a como lo imaginó en el marcador.
   // Señal de que es playoff: el resultado real trae 'advances' definido
-  // (en fase de grupos nunca se setea). El "quién pasa" del jugador se deriva
-  // de su MARCADOR si hay ganador, o de su elección manual si predijo empate.
-  // Así, quien predijo "Brasil 1-0" acierta el pase aunque no lo eligiera a mano.
-  if (actual.advances) {
-    const effectiveAdvances = (s1, s2, manual) => {
-      const a = Number(s1), b = Number(s2)
-      if (a > b) return 'team1'
-      if (b > a) return 'team2'
-      return manual ?? null // empate: la elección manual del jugador
-    }
-    const predAdv = effectiveAdvances(pred.score1, pred.score2, pred.advances)
-    if (predAdv && predAdv === actual.advances) {
-      breakdown.advances = 10
-    }
+  // (en fase de grupos nunca se setea).
+  if (actual.advances && pred.advances && pred.advances === actual.advances) {
+    breakdown.advances = 10
   }
 
   const total =

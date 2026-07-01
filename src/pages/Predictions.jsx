@@ -64,16 +64,10 @@ function ScoreBreakdown({ match, pred, actual, breakdown, total }) {
     },
   ]
 
-  // Solo en playoffs: fila de "quién pasa". El efectivo se deriva del marcador
-  // (o de la elección manual en empate), igual que en el cálculo de puntos.
+  // Solo en playoffs: fila de "quién pasa". Es siempre tu elección manual,
+  // independiente del marcador que hayas puesto.
   if (match.stage !== 'group' && actual?.advances) {
-    const effAdv = (s1, s2, manual) => {
-      const a = Number(s1), b = Number(s2)
-      if (a > b) return 'team1'
-      if (b > a) return 'team2'
-      return manual ?? null
-    }
-    const myAdv = effAdv(pred?.score1, pred?.score2, pred?.advances)
+    const myAdv = pred?.advances ?? null
     const whoTeam = (w) => w === 'team1' ? match.team1 : w === 'team2' ? match.team2 : '—'
     const detail = actual?.advances
       ? `Elegiste ${whoTeam(myAdv)}, pasó ${whoTeam(actual.advances)}`
@@ -199,19 +193,14 @@ function MatchRow({ match, pred, actual, onChange, locked, knockoutsEnabled, use
         <div className="flex-1 text-left font-medium text-sm">{teamWithFlag(match.team2)}</div>
       </div>
 
-      {/* PLAYOFFS: quién pasa (+10 pts). Bloqueado por el marcador; libre solo si hay empate. */}
+      {/* PLAYOFFS: quién pasa (+10 pts). Siempre es tu elección, aparte del marcador
+          (así puedes cubrir el caso de que el partido real termine distinto a
+          como pusiste el resultado, por ejemplo si empata a los 90). */}
       {match.stage !== 'group' && (() => {
         const s1 = pred?.score1, s2 = pred?.score2
         const bothFilled = s1 !== '' && s2 !== '' && s1 != null && s2 != null
-        const isDraw = bothFilled && Number(s1) === Number(s2)
-        // Si hay ganador claro, "quién pasa" lo determina el marcador (bloqueado).
-        const forcedAdvances = bothFilled && !isDraw
-          ? (Number(s1) > Number(s2) ? 'team1' : 'team2')
-          : null
-        // El valor mostrado: forzado por marcador, o el elegido por el usuario (solo en empate)
-        const effectiveAdvances = forcedAdvances || (isDraw ? pred?.advances : null)
-        // Solo se puede tocar manualmente si es empate y no está bloqueado
-        const togglesEnabled = isDraw && !disabled
+        const effectiveAdvances = pred?.advances ?? null
+        const togglesEnabled = bothFilled && !disabled
 
         const pickTeam = (who) => {
           if (!togglesEnabled) return
@@ -224,7 +213,7 @@ function MatchRow({ match, pred, actual, onChange, locked, knockoutsEnabled, use
             active
               ? 'bg-brand-600 border-brand-500 text-white font-semibold'
               : 'bg-ink-800 border-ink-600 text-ink-300'
-          } ${!togglesEnabled ? 'cursor-default opacity-90' : ''}`
+          } ${!togglesEnabled ? 'cursor-default opacity-50' : ''}`
         }
 
         return (
@@ -245,15 +234,11 @@ function MatchRow({ match, pred, actual, onChange, locked, knockoutsEnabled, use
               <div className="text-[10px] text-ink-500 text-center mt-1.5">
                 Pon el marcador de 90 min primero.
               </div>
-            ) : forcedAdvances ? (
-              <div className="text-[10px] text-ink-500 text-center mt-1.5">
-                Lo define el marcador. Si crees que termina empatado a los 90 (y se define en tiempo extra o penales), pon empate.
-              </div>
-            ) : (
+            ) : !effectiveAdvances ? (
               <div className="text-[10px] text-brand-300 text-center mt-1.5">
-                ⚖️ Empate a los 90: elige quién pasa (en tiempo extra o penales).
+                Elige quién crees que pasa (independiente del marcador que pusiste).
               </div>
-            )}
+            ) : null}
             {actual?.advances && (
               <div className="text-[10px] text-center mt-1.5 text-green-400">
                 Pasó: {actual.advances === 'team1' ? teamWithFlag(match.team1) : teamWithFlag(match.team2)}
@@ -441,18 +426,6 @@ export default function Predictions() {
   const displayMatches = viewMode === 'calendario' ? calendarMatches : matches
 
   const dirty = useMemo(() => {
-    // Calcula el "quién pasa" efectivo igual que al guardar: en playoffs lo fuerza
-    // el marcador, salvo empate (ahí vale la elección del usuario).
-    const effAdv = (matchId, p) => {
-      const m = matchById(matchId)
-      if (!m || m.stage === 'group') return null
-      const s1 = p?.score1, s2 = p?.score2
-      if (s1 === '' || s2 === '' || s1 == null || s2 == null) return null
-      const a = Number(s1), b = Number(s2)
-      if (a > b) return 'team1'
-      if (b > a) return 'team2'
-      return p?.advances ?? null // empate
-    }
     const keys = new Set([...Object.keys(preds), ...Object.keys(original)])
     for (const k of keys) {
       const a = preds[k]
@@ -460,8 +433,8 @@ export default function Predictions() {
       if (!a && !b) continue
       if (!a || !b) return true
       if (Number(a.score1) !== Number(b.score1) || Number(a.score2) !== Number(b.score2)) return true
-      // Cambio solo del ganador (marcador igual): también cuenta como cambio.
-      if (effAdv(k, a) !== effAdv(k, b)) return true
+      // El ganador elegido es independiente del marcador: cualquier cambio cuenta.
+      if ((a.advances ?? null) !== (b.advances ?? null)) return true
     }
     return false
   }, [preds, original])
@@ -483,15 +456,8 @@ export default function Predictions() {
       if (isMatchLocked(m)) continue
       if (m.stage !== 'group' && !knockoutsEnabled) continue
       // only push if changed vs original (marcador O quién pasa)
-      // Calcular el "quién pasa" efectivo: en playoffs, lo fuerza el marcador
-      // salvo empate a 90 (ahí el usuario elige quién pasa: tiempo extra o penales).
-      let effectiveAdvances = null
-      if (m.stage !== 'group') {
-        const a = Number(p.score1), b = Number(p.score2)
-        if (a > b) effectiveAdvances = 'team1'
-        else if (b > a) effectiveAdvances = 'team2'
-        else effectiveAdvances = p.advances ?? null // empate: elección del usuario
-      }
+      // "Quién pasa" es SIEMPRE tu elección manual, independiente del marcador.
+      const effectiveAdvances = m.stage !== 'group' ? (p.advances ?? null) : null
       const o = original[m.id]
       // Comparar normalizando a número (los scores pueden venir como string del input)
       const sameScore = o &&
