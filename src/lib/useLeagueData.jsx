@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react'
+import { createContext, useContext, useEffect, useState, useCallback } from 'react'
 import { supabase } from './supabase'
 
 /**
@@ -27,22 +27,33 @@ async function fetchAll(table, selectCols = '*') {
   return all
 }
 
+const EMPTY_STATE = {
+  profiles: [],
+  predictions: [],
+  results: [],
+  groupPreds: [],
+  groupResults: [],
+  thirdPreds: [],
+  thirdResults: [],
+  fines: [],
+  config: {},
+  loading: true,
+}
+
+const LeagueDataContext = createContext(null)
+
 /**
- * Loads all the data needed for the standings / overview screens.
+ * Carga TODA la data de la liga (9 tablas) una sola vez y la comparte
+ * entre todos los componentes que la consumen (vía contexto).
+ *
+ * Antes cada componente que llamaba a useLeagueData() disparaba su propia
+ * carga completa e independiente: como Layout (LiveSimulatorButton), Home,
+ * y varias páginas más se montan juntos, una sola vista podía disparar
+ * 2-3 cargas completas simultáneas de las 9 tablas. Con el Provider
+ * centralizado se hace UNA sola carga que todos comparten.
  */
-export function useLeagueData() {
-  const [state, setState] = useState({
-    profiles: [],
-    predictions: [],
-    results: [],
-    groupPreds: [],
-    groupResults: [],
-    thirdPreds: [],
-    thirdResults: [],
-    fines: [],
-    config: {},
-    loading: true,
-  })
+export function LeagueDataProvider({ children }) {
+  const [state, setState] = useState(EMPTY_STATE)
 
   const load = useCallback(async () => {
     setState(s => ({ ...s, loading: true }))
@@ -77,5 +88,18 @@ export function useLeagueData() {
 
   useEffect(() => { load() }, [load])
 
-  return { ...state, refresh: load }
+  const value = { ...state, refresh: load }
+  return <LeagueDataContext.Provider value={value}>{children}</LeagueDataContext.Provider>
+}
+
+/**
+ * Lee la data de la liga cargada por <LeagueDataProvider>. Debe usarse
+ * dentro del Provider (montado una vez en App.jsx, alrededor del Layout).
+ */
+export function useLeagueData() {
+  const ctx = useContext(LeagueDataContext)
+  if (!ctx) {
+    throw new Error('useLeagueData debe usarse dentro de <LeagueDataProvider>')
+  }
+  return ctx
 }
