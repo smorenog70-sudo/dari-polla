@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useLeagueData } from '../lib/useLeagueData'
-import { TOURNAMENT, matchById, fechaMatchIds, FECHA_LABELS, isMatchLocked, hasMatchStarted } from '../lib/matches'
+import { TOURNAMENT, matchById, fechaMatchIds, FECHA_LABELS, isMatchLocked, hasMatchStarted, formatKickoff } from '../lib/matches'
 import { FECHA_ORDER } from '../lib/playerStats'
 import { scoreMatch } from '../lib/scoring'
 import { resolveTeam, autoResolveGroupPositions } from '../lib/bracketTeams'
@@ -43,16 +43,12 @@ export default function AdminDashboard() {
           !m.team1?.match(/^[0-9WL]/) && !m.team2?.match(/^[0-9WL]/)
       ).sort((a, b) => new Date(a.kickoff_utc) - new Date(b.kickoff_utc))
 
-    const nextMatch = openMatches[0] || null
-
-    // ¿Quién NO ha puesto el próximo partido?
-    const missingNext = []
-    if (nextMatch) {
-      for (const prof of data.profiles) {
-        const has = predsByUser.get(prof.id)?.has(nextMatch.id)
-        if (!has) missingNext.push(prof)
-      }
-    }
+    // Próximos 3 partidos abiertos, con quién no ha predicho cada uno.
+    const next3 = openMatches.slice(0, 3)
+    const missingByMatch = next3.map(m => ({
+      match: m,
+      missing: data.profiles.filter(prof => !predsByUser.get(prof.id)?.has(m.id)),
+    }))
 
     // ¿Quién no ha puesto NINGÚN partido de los próximos abiertos? (completamente ausente)
     const next5 = openMatches.slice(0, 5)
@@ -150,7 +146,7 @@ export default function AdminDashboard() {
     lastMinuters.sort((a, b) => b.pct - a.pct)
 
     return {
-      nextMatch, missingNext, missingAllUpcoming, inactiveStreak, unpaid,
+      missingByMatch, missingAllUpcoming, inactiveStreak, unpaid,
       playedNoResult, participationRate, participationByFecha, lastMinuters,
       totalPlayers: data.profiles.length,
     }
@@ -211,33 +207,40 @@ export default function AdminDashboard() {
         </div>
       )}
 
-      {/* Quién no ha puesto el próximo partido */}
-      {stats.nextMatch && (
+      {/* Próximos 3 partidos y quién no ha predicho cada uno */}
+      {stats.missingByMatch.length > 0 && (
         <div className="card">
-          <h2 className="font-semibold mb-1">📋 Falta predecir el próximo</h2>
-          <div className="text-xs text-ink-400 mb-2">
-            {stats.nextMatch.team1} vs {stats.nextMatch.team2} · {stats.missingNext.length} sin predecir
-          </div>
-          {stats.missingNext.length === 0 ? (
-            <div className="text-sm text-green-400">✅ ¡Todos pusieron su marcador!</div>
-          ) : (
-            <>
-              <div className="flex flex-wrap gap-1">
-                {stats.missingNext.map(p => (
-                  <span key={p.id} className="text-xs bg-ink-700 rounded px-2 py-0.5">
-                    {nameOf(p)}
-                  </span>
-                ))}
+          <h2 className="font-semibold mb-2">📋 Próximos 3 partidos</h2>
+          <div className="space-y-3">
+            {stats.missingByMatch.map(({ match: m, missing }) => (
+              <div key={m.id} className="border-t border-ink-700 first:border-t-0 first:pt-0 pt-3">
+                <div className="text-sm font-medium">{m.team1} vs {m.team2}</div>
+                <div className="text-xs text-ink-400 mb-2">
+                  {formatKickoff(m.kickoff_utc)} · {missing.length} sin predecir
+                </div>
+                {missing.length === 0 ? (
+                  <div className="text-sm text-green-400">✅ ¡Todos pusieron su marcador!</div>
+                ) : (
+                  <>
+                    <div className="flex flex-wrap gap-1">
+                      {missing.map(p => (
+                        <span key={p.id} className="text-xs bg-ink-700 rounded px-2 py-0.5">
+                          {nameOf(p)}
+                        </span>
+                      ))}
+                    </div>
+                    <button
+                      onClick={() => copyList(missing,
+                        `⚽ ¡Falta poner el marcador de ${m.team1} vs ${m.team2}! No se les olvide pronosticar 👇`)}
+                      className="mt-2 text-xs bg-green-700 hover:bg-green-600 text-white rounded-lg px-3 py-1.5"
+                    >
+                      📋 Copiar lista para WhatsApp
+                    </button>
+                  </>
+                )}
               </div>
-              <button
-                onClick={() => copyList(stats.missingNext,
-                  `⚽ ¡Falta poner el marcador de ${stats.nextMatch.team1} vs ${stats.nextMatch.team2}! No se les olvide pronosticar 👇`)}
-                className="mt-2 text-xs bg-green-700 hover:bg-green-600 text-white rounded-lg px-3 py-1.5"
-              >
-                📋 Copiar lista para WhatsApp
-              </button>
-            </>
-          )}
+            ))}
+          </div>
         </div>
       )}
 
