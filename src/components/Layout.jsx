@@ -8,6 +8,7 @@ const navItems = [
   { to: '/predicciones', label: 'Partidos', icon: '⚽' },
   { to: '/bracket', label: 'Camino', icon: '🏆' },
   { to: '/tabla', label: 'Tabla', icon: '📊' },
+  { to: '/comunidad?vista=players', label: 'Marcadores', icon: '🧑‍🤝‍🧑' },
 ]
 
 const adminItems = [
@@ -127,7 +128,7 @@ export default function Layout() {
       <LiveSimulatorButton />
 
       <nav className="fixed bottom-0 inset-x-0 z-30 bg-ink-800 border-t border-ink-700">
-        <div className="max-w-2xl mx-auto grid grid-cols-4">
+        <div className="max-w-2xl mx-auto grid grid-cols-5">
           {navItems.map(i => (
             <NavLink
               key={i.to}

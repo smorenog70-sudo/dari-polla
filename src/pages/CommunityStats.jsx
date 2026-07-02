@@ -1,4 +1,5 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { useLeagueData } from '../lib/useLeagueData'
 import { TOURNAMENT, matchById, formatKickoff, isMatchLocked, hasMatchStarted } from '../lib/matches'
 import { buildResolver } from '../lib/bracketTeams'
@@ -25,7 +26,18 @@ const VIEWS = [
 
 export default function CommunityStats() {
   const data = useLeagueData()
-  const [view, setView] = useState('analysis')
+  const [searchParams] = useSearchParams()
+  // Permite entrar directo a una vista concreta vía ?vista=players
+  // (usado por el acceso directo "Marcadores" de la barra inferior).
+  const [view, setView] = useState(() => {
+    const v = searchParams.get('vista')
+    return VIEWS.some(x => x.id === v) ? v : 'analysis'
+  })
+  // Si cambia el parámetro estando ya en la página, sincroniza la vista.
+  useEffect(() => {
+    const v = searchParams.get('vista')
+    if (v && VIEWS.some(x => x.id === v)) setView(v)
+  }, [searchParams])
   useNowTick(30000) // refresca para reflejar pitazos
   const { resolveMatch } = useMemo(() => buildResolver(data), [data.results, data.config])
 
