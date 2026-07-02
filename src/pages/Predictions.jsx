@@ -230,8 +230,14 @@ function MatchRow({ match, pred, actual, onChange, locked, knockoutsEnabled, use
       {match.stage !== 'group' && (() => {
         const s1 = pred?.score1, s2 = pred?.score2
         const bothFilled = s1 !== '' && s2 !== '' && s1 != null && s2 != null
-        const effectiveAdvances = pred?.advances ?? null
-        const togglesEnabled = bothFilled && !disabled
+        const isTie = bothFilled && Number(s1) === Number(s2)
+        // Si el marcador NO es empate, el que pasa queda forzado al equipo con
+        // más goles: no se puede elegir al contrario. Solo en empate el usuario
+        // decide libremente (prórroga / penales).
+        const scoreWinner = bothFilled && !isTie ? (Number(s1) > Number(s2) ? 'team1' : 'team2') : null
+        const forced = scoreWinner != null
+        const effectiveAdvances = forced ? scoreWinner : (pred?.advances ?? null)
+        const togglesEnabled = bothFilled && !disabled && !forced
 
         const pickTeam = (who) => {
           if (!togglesEnabled) return
@@ -265,9 +271,13 @@ function MatchRow({ match, pred, actual, onChange, locked, knockoutsEnabled, use
               <div className="text-[10px] text-ink-500 text-center mt-1.5">
                 Pon el marcador de 90 min primero.
               </div>
+            ) : forced ? (
+              <div className="text-[10px] text-ink-500 text-center mt-1.5">
+                Ganas el marcador → pasa {effectiveAdvances === 'team1' ? teamWithFlag(match.team1) : teamWithFlag(match.team2)} automáticamente. Pon empate si crees que se decide en prórroga/penales.
+              </div>
             ) : !effectiveAdvances ? (
               <div className="text-[10px] text-brand-300 text-center mt-1.5">
-                Elige quién crees que pasa (independiente del marcador que pusiste).
+                Empate a los 90: elige quién crees que pasa (prórroga / penales).
               </div>
             ) : null}
             {actual?.advances && (
