@@ -593,6 +593,23 @@ export default function Home() {
         )
       })()}
 
+      {/* Acceso destacado al cuadro de eliminatorias — es lo más relevante del torneo ahora */}
+      <Link
+        to="/bracket"
+        className="block rounded-2xl p-4 bg-gradient-to-br from-brand-700/50 via-brand-900/30 to-ink-900 border border-brand-600/40 hover:border-brand-500 transition"
+      >
+        <div className="flex items-center justify-between">
+          <div>
+            <div className="text-[10px] uppercase tracking-wider text-brand-300 font-semibold mb-0.5">
+              🏆 Fase de eliminación
+            </div>
+            <div className="font-bold text-base leading-tight">Camino a la final</div>
+            <div className="text-xs text-ink-300 mt-0.5">Mira el cuadro completo de llaves</div>
+          </div>
+          <span className="text-brand-300 text-2xl shrink-0">→</span>
+        </div>
+      </Link>
+
       {/* Datos curiosos del próximo partido (o de toda la tanda) — solo nombres resueltos */}
       {nextMatches.filter(nm => !nm.team1?.match(/^[0-9WL]/) && !nm.team2?.match(/^[0-9WL]/)).map(nm => (
         <MatchCuriosities
@@ -610,15 +627,6 @@ export default function Home() {
 
       {/* Panel de avance del Mundial y de los puntos en juego */}
       <WorldCupProgressCard data={data} />
-
-      {/* Acceso destacado al cuadro de eliminatorias — ahora es lo más relevante del torneo */}
-      <Link to="/bracket" className="card flex items-center justify-between hover:bg-ink-700 transition">
-        <div>
-          <div className="text-sm font-semibold">🏆 Camino a la final</div>
-          <div className="text-xs text-ink-400">Mira el cuadro completo de eliminatorias</div>
-        </div>
-        <span className="text-brand-400 text-sm shrink-0">Ver →</span>
-      </Link>
 
       {/* Líderes actuales */}
       {(stats.goatName || stats.kingName) && (
@@ -714,18 +722,22 @@ export default function Home() {
       {/* Mis pronósticos */}
       <div className="card space-y-1">
         <h3 className="font-semibold mb-2">Mis pronósticos</h3>
-        <Link to="/predicciones" className="flex items-center justify-between py-2 border-b border-ink-700">
+        <Link to="/predicciones" className="flex items-center justify-between py-2">
           <span>⚽ Partidos</span>
           <span className="text-sm text-ink-300">{stats.myPreds} / {TOURNAMENT.matches.length}</span>
         </Link>
-        <Link to="/grupos" className="flex items-center justify-between py-2 border-b border-ink-700">
-          <span>🅰️ Posiciones de grupo</span>
-          <span className="text-sm text-ink-300">{stats.myGroupPreds} / 48</span>
-        </Link>
-        <Link to="/terceros" className="flex items-center justify-between py-2">
-          <span>🥉 Mejores terceros</span>
-          <span className="text-sm text-ink-300">{stats.myThirdPreds} / 8</span>
-        </Link>
+        {/* Fase de grupos — ya cerró, se muestra atenuado como histórico */}
+        <div className="pt-2 mt-1 border-t border-ink-700">
+          <div className="text-[10px] uppercase tracking-wider text-ink-500 mb-1">Fase de grupos · cerrada</div>
+          <Link to="/grupos" className="flex items-center justify-between py-1.5 text-ink-500">
+            <span className="text-sm">🅰️ Posiciones de grupo</span>
+            <span className="text-xs">{stats.myGroupPreds} / 48</span>
+          </Link>
+          <Link to="/terceros" className="flex items-center justify-between py-1.5 text-ink-500">
+            <span className="text-sm">🥉 Mejores terceros</span>
+            <span className="text-xs">{stats.myThirdPreds} / 8</span>
+          </Link>
+        </div>
       </div>
 
       {stats.myFines > 0 && (

@@ -6,9 +6,8 @@ import LiveSimulatorButton from './LiveSimulatorButton'
 const navItems = [
   { to: '/', label: 'Inicio', icon: '🏠' },
   { to: '/predicciones', label: 'Partidos', icon: '⚽' },
-  { to: '/grupos', label: 'Grupos', icon: '🅰️' },
-  { to: '/terceros', label: 'Terceros', icon: '🥉' },
-  { to: '/tabla', label: 'Tabla', icon: '🏆' },
+  { to: '/bracket', label: 'Camino', icon: '🏆' },
+  { to: '/tabla', label: 'Tabla', icon: '📊' },
 ]
 
 const adminItems = [
@@ -55,6 +54,12 @@ export default function Layout() {
               {profile?.is_admin && <span className="ml-2 pill bg-brand-600 text-white">ADMIN</span>}
               {profile && !profile.paid && <span className="ml-2 pill bg-yellow-600 text-white">PAGO PENDIENTE</span>}
             </div>
+            <NavLink to="/grupos" onClick={() => setMenuOpen(false)} className="block px-3 py-2 rounded hover:bg-ink-700">
+              🅰️ Posiciones de grupo
+            </NavLink>
+            <NavLink to="/terceros" onClick={() => setMenuOpen(false)} className="block px-3 py-2 rounded hover:bg-ink-700">
+              🥉 Mejores terceros
+            </NavLink>
             <NavLink to="/perfil" onClick={() => setMenuOpen(false)} className="block px-3 py-2 rounded hover:bg-ink-700">
               🎭 Mi perfil
             </NavLink>
@@ -72,9 +77,6 @@ export default function Layout() {
             </NavLink>
             <NavLink to="/resumen" onClick={() => setMenuOpen(false)} className="block px-3 py-2 rounded hover:bg-ink-700">
               📋 Resumen de fecha
-            </NavLink>
-            <NavLink to="/bracket" onClick={() => setMenuOpen(false)} className="block px-3 py-2 rounded hover:bg-ink-700">
-              🏆 Camino a la final
             </NavLink>
             <NavLink to="/revive" onClick={() => setMenuOpen(false)} className="block px-3 py-2 rounded hover:bg-ink-700">
               📜 Revive el partido
@@ -125,7 +127,7 @@ export default function Layout() {
       <LiveSimulatorButton />
 
       <nav className="fixed bottom-0 inset-x-0 z-30 bg-ink-800 border-t border-ink-700">
-        <div className="max-w-2xl mx-auto grid grid-cols-5">
+        <div className="max-w-2xl mx-auto grid grid-cols-4">
           {navItems.map(i => (
             <NavLink
               key={i.to}

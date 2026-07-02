@@ -17,6 +17,16 @@ import SharePredictionButton from '../components/SharePredictionButton'
 import MatchSocial from '../components/MatchSocial'
 import { teamWithFlag } from '../lib/flags'
 
+// Etiqueta corta de cada ronda de eliminación (para el distintivo del partido)
+const KNOCKOUT_LABELS = {
+  r32: '16avos',
+  r16: 'Octavos',
+  qf: 'Cuartos',
+  sf: 'Semifinal',
+  third: '3er puesto',
+  final: 'Final',
+}
+
 const TABS = [
   { id: 'closing', label: '⏰ Cierre pronto' },
   { id: 'F1', label: 'Fecha 1', stage: 'group', fecha: 1 },
@@ -139,8 +149,18 @@ function MatchRow({ match, pred, actual, onChange, locked, knockoutsEnabled, use
   const hasPrediction =
     pred && pred.score1 !== '' && pred.score2 !== '' && pred.score1 != null && pred.score2 != null
 
+  const isKnockout = match.stage !== 'group'
+
   return (
-    <div className="card mb-2">
+    <div className={`card mb-2 ${isKnockout ? 'border-brand-600/60 ring-1 ring-brand-600/30 bg-gradient-to-b from-brand-900/10 to-transparent' : ''}`}>
+      {isKnockout && (
+        <div className="flex items-center gap-1.5 mb-2 -mt-0.5">
+          <span className="pill bg-brand-600 text-white text-[10px] font-bold uppercase tracking-wide">
+            🏆 {KNOCKOUT_LABELS[match.stage] || 'Eliminación'}
+          </span>
+          <span className="text-[10px] text-brand-300 font-medium">Eliminación directa</span>
+        </div>
+      )}
       <div className="flex items-center justify-between text-xs text-ink-300 mb-2">
         <span>
           {match.group ? `Grupo ${match.group} · ` : ''}
