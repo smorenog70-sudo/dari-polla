@@ -7,6 +7,7 @@ import { resolveTeam, autoResolveGroupPositions } from '../lib/bracketTeams'
 import { computeGroupTables } from '../lib/groupTables'
 import { teamWithFlag } from '../lib/flags'
 import { useAuth } from '../lib/auth'
+import MatchCommunityStats from '../components/MatchCommunityStats'
 
 export default function Simulator() {
   const data = useLeagueData()
@@ -20,6 +21,24 @@ export default function Simulator() {
     () => new Set(data.results.map(r => r.match_id)),
     [data.results]
   )
+
+  // Predicciones de la comunidad agrupadas por partido, y perfiles por id.
+  // Se usan para mostrar, dentro de cada partido en curso, qué puso cada
+  // persona + el resumen agregado + la distribución de marcadores.
+  const predsByMatch = useMemo(() => {
+    const map = new Map()
+    for (const p of data.predictions) {
+      if (!map.has(p.match_id)) map.set(p.match_id, [])
+      map.get(p.match_id).push(p)
+    }
+    return map
+  }, [data.predictions])
+
+  const profilesById = useMemo(() => {
+    const m = {}
+    for (const p of data.profiles) m[p.id] = p
+    return m
+  }, [data.profiles])
 
   // Resolver nombres de playoffs (1A→equipo) para que 16avos/octavos/etc.
   // ya definidos también se puedan simular.
@@ -119,7 +138,9 @@ export default function Simulator() {
         <h1 className="text-xl font-bold mb-1">🔮 Simulador en vivo</h1>
         <p className="text-xs text-ink-300">
           Pon los marcadores que quieras y mira cómo quedaría la tabla si los partidos
-          terminaran así. Es solo tuyo: nada de esto afecta los puntos oficiales ni lo ven los demás.
+          terminaran así. Además, en cada partido en curso ves qué puso cada persona,
+          hacia dónde se inclinó la comunidad y los marcadores más repetidos.
+          Es solo tuyo: nada de esto afecta los puntos oficiales ni lo ven los demás.
         </p>
       </div>
 
@@ -220,6 +241,18 @@ export default function Simulator() {
                       )}
                     </div>
                   )}
+
+                  {/* Desglose de la comunidad: qué puso cada quien, resumen y distribución */}
+                  <div className="mt-2 pt-2 border-t border-ink-700/50">
+                    <div className="text-[10px] text-ink-400 uppercase tracking-wider mb-2">
+                      👥 Qué puso la comunidad
+                    </div>
+                    <MatchCommunityStats
+                      match={m}
+                      predictions={predsByMatch.get(m.id) || []}
+                      profilesById={profilesById}
+                    />
+                  </div>
                 </div>
               )
             })}

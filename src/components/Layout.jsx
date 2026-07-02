@@ -8,7 +8,7 @@ const navItems = [
   { to: '/predicciones', label: 'Partidos', icon: '⚽' },
   { to: '/bracket', label: 'Camino', icon: '🏆' },
   { to: '/tabla', label: 'Tabla', icon: '📊' },
-  { to: '/comunidad?vista=players', label: 'Marcadores', icon: '🧑‍🤝‍🧑' },
+  { to: '/simulador', label: 'En vivo', icon: '🔮' },
 ]
 
 const adminItems = [
