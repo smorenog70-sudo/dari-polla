@@ -88,7 +88,21 @@ export default function AdminResults() {
 
   const set = (id, field, val) => {
     const v = val === '' ? '' : Math.max(0, Math.min(30, parseInt(val) || 0))
-    setResults(prev => ({ ...prev, [id]: { ...prev[id], [field]: v } }))
+    setResults(prev => {
+      const next = { ...prev[id], [field]: v }
+      // Playoffs: al cargar el marcador, preselecciona automáticamente como
+      // "quién pasó" al equipo con más goles. El admin puede cambiarlo después
+      // (p. ej. si pasó por penales tras un empate a los 90).
+      const m = TOURNAMENT.matches.find(x => x.id === id)
+      if (m && m.stage !== 'group') {
+        const s1 = next.score1, s2 = next.score2
+        const bothFilled = s1 !== '' && s2 !== '' && s1 != null && s2 != null
+        if (bothFilled && s1 !== s2) {
+          next.advances = s1 > s2 ? 'team1' : 'team2'
+        }
+      }
+      return { ...prev, [id]: next }
+    })
   }
 
   const setAdvances = (id, who) => {

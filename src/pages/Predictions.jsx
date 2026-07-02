@@ -122,7 +122,18 @@ function MatchRow({ match, pred, actual, onChange, locked, knockoutsEnabled, use
 
   const set = (field, val) => {
     const v = val === '' ? '' : Math.max(0, Math.min(30, parseInt(val) || 0))
-    onChange({ ...pred, [field]: v })
+    const next = { ...pred, [field]: v }
+    // Playoffs: al poner el marcador, preselecciona automáticamente como
+    // "quién pasa" al equipo con más goles. El usuario puede cambiarlo después
+    // (p. ej. si cree que pasa por penales tras un empate a los 90).
+    if (match.stage !== 'group') {
+      const s1 = next.score1, s2 = next.score2
+      const bothFilled = s1 !== '' && s2 !== '' && s1 != null && s2 != null
+      if (bothFilled && s1 !== s2) {
+        next.advances = s1 > s2 ? 'team1' : 'team2'
+      }
+    }
+    onChange(next)
   }
 
   const hasPrediction =
