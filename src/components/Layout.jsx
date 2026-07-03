@@ -3,12 +3,15 @@ import { useState } from 'react'
 import { useAuth } from '../lib/auth'
 import LiveSimulatorButton from './LiveSimulatorButton'
 
+// Barra inferior fija. El "En vivo" (simulador) ya no vive aquí: se muestra
+// como widget flotante (LiveSimulatorButton) que se activa SOLO cuando hay un
+// partido en curso. En su lugar dejamos el acceso directo al podio.
 const navItems = [
   { to: '/', label: 'Inicio', icon: '🏠' },
   { to: '/predicciones', label: 'Partidos', icon: '⚽' },
   { to: '/bracket', label: 'Camino', icon: '🏆' },
   { to: '/tabla', label: 'Tabla', icon: '📊' },
-  { to: '/simulador', label: 'En vivo', icon: '🔮' },
+  { to: '/podio', label: 'Podio', icon: '🏅' },
 ]
 
 const adminItems = [
