@@ -1,4 +1,13 @@
 import { matchById } from './matches'
+import { ADVANCE_BONUS } from './scoring'
+
+// Techo de puntos de un partido: 15 base (5 resultado + 5 exacto + 2 local +
+// 2 visitante + 1 dif). En eliminación se suma el bono de "clasifica" de esa
+// ronda (r16=15 … final=50), así que la final puede valer hasta 65.
+function maxForMatch(match) {
+  const bonus = match && ADVANCE_BONUS[match.stage] ? ADVANCE_BONUS[match.stage] : 0
+  return 15 + bonus
+}
 
 /**
  * Estadísticas avanzadas para "Mi progreso".
@@ -205,21 +214,20 @@ export function projection(rows, totalMatchesInTournament) {
 }
 
 // #11 — Puntos posibles vs ganados.
-// El máximo por partido acertado perfecto es 15 (5 resultado + 5 exacto + 2 local + 2 visitante + 1 dif).
-// "Posibles" = partidos que jugaste × 15. "Ganados" = lo que sacaste.
-// Mide cuánto aprovechaste del techo teórico.
+// El techo por partido es 15 en fase de grupos, y 15 + el bono de "clasifica"
+// de la ronda en eliminación (hasta 65 en la final). "Posibles" = suma de esos
+// techos por partido jugado. Mide cuánto aprovechaste del máximo teórico.
 export function pointsEfficiency(rows) {
-  const MAX_PER_MATCH = 15
   const played = rows.length
   if (played === 0) return null
-  const possible = played * MAX_PER_MATCH
+  const possible = rows.reduce((s, r) => s + maxForMatch(r.match), 0)
   const earned = rows.reduce((s, r) => s + r.points, 0)
   return {
     earned,
     possible,
-    pct: Math.round((earned / possible) * 100),
+    pct: possible > 0 ? Math.round((earned / possible) * 100) : 0,
     played,
-    perfectMatches: rows.filter(r => r.points === MAX_PER_MATCH).length,
+    perfectMatches: rows.filter(r => r.points === maxForMatch(r.match)).length,
     leftOnTable: possible - earned,
   }
 }

@@ -12,7 +12,9 @@ import {
   scoreMatch,
   scoreGroupPositions,
   scoreThirds,
+  scorePodium,
 } from '../lib/scoring'
+import { actualPodium } from '../lib/podium'
 import { playedMatches, streaks, lastCompletedFecha } from '../lib/playerStats'
 import PendingMatchesBanner from '../components/PendingMatchesBanner'
 import NewResultsBanner from '../components/NewResultsBanner'
@@ -89,9 +91,12 @@ export default function Home() {
       if (r) pts += scoreMatch(p, r).total
     }
     const matchPts = pts
+    const realPodium = actualPodium(data)
+    const myPodiumPred = data.podiumPreds.find(p => p.user_id === user.id)
     const groupBonus = scoreGroupPositions(myGroupPreds, data.groupResults).total
     const thirdBonus = scoreThirds(myThirdPreds.map(t => t.team), data.thirdResults.map(t => t.team)).total
-    pts += groupBonus + thirdBonus
+    const podiumBonus = scorePodium(myPodiumPred, realPodium).total
+    pts += groupBonus + thirdBonus + podiumBonus
 
     const entryFee = Number(data.config.entry_fee || 50000)
     const fineAmount = Number(data.config.fine_amount || 5000)
@@ -118,6 +123,7 @@ export default function Home() {
       tpByUser.get(t.user_id).push(t.team)
     }
     const actualThirds = data.thirdResults.map(r => r.team)
+    const podiumByUser = new Map(data.podiumPreds.map(p => [p.user_id, p]))
     const totals = data.profiles.map(prof => {
       let p2 = 0
       for (const p of (predsByUser.get(prof.id) || [])) {
@@ -126,6 +132,7 @@ export default function Home() {
       }
       p2 += scoreGroupPositions(gpByUser.get(prof.id) || [], data.groupResults).total
       p2 += scoreThirds(tpByUser.get(prof.id) || [], actualThirds).total
+      p2 += scorePodium(podiumByUser.get(prof.id), realPodium).total
       return { id: prof.id, pts: p2 }
     }).sort((a, b) => b.pts - a.pts)
     const myRank = totals.findIndex(t => t.id === user.id) + 1

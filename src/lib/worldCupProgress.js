@@ -1,25 +1,27 @@
 import { TOURNAMENT } from './matches'
+import { ADVANCE_BONUS, PODIUM_POINTS, PODIUM_KEYS } from './scoring'
+import { actualPodium } from './podium'
 
 /**
  * Calcula el avance del Mundial y de los puntos "en juego" de la polla.
  *
  * Puntos POSIBLES por jugador (el máximo que alguien podría sacar):
- *  - Marcadores: 104 partidos × 15 pts (5 ganador + 5 exacto + 2 local + 2 visita + 1 dif) = 1560
- *  - Playoffs "quién pasa": 32 partidos de eliminación × 10 = 320
+ *  - Marcadores: 104 partidos × 15 pts (5 ganador + 5 exacto + 2 local + 2 visita + 1 dif)
+ *  - Playoffs "quién pasa": bono escalonado por ronda (r32=10 … final=50)
  *  - Posiciones de grupo: 12 grupos × 4 posiciones × 5 = 240
  *  - Mejores terceros: 8 × 5 = 40
- * Total teórico por jugador: 2160 pts
+ *  - Podio final: 30 + 20 + 15 + 10 = 75
  *
  * "Jugado" = lo que ya se resolvió (partidos con resultado, grupos cerrados, terceros definidos).
  * "Por jugar" = lo que falta.
  */
 
 const PTS_MATCH = 15          // máximo del marcador por partido
-const PTS_ADVANCES = 10       // "quién pasa" en playoffs
 const PTS_GROUP_POS = 5       // cada posición de grupo acertada
 const PTS_THIRD = 5           // cada tercero acertado
 const N_GROUP_POSITIONS = 12 * 4  // 48 posiciones (12 grupos × 4)
 const N_THIRDS = 8
+const PTS_PODIUM_TOTAL = PODIUM_KEYS.reduce((s, k) => s + PODIUM_POINTS[k], 0)  // 75
 
 export function worldCupProgress(data) {
   const matches = TOURNAMENT.matches
@@ -44,14 +46,19 @@ export function worldCupProgress(data) {
   const matchPtsPlayed = playedMatches * PTS_MATCH
   const matchPtsTotal = totalMatches * PTS_MATCH
 
-  // "Quién pasa" en playoffs (solo partidos de eliminación)
+  // "Quién pasa" en playoffs: bono escalonado por ronda (el 3er puesto no reparte).
   const koMatches = matches.filter(m => m.stage !== 'group')
-  const koPlayed = koMatches.filter(m => {
+  const advBonusOf = (m) => ADVANCE_BONUS[m.stage] ?? 0
+  const advancesPtsTotal = koMatches.reduce((s, m) => s + advBonusOf(m), 0)
+  const advancesPtsPlayed = koMatches.reduce((s, m) => {
     const r = resultsById.get(m.id)
-    return r && r.advances // cuenta como resuelto si ya tiene quién pasó
-  }).length
-  const advancesPtsPlayed = koPlayed * PTS_ADVANCES
-  const advancesPtsTotal = koMatches.length * PTS_ADVANCES
+    return s + (r && r.advances ? advBonusOf(m) : 0)
+  }, 0)
+
+  // Podio final (75 pts posibles). "Jugado" = puestos ya definidos por resultados.
+  const realPodium = actualPodium(data)
+  const podiumPtsPlayed = PODIUM_KEYS.reduce((s, k) => s + (realPodium[k] ? PODIUM_POINTS[k] : 0), 0)
+  const podiumPtsTotal = PTS_PODIUM_TOTAL
 
   // Posiciones de grupo: "jugado" = grupos cerrados (con resultados de posición)
   const groupResults = data.groupResults || []
@@ -64,8 +71,8 @@ export function worldCupProgress(data) {
   const thirdPlayed = Math.min(thirdResults.length, N_THIRDS) * PTS_THIRD
   const thirdTotal = N_THIRDS * PTS_THIRD
 
-  const ptsPlayed = matchPtsPlayed + advancesPtsPlayed + groupPosPlayed + thirdPlayed
-  const ptsTotal = matchPtsTotal + advancesPtsTotal + groupPosTotal + thirdTotal
+  const ptsPlayed = matchPtsPlayed + advancesPtsPlayed + groupPosPlayed + thirdPlayed + podiumPtsPlayed
+  const ptsTotal = matchPtsTotal + advancesPtsTotal + groupPosTotal + thirdTotal + podiumPtsTotal
   const ptsRemaining = ptsTotal - ptsPlayed
 
   return {
@@ -80,6 +87,7 @@ export function worldCupProgress(data) {
         advances: { played: advancesPtsPlayed, total: advancesPtsTotal },
         groupPos: { played: groupPosPlayed, total: groupPosTotal },
         thirds: { played: thirdPlayed, total: thirdTotal },
+        podium: { played: podiumPtsPlayed, total: podiumPtsTotal },
       },
     },
     pct: {

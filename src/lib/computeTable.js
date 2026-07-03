@@ -1,4 +1,5 @@
-import { scoreMatch, scoreGroupPositions, scoreThirds } from './scoring'
+import { scoreMatch, scoreGroupPositions, scoreThirds, scorePodium } from './scoring'
+import { actualPodium } from './podium'
 
 /**
  * Calcula la tabla de posiciones (solo puntos de partidos + bonus),
@@ -28,6 +29,8 @@ export function computeTable(data, simulatedResults = new Map()) {
     tpByUser.get(t.user_id).push(t.team)
   }
   const actualThirds = data.thirdResults.map(r => r.team)
+  const podiumByUser = new Map((data.podiumPreds || []).map(p => [p.user_id, p]))
+  const realPodium = actualPodium(data)
 
   // Resultados reales
   const realById = new Map(data.results.map(r => [r.match_id, r]))
@@ -49,6 +52,7 @@ export function computeTable(data, simulatedResults = new Map()) {
       let bonus = 0
       bonus += scoreGroupPositions(gpByUser.get(prof.id) || [], data.groupResults).total
       bonus += scoreThirds(tpByUser.get(prof.id) || [], actualThirds).total
+      bonus += scorePodium(podiumByUser.get(prof.id), realPodium).total
       map[prof.id] = pts + bonus
     }
     return map

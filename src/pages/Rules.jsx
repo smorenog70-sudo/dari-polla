@@ -62,6 +62,43 @@ export default function Rules() {
       </div>
 
       <div className="card">
+        <h2 className="font-semibold mb-1">🏆 Bono "¿Quién clasifica?"</h2>
+        <p className="text-xs text-ink-300 mb-3">
+          En cada cruce de eliminación, puntos extra por acertar quién pasa a la siguiente ronda.
+          El bono <strong>sube según la ronda</strong>:
+        </p>
+        <ul className="space-y-2 text-sm">
+          <li className="flex justify-between"><span>Dieciseisavos</span><span className="font-mono text-brand-500">10 pts</span></li>
+          <li className="flex justify-between"><span>Octavos</span><span className="font-mono text-brand-500">15 pts</span></li>
+          <li className="flex justify-between"><span>Cuartos</span><span className="font-mono text-brand-500">20 pts</span></li>
+          <li className="flex justify-between"><span>Semifinal</span><span className="font-mono text-brand-500">30 pts</span></li>
+          <li className="flex justify-between"><span>Final</span><span className="font-mono text-brand-500">50 pts</span></li>
+        </ul>
+        <p className="text-xs text-ink-500 mt-3">
+          El "quién clasifica" es tu elección aparte del marcador: si pones empate a los 90, eliges quién
+          crees que pasa por prórroga/penales. Los dieciseisavos se quedan en 10 porque ya se están jugando.
+        </p>
+      </div>
+
+      <div className="card">
+        <h2 className="font-semibold mb-1">🏅 Bono de podio</h2>
+        <p className="text-xs text-ink-300 mb-3">
+          Elige el podio final del Mundial (campeón, subcampeón, 3ro y 4to). Puntos por cada
+          <strong> posición exacta</strong> que aciertes. Se cierra al arrancar los octavos.
+        </p>
+        <ul className="space-y-2 text-sm">
+          <li className="flex justify-between"><span>🥇 Campeón</span><span className="font-mono text-brand-500">30 pts</span></li>
+          <li className="flex justify-between"><span>🥈 Subcampeón</span><span className="font-mono text-brand-500">20 pts</span></li>
+          <li className="flex justify-between"><span>🥉 3er puesto</span><span className="font-mono text-brand-500">15 pts</span></li>
+          <li className="flex justify-between"><span>🎖️ 4to puesto</span><span className="font-mono text-brand-500">10 pts</span></li>
+        </ul>
+        <p className="text-xs text-ink-500 mt-3">
+          Solo cuenta la posición exacta: si pusiste a un equipo de campeón y quedó subcampeón, no se da
+          el bono de subcampeón. Acertar al campeón puede sumar doble: el bono de la final más el de podio.
+        </p>
+      </div>
+
+      <div className="card">
         <h2 className="font-semibold mb-2">⚠️ Reglas clave</h2>
         <ul className="space-y-2 text-sm text-ink-100">
           <li>

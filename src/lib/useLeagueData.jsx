@@ -35,6 +35,7 @@ const EMPTY_STATE = {
   groupResults: [],
   thirdPreds: [],
   thirdResults: [],
+  podiumPreds: [],
   fines: [],
   config: {},
   loading: true,
@@ -57,7 +58,7 @@ export function LeagueDataProvider({ children }) {
 
   const load = useCallback(async () => {
     setState(s => ({ ...s, loading: true }))
-    const [profiles, preds, results, gp, gr, tp, tr, fines, cfgRows] = await Promise.all([
+    const [profiles, preds, results, gp, gr, tp, tr, pp, fines, cfgRows] = await Promise.all([
       fetchAll('profiles'),
       fetchAll('predictions'),
       fetchAll('results'),
@@ -65,6 +66,7 @@ export function LeagueDataProvider({ children }) {
       fetchAll('group_results'),
       fetchAll('third_predictions'),
       fetchAll('third_results'),
+      fetchAll('podium_predictions'),
       fetchAll('fines'),
       fetchAll('config'),
     ])
@@ -80,6 +82,7 @@ export function LeagueDataProvider({ children }) {
       groupResults: gr || [],
       thirdPreds: tp || [],
       thirdResults: tr || [],
+      podiumPreds: pp || [],
       fines: fines || [],
       config,
       loading: false,

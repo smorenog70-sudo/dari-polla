@@ -4,7 +4,8 @@ import { useAuth } from '../lib/auth'
 import { useLeagueData } from '../lib/useLeagueData'
 import { matchById, TOURNAMENT, hasMatchStarted, formatKickoff } from '../lib/matches'
 import { buildResolver } from '../lib/bracketTeams'
-import { scoreMatch, scoreGroupPositions, scoreThirds } from '../lib/scoring'
+import { scoreMatch, scoreGroupPositions, scoreThirds, scorePodium } from '../lib/scoring'
+import { actualPodium } from '../lib/podium'
 import { teamWithFlag } from '../lib/flags'
 import {
   playedMatches,
@@ -83,12 +84,15 @@ export default function Progress() {
     const myGroupPreds = data.groupPreds.filter(p => p.user_id === viewedUserId)
     const myThirdPreds = data.thirdPreds.filter(p => p.user_id === viewedUserId)
     const actualThirds = data.thirdResults.map(t => t.team)
+    const realPodium = actualPodium(data)
     const groupBonus = scoreGroupPositions(myGroupPreds, data.groupResults)
     const thirdBonus = scoreThirds(myThirdPreds.map(t => t.team), actualThirds)
+    const podiumBonus = scorePodium(data.podiumPreds.find(p => p.user_id === viewedUserId), realPodium)
     const bonusInfo = {
       group: groupBonus.total,
       third: thirdBonus.total,
-      total: groupBonus.total + thirdBonus.total,
+      podium: podiumBonus.total,
+      total: groupBonus.total + thirdBonus.total + podiumBonus.total,
     }
 
     // La evolución por partido + los bonos como capa acumulada encima.
@@ -160,7 +164,8 @@ export default function Progress() {
       const tp = data.thirdPreds.filter(p => p.user_id === uid)
       const g = scoreGroupPositions(gp, data.groupResults).total
       const th = scoreThirds(tp.map(t => t.team), actualThirds).total
-      return g + th
+      const pod = scorePodium(data.podiumPreds.find(p => p.user_id === uid), realPodium).total
+      return g + th + pod
     }
 
     // Para un usuario, puntos acumulados a lo largo de esos partidos.
@@ -487,8 +492,10 @@ function PersonalAnalysis({ stats }) {
     { value: b.exact, color: '#fb923c', label: 'Exacto' },
     { value: b.home + b.away, color: '#fdba74', label: 'Goles' },
     { value: b.diff, color: '#7c2d12', label: 'Diferencia' },
+    { value: b.advances || 0, color: '#f59e0b', label: 'Clasifica' },
     { value: bonusInfo?.group || 0, color: '#fbbf24', label: 'Bono grupos' },
     { value: bonusInfo?.third || 0, color: '#eab308', label: 'Bono terceros' },
+    { value: bonusInfo?.podium || 0, color: '#ca8a04', label: 'Podio' },
   ].filter(s => s.value > 0)
 
   return (
@@ -562,9 +569,9 @@ function PersonalAnalysis({ stats }) {
         <div className="card">
           <h2 className="font-semibold mb-1">🎁 Puntos de bono</h2>
           <p className="text-xs text-ink-300 mb-3">
-            Puntos extra por acertar las posiciones de los grupos y los mejores terceros.
+            Puntos extra por acertar las posiciones de los grupos, los mejores terceros y el podio final.
           </p>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-3 gap-3">
             <div className="bg-ink-900/40 rounded-lg p-3 text-center">
               <div className="text-2xl">🅰️</div>
               <div className="text-[10px] text-ink-400 uppercase tracking-wider mt-1">Posiciones de grupos</div>
@@ -574,6 +581,11 @@ function PersonalAnalysis({ stats }) {
               <div className="text-2xl">🥉</div>
               <div className="text-[10px] text-ink-400 uppercase tracking-wider mt-1">Mejores terceros</div>
               <div className="text-xl font-bold text-brand-400 mt-0.5">+{bonusInfo.third}</div>
+            </div>
+            <div className="bg-ink-900/40 rounded-lg p-3 text-center">
+              <div className="text-2xl">🏅</div>
+              <div className="text-[10px] text-ink-400 uppercase tracking-wider mt-1">Podio final</div>
+              <div className="text-xl font-bold text-brand-400 mt-0.5">+{bonusInfo.podium || 0}</div>
             </div>
           </div>
           <div className="text-center mt-3 text-sm text-ink-200">

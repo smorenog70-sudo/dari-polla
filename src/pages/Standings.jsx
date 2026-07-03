@@ -9,7 +9,9 @@ import {
   scoreMatch,
   scoreGroupPositions,
   scoreThirds,
+  scorePodium,
 } from '../lib/scoring'
+import { actualPodium } from '../lib/podium'
 import { useAuth } from '../lib/auth'
 
 const FECHA_FILTERS = [
@@ -94,6 +96,8 @@ export default function Standings() {
       if (!tpByUser.has(t.user_id)) tpByUser.set(t.user_id, [])
       tpByUser.get(t.user_id).push(t.team)
     }
+    const podiumByUser = new Map(data.podiumPreds.map(p => [p.user_id, p]))
+    const realPodium = actualPodium(data)
     const finesByUser = new Map()
     for (const f of data.fines) {
       finesByUser.set(f.user_id, (finesByUser.get(f.user_id) || 0) + (f.amount || 5000))
@@ -132,11 +136,12 @@ export default function Standings() {
         const r = resultsById.get(p.match_id)
         if (r) matchPts += scoreMatch(p, r).total
       }
-      // Group position bonus + best thirds bonus only count in "total"
+      // Group position bonus + best thirds bonus + podio only count in "total"
       let bonusPts = 0
       if (filter === 'total') {
         bonusPts += scoreGroupPositions(gpByUser.get(prof.id) || [], data.groupResults).total
         bonusPts += scoreThirds(tpByUser.get(prof.id) || [], actualThirds).total
+        bonusPts += scorePodium(podiumByUser.get(prof.id), realPodium).total
       }
       // Puntos y aciertos del ÚLTIMO partido jugado (para mostrar en la tabla)
       let lastPts = null, lastExact = false, lastOutcome = false, lastPredStr = null
@@ -241,6 +246,8 @@ export default function Standings() {
       tpByUser.get(p.user_id).push(p)
     }
     const actualThirds = data.thirdResults.map(t => t.team)
+    const podiumByUser = new Map(data.podiumPreds.map(p => [p.user_id, p]))
+    const realPodium = actualPodium(data)
 
     const series = data.profiles.map(prof => {
       const myPreds = predsByUser.get(prof.id) || []
@@ -251,6 +258,7 @@ export default function Standings() {
       }
       const bonus = scoreGroupPositions(gpByUser.get(prof.id) || [], data.groupResults).total
         + scoreThirds((tpByUser.get(prof.id) || []).map(t => t.team), actualThirds).total
+        + scorePodium(podiumByUser.get(prof.id), realPodium).total
       let cum = 0
       const points = playedIds.map((id, i) => {
         cum += ptsByMatch.get(id) || 0

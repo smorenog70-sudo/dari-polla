@@ -224,7 +224,7 @@ export function bettingProfile(userPreds, resultsById) {
  * De dónde saca sus puntos el usuario (desglose acumulado por tipo).
  */
 export function pointsBreakdown(userPreds, resultsById) {
-  const acc = { outcome: 0, exact: 0, home: 0, away: 0, diff: 0 }
+  const acc = { outcome: 0, exact: 0, home: 0, away: 0, diff: 0, advances: 0 }
   let total = 0
   for (const p of userPreds) {
     const r = resultsById.get(p.match_id)
@@ -235,6 +235,9 @@ export function pointsBreakdown(userPreds, resultsById) {
     acc.home += s.breakdown.home
     acc.away += s.breakdown.away
     acc.diff += s.breakdown.diff
+    // Antes faltaba acumular 'advances' (el bono de quién clasifica): el total
+    // sí lo incluía, así que los segmentos del donut no cuadraban con el total.
+    acc.advances += s.breakdown.advances
     total += s.total
   }
   return { acc, total }

@@ -3,7 +3,8 @@ import { useAuth } from '../lib/auth'
 import { useLeagueData } from '../lib/useLeagueData'
 import { TOURNAMENT, matchById, isMatchLocked, formatKickoff } from '../lib/matches'
 import { buildResolver } from '../lib/bracketTeams'
-import { scoreMatch, scoreGroupPositions, scoreThirds } from '../lib/scoring'
+import { scoreMatch, scoreGroupPositions, scoreThirds, scorePodium } from '../lib/scoring'
+import { actualPodium } from '../lib/podium'
 import { displayName, displayAvatar } from '../lib/playerDisplay'
 
 export default function Duel() {
@@ -27,6 +28,7 @@ export default function Duel() {
       data.thirdPreds.filter(x => x.user_id === uid).map(t => t.team),
       data.thirdResults.map(t => t.team)
     ).total
+    pts += scorePodium(data.podiumPreds.find(x => x.user_id === uid), actualPodium(data)).total
     return pts
   }
 

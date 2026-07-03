@@ -9,7 +9,7 @@ import {
   isMatchLocked,
   matchById,
 } from '../lib/matches'
-import { scoreMatch } from '../lib/scoring'
+import { scoreMatch, ADVANCE_BONUS } from '../lib/scoring'
 import { resolveTeam, autoResolveGroupPositions } from '../lib/bracketTeams'
 import { computeGroupTables } from '../lib/groupTables'
 import { useNowTick } from '../lib/useNowTick'
@@ -224,10 +224,11 @@ function MatchRow({ match, pred, actual, onChange, locked, knockoutsEnabled, use
         <div className="flex-1 text-left font-medium text-sm">{teamWithFlag(match.team2)}</div>
       </div>
 
-      {/* PLAYOFFS: quién pasa (+10 pts). Siempre es tu elección, aparte del marcador
-          (así puedes cubrir el caso de que el partido real termine distinto a
-          como pusiste el resultado, por ejemplo si empata a los 90). */}
+      {/* PLAYOFFS: quién pasa (bono por ronda). Siempre es tu elección, aparte del
+          marcador (así puedes cubrir el caso de que el partido real termine distinto
+          a como pusiste el resultado, por ejemplo si empata a los 90). */}
       {match.stage !== 'group' && (() => {
+        const advBonus = ADVANCE_BONUS[match.stage] ?? 10
         const s1 = pred?.score1, s2 = pred?.score2
         const bothFilled = s1 !== '' && s2 !== '' && s1 != null && s2 != null
         const isTie = bothFilled && Number(s1) === Number(s2)
@@ -256,7 +257,7 @@ function MatchRow({ match, pred, actual, onChange, locked, knockoutsEnabled, use
         return (
           <div className="mt-2 bg-ink-900/40 rounded-lg p-2">
             <div className="text-[10px] text-ink-400 text-center mb-1.5">
-              ¿Quién pasa? <span className="text-brand-400">(+10 pts extra)</span>
+              ¿Quién pasa? <span className="text-brand-400">(+{advBonus} pts extra)</span>
             </div>
             <div className="flex gap-1.5">
               <button type="button" onClick={() => pickTeam('team1')} disabled={!togglesEnabled} className={btnClass('team1')}>
@@ -283,7 +284,7 @@ function MatchRow({ match, pred, actual, onChange, locked, knockoutsEnabled, use
             {actual?.advances && (
               <div className="text-[10px] text-center mt-1.5 text-green-400">
                 Pasó: {actual.advances === 'team1' ? teamWithFlag(match.team1) : teamWithFlag(match.team2)}
-                {effectiveAdvances && (effectiveAdvances === actual.advances ? ' ✅ +10' : ' ❌')}
+                {effectiveAdvances && (effectiveAdvances === actual.advances ? ` ✅ +${advBonus}` : ' ❌')}
               </div>
             )}
           </div>

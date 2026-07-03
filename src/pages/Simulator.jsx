@@ -6,6 +6,7 @@ import { TOURNAMENT, matchById, formatKickoff, hasMatchStarted } from '../lib/ma
 import { resolveTeam, autoResolveGroupPositions } from '../lib/bracketTeams'
 import { computeGroupTables } from '../lib/groupTables'
 import { teamWithFlag } from '../lib/flags'
+import { ADVANCE_BONUS } from '../lib/scoring'
 import { useAuth } from '../lib/auth'
 import MatchCommunityStats from '../components/MatchCommunityStats'
 
@@ -190,8 +191,9 @@ export default function Simulator() {
                     <span className="flex-1 text-left text-sm truncate">{teamWithFlag(m.team2)}</span>
                   </div>
 
-                  {/* PLAYOFFS: quién pasa (+10). Bloqueado por marcador, libre solo en empate. */}
+                  {/* PLAYOFFS: quién pasa (bono por ronda). Bloqueado por marcador, libre solo en empate. */}
                   {m.stage !== 'group' && (() => {
+                    const advBonus = ADVANCE_BONUS[m.stage] ?? 10
                     const bothFilled = sim.score1 !== '' && sim.score2 !== '' && sim.score1 != null && sim.score2 != null
                     const isDraw = bothFilled && Number(sim.score1) === Number(sim.score2)
                     const forced = bothFilled && !isDraw ? (Number(sim.score1) > Number(sim.score2) ? 'team1' : 'team2') : null
@@ -202,7 +204,7 @@ export default function Simulator() {
                     } ${!enabled ? 'cursor-default opacity-90' : ''}`
                     return (
                       <div className="mt-2 bg-ink-900/60 rounded-lg p-1.5">
-                        <div className="text-[9px] text-ink-400 text-center mb-1">¿Quién pasa? (+10)</div>
+                        <div className="text-[9px] text-ink-400 text-center mb-1">¿Quién pasa? (+{advBonus})</div>
                         <div className="flex gap-1">
                           <button type="button" disabled={!enabled} onClick={() => enabled && setSimAdvances(m.id, 'team1')} className={btn('team1')}>
                             {teamWithFlag(m.team1)}

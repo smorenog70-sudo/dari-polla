@@ -15,6 +15,7 @@ const Home = lazy(() => import('./pages/Home'))
 const Predictions = lazy(() => import('./pages/Predictions'))
 const GroupsPredictions = lazy(() => import('./pages/GroupsPredictions'))
 const ThirdsPredictions = lazy(() => import('./pages/ThirdsPredictions'))
+const Podium = lazy(() => import('./pages/Podium'))
 const Standings = lazy(() => import('./pages/Standings'))
 const Rules = lazy(() => import('./pages/Rules'))
 const CommunityStats = lazy(() => import('./pages/CommunityStats'))
@@ -63,6 +64,7 @@ export default function App() {
             <Route path="predicciones" element={<Predictions />} />
             <Route path="grupos" element={<GroupsPredictions />} />
             <Route path="terceros" element={<ThirdsPredictions />} />
+            <Route path="podio" element={<Podium />} />
             <Route path="tabla" element={<Standings />} />
             <Route path="comunidad" element={<CommunityStats />} />
             <Route path="progreso" element={<Progress />} />

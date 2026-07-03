@@ -61,6 +61,9 @@ export default function Layout() {
             <NavLink to="/terceros" onClick={() => setMenuOpen(false)} className="block px-3 py-2 rounded hover:bg-ink-700">
               🥉 Mejores terceros
             </NavLink>
+            <NavLink to="/podio" onClick={() => setMenuOpen(false)} className="block px-3 py-2 rounded hover:bg-ink-700">
+              🏅 Podio final
+            </NavLink>
             <NavLink to="/perfil" onClick={() => setMenuOpen(false)} className="block px-3 py-2 rounded hover:bg-ink-700">
               🎭 Mi perfil
             </NavLink>

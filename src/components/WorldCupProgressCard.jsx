@@ -51,6 +51,7 @@ export default function WorldCupProgressCard({ data }) {
           <ProgressBar label="¿Quién pasa? (playoffs)" played={p.points.breakdown.advances.played} total={p.points.breakdown.advances.total} color="#fbbf24" suffix=" pts" />
           <ProgressBar label="Posiciones de grupo" played={p.points.breakdown.groupPos.played} total={p.points.breakdown.groupPos.total} color="#a78bfa" suffix=" pts" />
           <ProgressBar label="Mejores terceros" played={p.points.breakdown.thirds.played} total={p.points.breakdown.thirds.total} color="#34d399" suffix=" pts" />
+          <ProgressBar label="Podio final" played={p.points.breakdown.podium.played} total={p.points.breakdown.podium.total} color="#ca8a04" suffix=" pts" />
         </div>
         <div className="mt-3 text-center text-xs text-ink-300">
           De <span className="font-bold text-ink-100">{p.points.total}</span> puntos posibles,
