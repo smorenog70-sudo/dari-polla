@@ -179,12 +179,28 @@ export function lastCompletedFecha(resultsById) {
  * Calcula los logros desbloqueados por un usuario.
  * Devuelve lista de { id, icon, name, desc, unlocked }.
  */
-export function achievements(rows, evolution, allRowsByUser, userId) {
+export function achievements(rows, evolution, allRowsByUser, userId, opts = {}) {
   const totalPoints = rows.reduce((s, r) => s + r.points, 0)
   const exactCount = rows.filter(r => r.exact).length
   const outcomeCount = rows.filter(r => r.hitOutcome).length
   const { best: bestStreak } = streaks(rows)
   const played = rows.length
+
+  // --- Medallas de eliminación: ¿acertó quién pasa/gana en cada ronda? ---
+  // Un partido de playoff con breakdown.advances > 0 significa que atinó al que
+  // clasifica (o al ganador, en el 3er puesto). Marcamos por ronda.
+  const advStages = new Set(
+    rows.filter(r => r.breakdown?.advances > 0).map(r => r.match.stage)
+  )
+
+  // --- Medallas de podio: llegan por opts.podium (breakdown de scorePodium),
+  // con los puntos por puesto (>0 = acertado). ---
+  const podium = opts.podium || {}
+  const podiumHits =
+    (podium.champion > 0 ? 1 : 0) +
+    (podium.runner_up > 0 ? 1 : 0) +
+    (podium.third_place > 0 ? 1 : 0) +
+    (podium.fourth_place > 0 ? 1 : 0)
 
   // --- Métricas para medallas nuevas ---
   // Perfeccionista: algún partido con los 15 puntos
@@ -460,6 +476,21 @@ export function achievements(rows, evolution, allRowsByUser, userId) {
     { id: 'fecha_sniper', icon: '🎯', name: 'Francotirador de fecha', desc: 'Acierta todos los ganadores de una fecha completa', unlocked: perfectFechaOutcomes },
     { id: 'comeback', icon: '📈', name: 'Remontada', desc: 'Llega al top 5 tras haber estado fuera del top 10', unlocked: comeback },
     { id: 'streak_10', icon: '🔥🔥', name: 'Imparable total', desc: 'Racha de 10 aciertos seguidos', unlocked: bestStreak >= 10 },
+
+    // Eliminación: acertar quién clasifica/gana en cada ronda
+    { id: 'ko_r32', icon: '🥊', name: 'Adivino de 16avos', desc: 'Acierta quién clasifica en un partido de 16avos', unlocked: advStages.has('r32') },
+    { id: 'ko_r16', icon: '🥊', name: 'Vidente de octavos', desc: 'Acierta quién clasifica en octavos', unlocked: advStages.has('r16') },
+    { id: 'ko_qf', icon: '🥊', name: 'Oráculo de cuartos', desc: 'Acierta quién clasifica en cuartos', unlocked: advStages.has('qf') },
+    { id: 'ko_sf', icon: '🔮', name: 'Profeta de semis', desc: 'Acierta quién clasifica en semifinal', unlocked: advStages.has('sf') },
+    { id: 'ko_third', icon: '🥉', name: 'Juez del bronce', desc: 'Acierta quién gana el partido por el 3er puesto', unlocked: advStages.has('third') },
+    { id: 'ko_final', icon: '🏆', name: 'Vidente de la final', desc: 'Acierta quién levanta la copa', unlocked: advStages.has('final') },
+
+    // Podio final: acertar cada puesto exacto
+    { id: 'podium_champ', icon: '🥇', name: 'Ojo de campeón', desc: 'Acierta el campeón del Mundial', unlocked: podium.champion > 0 },
+    { id: 'podium_runner', icon: '🥈', name: 'Subcampeón cantado', desc: 'Acierta el subcampeón', unlocked: podium.runner_up > 0 },
+    { id: 'podium_third', icon: '🥉', name: 'Tercero clavado', desc: 'Acierta el 3er puesto del podio', unlocked: podium.third_place > 0 },
+    { id: 'podium_fourth', icon: '🎖️', name: 'Cuarto exacto', desc: 'Acierta el 4to puesto del podio', unlocked: podium.fourth_place > 0 },
+    { id: 'podium_full', icon: '👑', name: 'Podio perfecto', desc: 'Acierta los 4 puestos del podio', unlocked: podiumHits >= 4 },
 
     { id: 'goat', icon: '🐐', name: 'La cabra (GOAT)', desc: 'Llega al puesto #1 de la tabla general', unlocked: false }, // se calcula fuera
   ]

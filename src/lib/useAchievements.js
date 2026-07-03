@@ -2,6 +2,8 @@ import { useMemo } from 'react'
 import { useAuth } from './auth'
 import { useLeagueData } from './useLeagueData'
 import { playedMatches, achievements, evolutionByMatch } from './playerStats'
+import { scorePodium } from './scoring'
+import { actualPodium } from './podium'
 
 /**
  * Calcula las medallas del usuario actual (mismas que muestra "Mi progreso").
@@ -28,7 +30,11 @@ export function useAchievements() {
       allRowsByUser.set(uid, playedMatches(preds, resultsById))
     }
 
-    const ach = achievements(rows, evolution, allRowsByUser, user.id)
+    const myPodium = scorePodium(
+      data.podiumPreds.find(p => p.user_id === user.id),
+      actualPodium(data)
+    ).breakdown
+    const ach = achievements(rows, evolution, allRowsByUser, user.id, { podium: myPodium })
 
     // GOAT (#1 de la tabla general por puntos de partidos)
     const totals = []

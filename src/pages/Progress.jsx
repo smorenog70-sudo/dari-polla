@@ -126,7 +126,7 @@ export default function Progress() {
       allRowsByUser.set(uid, playedMatches(preds, resultsById))
     }
 
-    const ach = achievements(rows, evolution, allRowsByUser, viewedUserId)
+    const ach = achievements(rows, evolution, allRowsByUser, viewedUserId, { podium: podiumBonus.breakdown })
 
     // Medalla GOAT: ¿es el #1 de la tabla general por puntos de partidos?
     const totalsByUser = []
@@ -230,7 +230,8 @@ export default function Progress() {
     // Corremos achievements para cada usuario y contamos por medalla.
     const holdersByBadge = {} // badgeId -> [{name, isMe}]
     for (const [uid, urows] of allRowsByUser) {
-      const uAch = achievements(urows, [], allRowsByUser, uid)
+      const uPodium = scorePodium(data.podiumPreds.find(p => p.user_id === uid), realPodium).breakdown
+      const uAch = achievements(urows, [], allRowsByUser, uid, { podium: uPodium })
       // GOAT aparte (mismo criterio que arriba)
       const goatU = uAch.find(a => a.id === 'goat')
       if (goatU) goatU.unlocked = totalsByUser.length > 1 && totalsByUser[0].uid === uid &&
