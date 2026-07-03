@@ -46,7 +46,7 @@ export function worldCupProgress(data) {
   const matchPtsPlayed = playedMatches * PTS_MATCH
   const matchPtsTotal = totalMatches * PTS_MATCH
 
-  // "Quién pasa" en playoffs: bono escalonado por ronda (el 3er puesto no reparte).
+  // "Quién pasa/gana" en playoffs: bono escalonado por ronda (incluye 3er puesto = 30).
   const koMatches = matches.filter(m => m.stage !== 'group')
   const advBonusOf = (m) => ADVANCE_BONUS[m.stage] ?? 0
   const advancesPtsTotal = koMatches.reduce((s, m) => s + advBonusOf(m), 0)

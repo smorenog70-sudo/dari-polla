@@ -72,10 +72,11 @@ export default function Rules() {
           <li className="flex justify-between"><span>Octavos</span><span className="font-mono text-brand-500">15 pts</span></li>
           <li className="flex justify-between"><span>Cuartos</span><span className="font-mono text-brand-500">20 pts</span></li>
           <li className="flex justify-between"><span>Semifinal</span><span className="font-mono text-brand-500">30 pts</span></li>
+          <li className="flex justify-between"><span>Partido por el 3er puesto (acertar al ganador)</span><span className="font-mono text-brand-500">30 pts</span></li>
           <li className="flex justify-between"><span>Final</span><span className="font-mono text-brand-500">50 pts</span></li>
         </ul>
         <p className="text-xs text-ink-500 mt-3">
-          El "quién clasifica" es tu elección aparte del marcador: si pones empate a los 90, eliges quién
+          El "quién gana/clasifica" es tu elección aparte del marcador: si pones empate a los 90, eliges quién
           crees que pasa por prórroga/penales. Los dieciseisavos se quedan en 10 porque ya se están jugando.
         </p>
       </div>

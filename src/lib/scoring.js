@@ -11,12 +11,12 @@
 
 import { matchById } from './matches'
 
-// Bono por acertar "quién clasifica" en cada cruce de eliminación, escalonado
-// por ronda. Los dieciseisavos (r32) se quedan en 10 porque ya se están jugando
-// (cambiarlo a mitad del torneo sería injusto); el escalonado nuevo aplica de
-// octavos en adelante, que todavía no se juega. El 3er puesto no reparte este
-// bono porque de ese partido no "clasifica" nadie.
-export const ADVANCE_BONUS = { r32: 10, r16: 15, qf: 20, sf: 30, final: 50 }
+// Bono por acertar "quién gana / clasifica" en cada cruce de eliminación,
+// escalonado por ronda. Los dieciseisavos (r32) se quedan en 10 porque ya se
+// están jugando (cambiarlo a mitad del torneo sería injusto); el escalonado
+// nuevo aplica de octavos en adelante. En el partido por el 3er puesto acertar
+// al ganador vale 30.
+export const ADVANCE_BONUS = { r32: 10, r16: 15, qf: 20, sf: 30, third: 30, final: 50 }
 
 // Bono de podio: puntos por acertar cada puesto EXACTO del podio final.
 export const PODIUM_POINTS = { champion: 30, runner_up: 20, third_place: 15, fourth_place: 10 }
@@ -68,7 +68,7 @@ export function scoreMatch(pred, actual, stage) {
   // termina distinto a como lo imaginó en el marcador.
   // Señal de que es playoff: el resultado real trae 'advances' definido
   // (en fase de grupos nunca se setea). El bono depende de la ronda: r32=10,
-  // r16=15, qf=20, sf=30, final=50 (el 3er puesto no reparte este bono).
+  // r16=15, qf=20, sf=30, 3er puesto=30, final=50.
   if (actual.advances && pred.advances && pred.advances === actual.advances) {
     const st = stage || matchById(actual.match_id ?? pred.match_id)?.stage
     breakdown.advances = ADVANCE_BONUS[st] ?? 10
