@@ -43,13 +43,23 @@ export default function Layout() {
             <img src="/logo.png" alt="Dari-polla" className="w-9 h-9 rounded-full bg-white p-0.5" />
             <span className="font-bold text-lg">Dari-polla</span>
           </Link>
-          <button
-            onClick={() => setMenuOpen(o => !o)}
-            className="p-2 rounded-lg hover:bg-ink-700"
-            aria-label="Menú"
-          >
-            <span className="text-xl">{menuOpen ? '✕' : '☰'}</span>
-          </button>
+          <div className="flex items-center gap-1">
+            <button
+              onClick={() => window.location.reload()}
+              className="p-2 rounded-lg hover:bg-ink-700"
+              aria-label="Actualizar"
+              title="Actualizar app (recarga para ver los últimos cambios)"
+            >
+              <span className="text-xl">🔄</span>
+            </button>
+            <button
+              onClick={() => setMenuOpen(o => !o)}
+              className="p-2 rounded-lg hover:bg-ink-700"
+              aria-label="Menú"
+            >
+              <span className="text-xl">{menuOpen ? '✕' : '☰'}</span>
+            </button>
+          </div>
         </div>
         {menuOpen && (
           <div className="max-w-2xl mx-auto px-4 pb-3 space-y-1">
