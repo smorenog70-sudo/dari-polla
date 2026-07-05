@@ -39,7 +39,7 @@ export default function Podium() {
 
   const teams = useMemo(() => octavosTeams(data), [data])
   const actual = useMemo(() => actualPodium(data), [data])
-  const locked = podiumLocked()
+  const locked = podiumLocked(data.config)
   const closeAt = podiumCloseAt()
 
   const scored = useMemo(() => scorePodium(picks, actual), [picks, actual])

@@ -77,8 +77,13 @@ export function actualPodium(data) {
   return out
 }
 
-/** ¿Ya cerró la predicción del podio? Cierra al arrancar el primer partido de octavos. */
-export function podiumLocked(now = new Date()) {
+/**
+ * ¿Ya cerró la predicción del podio? Por defecto cierra al arrancar el primer
+ * partido de octavos. El admin puede reabrirla con config.podium_open = true
+ * (p. ej. para quien no alcanzó a ponerla).
+ */
+export function podiumLocked(config = {}, now = new Date()) {
+  if (config?.podium_open === true) return false  // reabierto manualmente por el admin
   const r16 = TOURNAMENT.matches.filter(m => m.stage === 'r16')
   if (r16.length === 0) return false
   return r16.some(m => hasMatchStarted(m, now))

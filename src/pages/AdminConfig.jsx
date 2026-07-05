@@ -27,6 +27,7 @@ export default function AdminConfig() {
       { key: 'fine_amount', value: Number(config.fine_amount) || 5000 },
       { key: 'knockouts_enabled', value: !!config.knockouts_enabled },
       { key: 'predictions_locked', value: !!config.predictions_locked },
+      { key: 'podium_open', value: !!config.podium_open },
     ]
     const { error } = await supabase.from('config').upsert(rows, { onConflict: 'key' })
     setSaving(false)
@@ -110,6 +111,20 @@ export default function AdminConfig() {
             <div className="font-medium">Habilitar predicciones de eliminatorias</div>
             <div className="text-xs text-ink-500">
               Activar cuando termine la fase de grupos. Al activarlo, las predicciones de grupos y mejores terceros se bloquean.
+            </div>
+          </div>
+        </label>
+        <label className="flex items-center gap-3 cursor-pointer">
+          <input
+            type="checkbox"
+            checked={!!config.podium_open}
+            onChange={e => set('podium_open', e.target.checked)}
+            className="w-5 h-5 rounded accent-brand-600"
+          />
+          <div>
+            <div className="font-medium">Reabrir predicción del podio</div>
+            <div className="text-xs text-ink-500">
+              El podio se cierra solo al arrancar los octavos. Actívalo para reabrirlo (p. ej. para quien no alcanzó a ponerlo). Recuerda desactivarlo después.
             </div>
           </div>
         </label>

@@ -5,7 +5,8 @@ import { useLeagueData } from '../lib/useLeagueData'
 import { matchById, TOURNAMENT, hasMatchStarted, formatKickoff } from '../lib/matches'
 import { buildResolver } from '../lib/bracketTeams'
 import { scoreMatch, scoreGroupPositions, scoreThirds, scorePodium } from '../lib/scoring'
-import { actualPodium } from '../lib/podium'
+import { actualPodium, PODIUM_LABELS, PODIUM_KEYS } from '../lib/podium'
+import { PODIUM_POINTS } from '../lib/scoring'
 import { teamWithFlag } from '../lib/flags'
 import {
   playedMatches,
@@ -424,6 +425,9 @@ export default function Progress() {
         <AdvancedStats s={stats.newStats} />
       )}
 
+      {/* === PODIO DE CADA UNO (público, ya que la predicción cerró) === */}
+      <PodiumBoard data={data} viewedUserId={viewedUserId} />
+
       {/* Logros */}
       <div className="card">
         <div className="flex items-center justify-between mb-3">
@@ -471,6 +475,76 @@ export default function Progress() {
             )
           })}
         </div>
+      </div>
+    </div>
+  )
+}
+
+/**
+ * Tablero público con el podio que puso cada quien. Se muestra ya que la
+ * predicción del podio cerró. Si ya se conoce el podio real, marca los aciertos
+ * y ordena por puntos de podio.
+ */
+function PodiumBoard({ data, viewedUserId }) {
+  const board = useMemo(() => {
+    const real = actualPodium(data)
+    const hasReal = PODIUM_KEYS.some(k => real[k])
+    const profById = {}
+    for (const p of data.profiles) profById[p.id] = p
+    const nameOf = (id) => {
+      const p = profById[id]
+      return p ? ((p.nickname || '').trim() || p.display_name) : 'Jugador'
+    }
+    const rows = (data.podiumPreds || [])
+      .filter(p => PODIUM_KEYS.some(k => p[k]))
+      .map(p => {
+        const hits = PODIUM_KEYS.reduce((s, k) => s + (real[k] && p[k] === real[k] ? PODIUM_POINTS[k] : 0), 0)
+        return { uid: p.user_id, name: nameOf(p.user_id), pick: p, pts: hits }
+      })
+      .sort((a, b) => hasReal ? (b.pts - a.pts || a.name.localeCompare(b.name, 'es')) : a.name.localeCompare(b.name, 'es'))
+    return { real, hasReal, rows }
+  }, [data])
+
+  if (board.rows.length === 0) return null
+
+  return (
+    <div className="card">
+      <h2 className="font-semibold mb-1">🏅 El podio de cada uno</h2>
+      <p className="text-xs text-ink-300 mb-3">
+        Lo que pronosticó cada quien para el podio final.
+        {board.hasReal && ' En verde, los aciertos.'}
+      </p>
+      <div className="space-y-2">
+        {board.rows.map(r => (
+          <div
+            key={r.uid}
+            className={`rounded-lg p-2 border ${r.uid === viewedUserId ? 'border-brand-600/60 bg-brand-900/10' : 'border-ink-700 bg-ink-900/40'}`}
+          >
+            <div className="flex items-center justify-between mb-1.5">
+              <span className="text-sm font-medium truncate">
+                {r.name}{r.uid === viewedUserId && <span className="text-brand-400 text-xs"> (tú)</span>}
+              </span>
+              {board.hasReal && (
+                <span className="text-xs font-bold text-brand-400 shrink-0">+{r.pts}</span>
+              )}
+            </div>
+            <div className="grid grid-cols-4 gap-1">
+              {PODIUM_KEYS.map(k => {
+                const team = r.pick[k]
+                const hit = board.hasReal && board.real[k] && team === board.real[k]
+                return (
+                  <div
+                    key={k}
+                    className={`rounded p-1 text-center ${hit ? 'bg-green-700/40 border border-green-500' : 'bg-ink-800/60'}`}
+                  >
+                    <div className="text-[9px] text-ink-400 uppercase tracking-wide truncate">{PODIUM_LABELS[k]}</div>
+                    <div className="text-xs mt-0.5 truncate">{team ? teamWithFlag(team) : '—'}</div>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   )
