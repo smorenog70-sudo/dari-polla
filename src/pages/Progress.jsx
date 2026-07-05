@@ -425,8 +425,8 @@ export default function Progress() {
         <AdvancedStats s={stats.newStats} />
       )}
 
-      {/* === PODIO DE CADA UNO (público, ya que la predicción cerró) === */}
-      <PodiumBoard data={data} viewedUserId={viewedUserId} />
+      {/* === PODIO DEL JUGADOR (público, ya que la predicción cerró) === */}
+      <PodiumBoard data={data} viewedUserId={viewedUserId} isOwn={isOwn} />
 
       {/* Logros */}
       <div className="card">
@@ -481,70 +481,48 @@ export default function Progress() {
 }
 
 /**
- * Tablero público con el podio que puso cada quien. Se muestra ya que la
- * predicción del podio cerró. Si ya se conoce el podio real, marca los aciertos
- * y ordena por puntos de podio.
+ * El podio que puso el jugador que se está viendo. Se muestra ya que la
+ * predicción del podio cerró (es público). Si ya se conoce el podio real,
+ * marca los aciertos y suma los puntos de podio.
  */
-function PodiumBoard({ data, viewedUserId }) {
-  const board = useMemo(() => {
+function PodiumBoard({ data, viewedUserId, isOwn }) {
+  const info = useMemo(() => {
+    const pick = (data.podiumPreds || []).find(p => p.user_id === viewedUserId)
+    if (!pick || !PODIUM_KEYS.some(k => pick[k])) return null
     const real = actualPodium(data)
     const hasReal = PODIUM_KEYS.some(k => real[k])
-    const profById = {}
-    for (const p of data.profiles) profById[p.id] = p
-    const nameOf = (id) => {
-      const p = profById[id]
-      return p ? ((p.nickname || '').trim() || p.display_name) : 'Jugador'
-    }
-    const rows = (data.podiumPreds || [])
-      .filter(p => PODIUM_KEYS.some(k => p[k]))
-      .map(p => {
-        const hits = PODIUM_KEYS.reduce((s, k) => s + (real[k] && p[k] === real[k] ? PODIUM_POINTS[k] : 0), 0)
-        return { uid: p.user_id, name: nameOf(p.user_id), pick: p, pts: hits }
-      })
-      .sort((a, b) => hasReal ? (b.pts - a.pts || a.name.localeCompare(b.name, 'es')) : a.name.localeCompare(b.name, 'es'))
-    return { real, hasReal, rows }
-  }, [data])
+    const pts = PODIUM_KEYS.reduce((s, k) => s + (real[k] && pick[k] === real[k] ? PODIUM_POINTS[k] : 0), 0)
+    return { pick, real, hasReal, pts }
+  }, [data, viewedUserId])
 
-  if (board.rows.length === 0) return null
+  if (!info) return null
 
   return (
     <div className="card">
-      <h2 className="font-semibold mb-1">🏅 El podio de cada uno</h2>
+      <div className="flex items-center justify-between mb-1">
+        <h2 className="font-semibold">🏅 {isOwn ? 'Tu podio' : 'Su podio'}</h2>
+        {info.hasReal && (
+          <span className="text-sm font-bold text-brand-400">+{info.pts} pts</span>
+        )}
+      </div>
       <p className="text-xs text-ink-300 mb-3">
-        Lo que pronosticó cada quien para el podio final.
-        {board.hasReal && ' En verde, los aciertos.'}
+        El pronóstico del podio final.
+        {info.hasReal && ' En verde, los aciertos.'}
       </p>
-      <div className="space-y-2">
-        {board.rows.map(r => (
-          <div
-            key={r.uid}
-            className={`rounded-lg p-2 border ${r.uid === viewedUserId ? 'border-brand-600/60 bg-brand-900/10' : 'border-ink-700 bg-ink-900/40'}`}
-          >
-            <div className="flex items-center justify-between mb-1.5">
-              <span className="text-sm font-medium truncate">
-                {r.name}{r.uid === viewedUserId && <span className="text-brand-400 text-xs"> (tú)</span>}
-              </span>
-              {board.hasReal && (
-                <span className="text-xs font-bold text-brand-400 shrink-0">+{r.pts}</span>
-              )}
+      <div className="grid grid-cols-4 gap-1.5">
+        {PODIUM_KEYS.map(k => {
+          const team = info.pick[k]
+          const hit = info.hasReal && info.real[k] && team === info.real[k]
+          return (
+            <div
+              key={k}
+              className={`rounded-lg p-2 text-center ${hit ? 'bg-green-700/40 border border-green-500' : 'bg-ink-900/40 border border-ink-700'}`}
+            >
+              <div className="text-[9px] text-ink-400 uppercase tracking-wide truncate">{PODIUM_LABELS[k]}</div>
+              <div className="text-xs mt-0.5 truncate">{team ? teamWithFlag(team) : '—'}</div>
             </div>
-            <div className="grid grid-cols-4 gap-1">
-              {PODIUM_KEYS.map(k => {
-                const team = r.pick[k]
-                const hit = board.hasReal && board.real[k] && team === board.real[k]
-                return (
-                  <div
-                    key={k}
-                    className={`rounded p-1 text-center ${hit ? 'bg-green-700/40 border border-green-500' : 'bg-ink-800/60'}`}
-                  >
-                    <div className="text-[9px] text-ink-400 uppercase tracking-wide truncate">{PODIUM_LABELS[k]}</div>
-                    <div className="text-xs mt-0.5 truncate">{team ? teamWithFlag(team) : '—'}</div>
-                  </div>
-                )
-              })}
-            </div>
-          </div>
-        ))}
+          )
+        })}
       </div>
     </div>
   )
