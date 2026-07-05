@@ -5,6 +5,7 @@ import { TOURNAMENT, matchById, formatKickoff, isMatchLocked, hasMatchStarted } 
 import { buildResolver } from '../lib/bracketTeams'
 import { useNowTick } from '../lib/useNowTick'
 import { teamWithFlag } from '../lib/flags'
+import { PODIUM_KEYS, PODIUM_LABELS } from '../lib/podium'
 import MatchCommunityStats from '../components/MatchCommunityStats'
 import {
   groupGoalBias,
@@ -19,6 +20,7 @@ const VIEWS = [
   { id: 'matches', label: '⚽ Por partido' },
   { id: 'players', label: '🧑‍🤝‍🧑 Marcadores por persona' },
   { id: 'teams', label: '🏆 Equipos favoritos' },
+  { id: 'podium', label: '🏅 Podio' },
   { id: 'scores', label: '📊 Marcadores' },
   { id: 'overview', label: '👥 General' },
 ]
@@ -112,6 +114,7 @@ export default function CommunityStats() {
       {view === 'matches' && <MatchesView predsByMatch={predsByMatch} resolveMatch={resolveMatch} />}
       {view === 'players' && <PlayersView predsByMatch={predsByMatch} profilesById={profilesById} resolveMatch={resolveMatch} />}
       {view === 'teams' && <TeamsView predictions={data.predictions} thirdPreds={data.thirdPreds} groupPreds={data.groupPreds} resolveMatch={resolveMatch} />}
+      {view === 'podium' && <PodiumView podiumPreds={data.podiumPreds} />}
       {view === 'scores' && <ScoresView predictions={data.predictions} />}
     </div>
   )
@@ -434,6 +437,77 @@ function RankList({ title, subtitle, items, empty }) {
           ))}
         </div>
       )}
+    </div>
+  )
+}
+
+// ===================================================================
+// VIEW: Podio comunal (cómo votó el grupo el podio final)
+// ===================================================================
+const POS_ICONS = { champion: '🥇', runner_up: '🥈', third_place: '🥉', fourth_place: '🎖️' }
+
+function PodiumView({ podiumPreds }) {
+  const { byPos, accumulated, totalPlayers } = useMemo(() => {
+    const isReal = (t) => t && !/^[0-9WL]/.test(t)
+    const byPos = {}
+    for (const k of PODIUM_KEYS) byPos[k] = new Map()
+    const acc = new Map()
+    let players = 0
+    for (const p of podiumPreds || []) {
+      let any = false
+      for (const k of PODIUM_KEYS) {
+        const t = p[k]
+        if (!isReal(t)) continue
+        any = true
+        bump(byPos[k], t)
+        bump(acc, t)
+      }
+      if (any) players++
+    }
+    const sortDesc = (m) => [...m.entries()].sort((a, b) => b[1] - a[1])
+    const byPosSorted = {}
+    for (const k of PODIUM_KEYS) byPosSorted[k] = sortDesc(byPos[k]).slice(0, 10)
+    return {
+      byPos: byPosSorted,
+      accumulated: sortDesc(acc).slice(0, 15),
+      totalPlayers: players,
+    }
+  }, [podiumPreds])
+
+  if (totalPlayers === 0) {
+    return (
+      <div className="card text-center py-8 text-ink-300">
+        <div className="text-3xl mb-2">🏅</div>
+        <div>Aún nadie ha puesto su podio.</div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="space-y-3">
+      <div className="card bg-brand-900/20 border-brand-700/40">
+        <p className="text-xs text-ink-200">
+          🏅 Cómo votó la comunidad el podio final. <strong>{totalPlayers}</strong>{' '}
+          {totalPlayers === 1 ? 'persona puso' : 'personas pusieron'} su podio.
+        </p>
+      </div>
+
+      <RankList
+        title="🏅 Equipos más metidos al podio (acumulado)"
+        subtitle="Cuántas veces aparece cada equipo en el podio de alguien, sumando los 4 puestos"
+        items={accumulated}
+        empty="Aún no hay podios."
+      />
+
+      {PODIUM_KEYS.map(k => (
+        <RankList
+          key={k}
+          title={`${POS_ICONS[k]} Más elegidos como ${PODIUM_LABELS[k].toLowerCase()}`}
+          subtitle={`Equipos que más gente puso de ${PODIUM_LABELS[k].toLowerCase()}`}
+          items={byPos[k]}
+          empty="Nadie eligió este puesto todavía."
+        />
+      ))}
     </div>
   )
 }
