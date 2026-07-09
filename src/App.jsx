@@ -36,6 +36,7 @@ const AdminThirds = lazy(() => import('./pages/AdminThirds'))
 const AdminUsers = lazy(() => import('./pages/AdminUsers'))
 const AdminFines = lazy(() => import('./pages/AdminFines'))
 const AdminConfig = lazy(() => import('./pages/AdminConfig'))
+const AdminSchedule = lazy(() => import('./pages/AdminSchedule'))
 const AdminDashboard = lazy(() => import('./pages/AdminDashboard'))
 
 function PageFallback() {
@@ -86,6 +87,7 @@ export default function App() {
             <Route path="admin/llaves" element={<Protected adminOnly><AdminBracket /></Protected>} />
             <Route path="admin/usuarios" element={<Protected adminOnly><AdminUsers /></Protected>} />
             <Route path="admin/multas" element={<Protected adminOnly><AdminFines /></Protected>} />
+            <Route path="admin/horarios" element={<Protected adminOnly><AdminSchedule /></Protected>} />
             <Route path="admin/config" element={<Protected adminOnly><AdminConfig /></Protected>} />
           </Route>
           <Route path="*" element={<Navigate to="/" replace />} />

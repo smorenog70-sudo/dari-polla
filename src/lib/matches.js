@@ -92,3 +92,31 @@ export function formatKickoff(iso) {
 export function matchById(id) {
   return fixtures.matches.find(m => m.id === id)
 }
+
+// --- Horarios editables por el admin ---
+// Los horarios vienen predeterminados de fixtures.json, pero el admin puede
+// sobreescribirlos (se guardan en config.match_times = { matchId: isoUTC }).
+// Guardamos el horario ORIGINAL de cada partido la primera vez para poder
+// restablecerlo y para que aplicar overrides sea idempotente.
+const ORIGINAL_KICKOFFS = new Map()
+
+/** Horario original (de fixtures) de un partido, ignorando cualquier override. */
+export function originalKickoff(id) {
+  if (ORIGINAL_KICKOFFS.has(id)) return ORIGINAL_KICKOFFS.get(id)
+  return fixtures.matches.find(m => m.id === id)?.kickoff_utc
+}
+
+/**
+ * Aplica los overrides de horario del admin sobre los partidos en memoria.
+ * Se llama al cargar la data (useLeagueData). Es idempotente: cada llamada
+ * restablece al horario original y luego aplica los overrides vigentes, así
+ * quitar un override restaura el horario predeterminado.
+ */
+export function applyKickoffOverrides(overrides = {}) {
+  for (const m of fixtures.matches) {
+    if (!ORIGINAL_KICKOFFS.has(m.id)) ORIGINAL_KICKOFFS.set(m.id, m.kickoff_utc)
+    const orig = ORIGINAL_KICKOFFS.get(m.id)
+    const ov = overrides?.[m.id]
+    m.kickoff_utc = (ov && typeof ov === 'string') ? ov : orig
+  }
+}

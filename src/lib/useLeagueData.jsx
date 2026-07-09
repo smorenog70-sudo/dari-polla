@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState, useCallback } from 'react'
 import { supabase } from './supabase'
+import { applyKickoffOverrides } from './matches'
 
 /**
  * Trae TODAS las filas de una tabla, paginando de a 1000.
@@ -73,6 +74,10 @@ export function LeagueDataProvider({ children }) {
 
     const config = {}
     for (const r of cfgRows || []) config[r.key] = r.value
+
+    // Aplica los horarios que el admin haya sobreescrito (antes de que los
+    // componentes vuelvan a renderizar con la data ya cargada).
+    applyKickoffOverrides(config.match_times || {})
 
     setState({
       profiles: profiles || [],

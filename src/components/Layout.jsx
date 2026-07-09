@@ -20,6 +20,7 @@ const adminItems = [
   { to: '/admin/grupos', label: 'Resultados Grupos' },
   { to: '/admin/terceros', label: 'Mejores Terceros' },
   { to: '/admin/llaves', label: 'Llaves (eliminatorias)' },
+  { to: '/admin/horarios', label: 'Horarios de partidos' },
   { to: '/admin/multas', label: 'Multas' },
   { to: '/admin/usuarios', label: 'Usuarios' },
   { to: '/admin/config', label: 'Config' },
