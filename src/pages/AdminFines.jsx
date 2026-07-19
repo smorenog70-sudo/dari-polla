@@ -16,6 +16,24 @@ export default function AdminFines() {
   const [selected, setSelected] = useState('group-F1')
   const [msg, setMsg] = useState('')
   const [working, setWorking] = useState(false)
+  // Overrides locales de "pagada" para no recargar toda la data en cada toggle.
+  const [paidOverrides, setPaidOverrides] = useState(new Map())
+
+  const isPaid = (f) => (paidOverrides.has(f.id) ? paidOverrides.get(f.id) : !!f.paid)
+
+  const togglePaid = async (fine) => {
+    const next = !isPaid(fine)
+    setPaidOverrides(prev => new Map(prev).set(fine.id, next))
+    const { error } = await supabase
+      .from('fines')
+      .update({ paid: next, paid_at: next ? new Date().toISOString() : null })
+      .eq('id', fine.id)
+    if (error) {
+      setPaidOverrides(prev => new Map(prev).set(fine.id, !next))
+      setMsg('❌ ' + error.message)
+      setTimeout(() => setMsg(''), 3000)
+    }
+  }
 
   // Compute standings for the selected fecha
   const ranking = useMemo(() => {
@@ -64,6 +82,33 @@ export default function AdminFines() {
     return data.fines.filter(f => f.fecha_id === selected)
   }, [data, selected])
 
+  // Todos los que deben multas (en cualquier fecha), con su estado de pago.
+  const debtors = useMemo(() => {
+    const byUser = new Map()
+    for (const f of data.fines) {
+      if (!byUser.has(f.user_id)) byUser.set(f.user_id, [])
+      byUser.get(f.user_id).push(f)
+    }
+    return [...byUser.entries()]
+      .map(([uid, fines]) => {
+        const prof = data.profiles.find(p => p.id === uid)
+        fines.sort((a, b) => FECHAS.indexOf(a.fecha_id) - FECHAS.indexOf(b.fecha_id))
+        let pending = 0
+        let paidTotal = 0
+        for (const f of fines) {
+          if (isPaid(f)) paidTotal += f.amount || 0
+          else pending += f.amount || 0
+        }
+        return { id: uid, name: prof?.display_name || 'Jugador', fines, pending, paidTotal }
+      })
+      .sort((a, b) => b.pending - a.pending || a.name.localeCompare(b.name))
+  }, [data.fines, data.profiles, paidOverrides])
+
+  const totals = useMemo(() => ({
+    pending: debtors.reduce((s, d) => s + d.pending, 0),
+    paid: debtors.reduce((s, d) => s + d.paidTotal, 0),
+  }), [debtors])
+
   const applyFines = async () => {
     if (ranking.length < 2) return
     setWorking(true)
@@ -71,11 +116,19 @@ export default function AdminFines() {
     const fineAmount = Number(data.config.fine_amount || 5000)
     // Los 2 peores puestos por puntaje; si hay empates, pagan todos.
     const toFine = ranking.filter(r => finedSet.has(r.id))
-    const rows = toFine.map(r => ({
-      user_id: r.id,
-      fecha_id: selected,
-      amount: fineAmount,
-    }))
+    // Si se reasignan las multas, conserva el estado de pago de quien ya había pagado.
+    const prevByUser = new Map(existing.map(f => [f.user_id, f]))
+    const rows = toFine.map(r => {
+      const prev = prevByUser.get(r.id)
+      const wasPaid = prev ? isPaid(prev) : false
+      return {
+        user_id: r.id,
+        fecha_id: selected,
+        amount: fineAmount,
+        paid: wasPaid,
+        paid_at: wasPaid ? (prev.paid_at || new Date().toISOString()) : null,
+      }
+    })
     // Delete existing fines for this fecha first
     const { error: delErr } = await supabase.from('fines').delete().eq('fecha_id', selected)
     if (delErr) {
@@ -122,6 +175,55 @@ export default function AdminFines() {
         </p>
       </div>
 
+      <div className="card">
+        <div className="flex items-center justify-between mb-1">
+          <h3 className="font-semibold">💰 Deudores</h3>
+          <div className="text-xs text-ink-300 text-right">
+            <span className="text-red-300">Pendiente: {totals.pending.toLocaleString('es-CO')}</span>
+            {' · '}
+            <span className="text-green-300">Pagado: {totals.paid.toLocaleString('es-CO')}</span>
+          </div>
+        </div>
+        <p className="text-xs text-ink-300 mb-2">
+          Toca una multa para marcarla como pagada o pendiente.
+        </p>
+        {debtors.length === 0 && (
+          <p className="text-sm text-ink-500 text-center py-2">Nadie debe multas todavía.</p>
+        )}
+        {debtors.map(d => (
+          <div key={d.id} className="border-t border-ink-700 py-2">
+            <div className="flex items-center justify-between text-sm">
+              <span className="font-semibold">{d.name}</span>
+              {d.pending > 0 ? (
+                <span className="text-red-300 font-medium">
+                  Debe {d.pending.toLocaleString('es-CO')} COP
+                </span>
+              ) : (
+                <span className="text-green-300 font-medium">Al día ✅</span>
+              )}
+            </div>
+            <div className="flex flex-wrap gap-1.5 mt-1.5">
+              {d.fines.map(f => {
+                const paid = isPaid(f)
+                return (
+                  <button
+                    key={f.id}
+                    onClick={() => togglePaid(f)}
+                    className={`pill border transition active:scale-[0.97] ${
+                      paid
+                        ? 'bg-green-900/30 border-green-700/50 text-green-300'
+                        : 'bg-red-900/30 border-red-700/50 text-red-300'
+                    }`}
+                  >
+                    {FECHA_LABELS[f.fecha_id] || f.fecha_id} · {(f.amount || 0).toLocaleString('es-CO')} {paid ? '✅' : '⏳'}
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+        ))}
+      </div>
+
       <div>
         <label className="label">Fecha</label>
         <select value={selected} onChange={e => setSelected(e.target.value)} className="input">
@@ -160,12 +262,23 @@ export default function AdminFines() {
       {existing.length > 0 && (
         <div className="card bg-yellow-900/20 border-yellow-700/40">
           <h3 className="font-semibold mb-2">Multas ya aplicadas</h3>
-          <ul className="text-sm space-y-1">
+          <ul className="text-sm space-y-1.5">
             {existing.map(f => {
               const u = data.profiles.find(p => p.id === f.user_id)
+              const paid = isPaid(f)
               return (
-                <li key={f.id}>
-                  • {u?.display_name || f.user_id} — {f.amount.toLocaleString('es-CO')} COP
+                <li key={f.id} className="flex items-center justify-between gap-2">
+                  <span>• {u?.display_name || f.user_id} — {f.amount.toLocaleString('es-CO')} COP</span>
+                  <button
+                    onClick={() => togglePaid(f)}
+                    className={`pill border shrink-0 transition active:scale-[0.97] ${
+                      paid
+                        ? 'bg-green-900/30 border-green-700/50 text-green-300'
+                        : 'bg-red-900/30 border-red-700/50 text-red-300'
+                    }`}
+                  >
+                    {paid ? 'Pagada ✅' : 'Pendiente ⏳'}
+                  </button>
                 </li>
               )
             })}
