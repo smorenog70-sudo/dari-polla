@@ -21,11 +21,9 @@ Stack: React + Vite + Tailwind (frontend) · Supabase (auth + Postgres + RLS) ·
 3. Click **Run** (abajo a la derecha). Debe decir "Success" sin errores.
 
 > **¿Ya tienes la app corriendo con usuarios?** No vuelvas a correr
-> `supabase_schema.sql`. En su lugar corre una sola vez las migraciones que
-> te falten (agregan columnas/tablas sin tocar tus datos existentes):
-> `supabase_migration_social.sql` (apodos, avatares, comentarios y reacciones),
-> `supabase_migration_playoffs.sql`, `supabase_migration_podium.sql` y
-> `supabase_migration_fines_paid.sql` (marca multas como pagadas o pendientes).
+> `supabase_schema.sql`. En su lugar corre una sola vez
+> `supabase_migration_social.sql` (agrega apodos, avatares, comentarios y
+> reacciones sin tocar tus datos existentes).
 
 ### 3. Obtener las credenciales
 

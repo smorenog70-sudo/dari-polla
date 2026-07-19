@@ -16,20 +16,38 @@ export default function AdminFines() {
   const [selected, setSelected] = useState('group-F1')
   const [msg, setMsg] = useState('')
   const [working, setWorking] = useState(false)
-  // Overrides locales de "pagada" para no recargar toda la data en cada toggle.
-  const [paidOverrides, setPaidOverrides] = useState(new Map())
+  // Los pagos se guardan en config (key 'fines_paid', jsonb) como
+  // { "user_id|fecha_id": true }, así no hace falta migrar la tabla fines.
+  // paidOverrides son cambios locales para no recargar toda la data en cada toggle.
+  const [paidOverrides, setPaidOverrides] = useState({})
 
-  const isPaid = (f) => (paidOverrides.has(f.id) ? paidOverrides.get(f.id) : !!f.paid)
+  const basePaid = data.config.fines_paid || {}
+  const paidKey = (f) => `${f.user_id}|${f.fecha_id}`
+  const isPaid = (f) => {
+    const k = paidKey(f)
+    return k in paidOverrides ? paidOverrides[k] : !!basePaid[k]
+  }
+
+  // Mapa completo (config + cambios locales + extra) listo para guardar.
+  const fullPaidMap = (extra = {}) => {
+    const full = { ...basePaid }
+    for (const [k, v] of Object.entries({ ...paidOverrides, ...extra })) {
+      if (v) full[k] = true
+      else delete full[k]
+    }
+    return full
+  }
+
+  const savePaidMap = (map) =>
+    supabase.from('config').upsert({ key: 'fines_paid', value: map }, { onConflict: 'key' })
 
   const togglePaid = async (fine) => {
+    const k = paidKey(fine)
     const next = !isPaid(fine)
-    setPaidOverrides(prev => new Map(prev).set(fine.id, next))
-    const { error } = await supabase
-      .from('fines')
-      .update({ paid: next, paid_at: next ? new Date().toISOString() : null })
-      .eq('id', fine.id)
+    setPaidOverrides(prev => ({ ...prev, [k]: next }))
+    const { error } = await savePaidMap(fullPaidMap({ [k]: next }))
     if (error) {
-      setPaidOverrides(prev => new Map(prev).set(fine.id, !next))
+      setPaidOverrides(prev => ({ ...prev, [k]: !next }))
       setMsg('❌ ' + error.message)
       setTimeout(() => setMsg(''), 3000)
     }
@@ -102,7 +120,7 @@ export default function AdminFines() {
         return { id: uid, name: prof?.display_name || 'Jugador', fines, pending, paidTotal }
       })
       .sort((a, b) => b.pending - a.pending || a.name.localeCompare(b.name))
-  }, [data.fines, data.profiles, paidOverrides])
+  }, [data.fines, data.profiles, data.config, paidOverrides])
 
   const totals = useMemo(() => ({
     pending: debtors.reduce((s, d) => s + d.pending, 0),
@@ -116,19 +134,11 @@ export default function AdminFines() {
     const fineAmount = Number(data.config.fine_amount || 5000)
     // Los 2 peores puestos por puntaje; si hay empates, pagan todos.
     const toFine = ranking.filter(r => finedSet.has(r.id))
-    // Si se reasignan las multas, conserva el estado de pago de quien ya había pagado.
-    const prevByUser = new Map(existing.map(f => [f.user_id, f]))
-    const rows = toFine.map(r => {
-      const prev = prevByUser.get(r.id)
-      const wasPaid = prev ? isPaid(prev) : false
-      return {
-        user_id: r.id,
-        fecha_id: selected,
-        amount: fineAmount,
-        paid: wasPaid,
-        paid_at: wasPaid ? (prev.paid_at || new Date().toISOString()) : null,
-      }
-    })
+    const rows = toFine.map(r => ({
+      user_id: r.id,
+      fecha_id: selected,
+      amount: fineAmount,
+    }))
     // Delete existing fines for this fecha first
     const { error: delErr } = await supabase.from('fines').delete().eq('fecha_id', selected)
     if (delErr) {
@@ -146,7 +156,21 @@ export default function AdminFines() {
         { fecha_id: selected, closed_at: new Date().toISOString(), closed_by: user.id },
         { onConflict: 'fecha_id' }
       )
+      // Limpia marcas de pago de quienes ya no quedaron multados en esta fecha.
+      // (Quien sigue multado conserva su marca porque va por user_id|fecha_id.)
+      const keep = new Set(toFine.map(r => r.id))
+      const full = fullPaidMap()
+      let changed = false
+      for (const k of Object.keys(full)) {
+        const [uid, fid] = k.split('|')
+        if (fid === selected && !keep.has(uid)) {
+          delete full[k]
+          changed = true
+        }
+      }
+      if (changed) await savePaidMap(full)
       setMsg(`✅ Multas aplicadas a ${toFine.map(r => r.name).join(', ')}`)
+      setPaidOverrides({})
       data.refresh()
       setTimeout(() => setMsg(''), 3000)
     }
@@ -157,8 +181,19 @@ export default function AdminFines() {
     setMsg('')
     await supabase.from('fines').delete().eq('fecha_id', selected)
     await supabase.from('closed_fechas').delete().eq('fecha_id', selected)
+    // Borra también las marcas de pago de esta fecha
+    const full = fullPaidMap()
+    let changed = false
+    for (const k of Object.keys(full)) {
+      if (k.split('|')[1] === selected) {
+        delete full[k]
+        changed = true
+      }
+    }
+    if (changed) await savePaidMap(full)
     setWorking(false)
     setMsg('✅ Multas eliminadas')
+    setPaidOverrides({})
     data.refresh()
     setTimeout(() => setMsg(''), 2000)
   }

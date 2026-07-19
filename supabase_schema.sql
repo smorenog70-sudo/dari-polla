@@ -170,8 +170,6 @@ create table if not exists fines (
   user_id uuid not null references auth.users(id) on delete cascade,
   fecha_id text not null,               -- 'group-F1', 'group-F2', 'group-F3', 'r32', 'r16', 'qf', 'sf', 'third', 'final'
   amount int not null default 5000,
-  paid boolean not null default false,  -- ¿ya pagó esta multa? (lo marca el admin)
-  paid_at timestamptz,
   created_at timestamptz not null default now(),
   unique (user_id, fecha_id)
 );
