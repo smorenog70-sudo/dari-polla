@@ -2,7 +2,7 @@
 
 Polla Mundialista 2026 — Web app móvil con auth, predicciones, marcadores, tabla en vivo y multas.
 
-Stack: React + Vite + Tailwind (frontend) · Supabase (auth + Postgres + RLS) · Netlify (hosting).
+Stack: React + Vite + Tailwind (frontend) · Supabase (auth + Postgres + RLS) · Vercel (hosting).
 
 ---
 
@@ -75,7 +75,7 @@ Por defecto, Supabase requiere confirmación de email. Para una polla casera con
 
 - **Authentication** → **Providers** → **Email** → desactiva *Confirm email* (así los amigos entran inmediato sin verificar).
 
-Si lo dejas activado: tienes que ir a **Authentication → URL Configuration** y asegurarte que la URL del sitio sea la de Netlify.
+Si lo dejas activado: tienes que ir a **Authentication → URL Configuration** y asegurarte que el **Site URL** sea la de Vercel (`https://dari-polla.vercel.app` o tu dominio propio). Agrega también `https://*-tu-usuario.vercel.app/**` en **Redirect URLs** si quieres que los links de confirmación funcionen desde los deploy previews.
 
 ### 7. Subir a GitHub
 
@@ -88,19 +88,31 @@ git remote add origin https://github.com/TU_USUARIO/dari-polla.git
 git push -u origin main
 ```
 
-### 8. Desplegar en Netlify
+### 8. Desplegar en Vercel
 
-1. Entra a [netlify.com](https://app.netlify.com) y dale **Add new site → Import from Git**.
-2. Conecta tu repo de GitHub.
-3. **Build settings** (debería detectar automático por `netlify.toml`):
+1. Entra a [vercel.com](https://vercel.com) y dale **Add New… → Project**.
+2. Conecta tu repo de GitHub e impórtalo.
+3. **Build settings** (se detecta automático por `vercel.json`, framework preset **Vite**):
    - Build command: `npm run build`
-   - Publish directory: `dist`
-4. **Environment variables** → agrega:
+   - Output directory: `dist`
+   - Install command: `npm install`
+4. **Environment variables** → agrega (marca los 3 entornos: Production, Preview, Development):
    - `VITE_SUPABASE_URL` = tu URL de Supabase
    - `VITE_SUPABASE_ANON_KEY` = tu anon key
-5. Click **Deploy site**.
+5. Click **Deploy**.
 
-Te dará una URL tipo `https://random-name-12345.netlify.app`. Puedes cambiarle el nombre en **Site settings → Change site name** a algo como `dari-polla.netlify.app`, o conectar un dominio propio.
+Te dará una URL tipo `https://dari-polla.vercel.app`. Puedes cambiarla en **Settings → Domains**, o conectar un dominio propio.
+
+> Ojo: las variables `VITE_*` se inyectan **en tiempo de build**. Si las agregas o cambias después del primer deploy, tienes que redesplegar (**Deployments → … → Redeploy**) para que tomen efecto.
+
+El `vercel.json` ya trae el rewrite `/(.*) → /index.html`, que es lo que hace que el routing de React Router funcione al recargar en una URL interna (el equivalente a los `_redirects` de Netlify).
+
+#### Si vienes de Netlify
+
+1. Despliega en Vercel como arriba.
+2. Actualiza el **Site URL** en Supabase (**Authentication → URL Configuration**) a la URL nueva.
+3. Si tenías un dominio propio apuntando a Netlify, muévelo en **Settings → Domains** de Vercel y actualiza el DNS.
+4. Cuando confirmes que todo funciona, borra el sitio en Netlify para que no queden dos deploys vivos del mismo repo.
 
 ---
 
@@ -159,7 +171,7 @@ Si openfootball publica cambios después de los playoffs de clasificación:
 python3 scripts/build_fixtures.py
 ```
 
-Esto regenera `src/data/fixtures.json`. Después haz commit + push y Netlify rebuildea solo.
+Esto regenera `src/data/fixtures.json`. Después haz commit + push y Vercel rebuildea solo.
 
 ### Backup de la base de datos
 
@@ -169,7 +181,7 @@ Supabase trae backup automático en planes pagos. En free puedes:
 ### Costos
 
 - Supabase free: hasta 500MB de DB + 50k MAUs. Sobra para una polla de ~50 amigos.
-- Netlify free: 100GB de bandwidth/mes. Sobra de sobra.
+- Vercel Hobby: 100GB de bandwidth/mes. Sobra de sobra (es para uso no comercial, que es justo el caso).
 - Total: **0 USD/mes**.
 
 ---
@@ -182,7 +194,7 @@ dari-polla/
 ├── package.json
 ├── vite.config.js
 ├── tailwind.config.js
-├── netlify.toml
+├── vercel.json
 ├── supabase_schema.sql        ← schema completo, correr una sola vez
 ├── scripts/
 │   └── build_fixtures.py       ← genera fixtures desde openfootball
